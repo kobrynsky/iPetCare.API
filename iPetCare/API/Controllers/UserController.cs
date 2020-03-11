@@ -36,5 +36,18 @@ namespace API.Controllers
                 return Unauthorized();
             return BadRequest();
         }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<ActionResult<RegisterDtoResponse>> Register(RegisterDtoRequest dto)
+        {
+            var response =  await _userService.RegisterAsync(dto);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized();
+            return BadRequest();
+        }
     }
 }
