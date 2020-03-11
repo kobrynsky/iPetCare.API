@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using API.Security;
+using Application.Dtos.Users;
 using Application.Interfaces;
+using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,12 +24,17 @@ namespace API.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
-        [Route("test")]
-        public async Task<IActionResult> GetUser()
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginDtoResponse>> Login(LoginDtoRequest dto)
         {
-            return Ok("Heeej");
-        }
+            var response = await _userService.LoginAsync(dto);
 
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized();
+            return BadRequest();
+        }
     }
 }
