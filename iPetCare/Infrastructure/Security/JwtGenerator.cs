@@ -4,7 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.Interfaces;
-using Domain;
 using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +22,6 @@ namespace Infrastructure.Security
 
         public string CreateToken(ApplicationUser user)
         {
-
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.UserName),

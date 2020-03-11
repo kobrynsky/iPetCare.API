@@ -1,6 +1,3 @@
-using AutoMapper;
-using Domain;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 using System;
-using System.Net.Http;
 using System.Text;
 using Application.Interfaces;
 using Application.Services;
@@ -60,7 +56,6 @@ namespace API
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<ApplicationUser>>();
-
 
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IJwtGenerator, JwtGenerator>();

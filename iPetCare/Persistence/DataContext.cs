@@ -8,7 +8,6 @@ namespace Persistence
     {
         public DataContext(DbContextOptions options) : base(options)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
