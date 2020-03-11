@@ -13,14 +13,17 @@ namespace Infrastructure.Security
 {
     public class JwtGenerator : IJwtGenerator
     {
+        private readonly IConfiguration _config;
         private readonly SymmetricSecurityKey _key;
         public JwtGenerator(IConfiguration config)
         {
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TestSupportSystemJwtToken"));
+            _config = config;
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         }
 
         public string CreateToken(ApplicationUser user)
         {
+
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.UserName),
