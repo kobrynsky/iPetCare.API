@@ -15,7 +15,6 @@ namespace API
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            CreateDbIfNeeded(host);
             PopulateDbIfNeeded(host);
             host.Run();
         }
@@ -26,27 +25,6 @@ namespace API
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-
-
-        public static void CreateDbIfNeeded(IHost host)
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    //jeœli nie ma stworzonej bazy to tworzy j¹ automatycznie
-                    var context = services.GetRequiredService<DataContext>();
-                    context.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occured during migration");
-                }
-            }
-        }
 
         public static void PopulateDbIfNeeded(IHost host)
         {

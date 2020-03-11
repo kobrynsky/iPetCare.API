@@ -1,4 +1,3 @@
-using API.Middleware;
 using AutoMapper;
 using Domain;
 using FluentValidation.AspNetCore;
@@ -96,7 +95,6 @@ namespace API
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseHttpsRedirection();
 
