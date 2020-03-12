@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using Application.Dtos.Users;
 using Application.Interfaces;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/user")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -27,8 +28,8 @@ namespace API.Controllers
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized();
-            return BadRequest();
+                return Unauthorized(response.Message);
+            return BadRequest(response.Message);
         }
 
         [AllowAnonymous]
@@ -40,8 +41,21 @@ namespace API.Controllers
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized();
-            return BadRequest();
+                return Unauthorized(response.Message);
+            return BadRequest(response.Message);
+        }
+
+        [Authorize(Roles = Role.Administrator)]
+        [HttpGet("")]
+        public async Task<ActionResult<GetAllDtoResponse>> GetUsers()
+        {
+            var response = await _userService.GetAllAsync();
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized(response.Message);
+            return BadRequest(response.Message);
         }
     }
 }

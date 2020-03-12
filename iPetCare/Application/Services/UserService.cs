@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Application.Dtos.Users;
 using Application.Interfaces;
 using Application.Services.Utilities;
+using AutoMapper;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +20,14 @@ namespace Application.Services
         private readonly IJwtGenerator _jwtGenerator;
         private readonly DataContext _context;
         private readonly IUserAccessor _userAccessor;
+        private readonly IMapper _mapper;
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator, DataContext context, IUserAccessor userAccessor)
+        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator, DataContext context, IUserAccessor userAccessor, IMapper _mapper)
         {
             _jwtGenerator = jwtGenerator;
             _context = context;
             _userAccessor = userAccessor;
+            this._mapper = _mapper;
             _signInManager = signInManager;
             _userManager = userManager;
         }
@@ -105,6 +109,25 @@ namespace Application.Services
                 }
             }
             return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Unauthorized);
+        }
+
+        public async Task<ServiceResponse<GetAllDtoResponse>> GetAllAsync()
+        {
+            var currentUserName = _userAccessor.GetCurrentUsername();
+
+            if (currentUserName == null)
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "No permissions to get all users");
+
+            var currentUser = await _userManager.FindByNameAsync(currentUserName);
+            if (currentUser == null || currentUser.Role != Role.Administrator)
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "No permissions to get all users");
+
+            var users = await _context.Users.ToListAsync();
+
+            var dto = new GetAllDtoResponse();
+            dto.Users = _mapper.Map<List<UserGetAllDtoResponse>>(users);
+
+            return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }

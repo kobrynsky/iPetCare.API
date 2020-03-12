@@ -11,8 +11,10 @@ using Microsoft.OpenApi.Models;
 using Persistence;
 using System;
 using System.Text;
+using Application.Infrastructure;
 using Application.Interfaces;
 using Application.Services;
+using AutoMapper;
 using Domain.Models;
 using Infrastructure.Security;
 using Microsoft.Extensions.Hosting;
@@ -56,7 +58,7 @@ namespace API
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<ApplicationUser>>();
-
+            services.AddAutoMapper(c => c.AddProfile<AutoMapperProfile>(), typeof(Startup));
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IUserService, UserService>();
