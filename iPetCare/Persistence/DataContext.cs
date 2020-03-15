@@ -46,6 +46,16 @@ namespace Persistence
                 .Property(e => e.Gender)
                 .HasConversion(converter);
 
+            builder.Entity<Vet>()
+                .HasOne(x => x.User)
+                .WithOne(x => x.Vet)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Owner>()
+                .HasOne(x => x.User)
+                .WithOne(x => x.Owner)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // association tables
             builder.Entity<ImportantDatePet>().HasKey(x => new {x.ImportantDateId, x.PetId});
             builder.Entity<InstitutionVet>().HasKey(x => new {x.InstitutionId, x.VetId});

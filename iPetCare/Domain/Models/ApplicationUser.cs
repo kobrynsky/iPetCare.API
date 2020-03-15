@@ -11,6 +11,10 @@ namespace Domain.Models
 
         public string ImageUrl { get; set; }
 
+        public virtual Vet Vet{ get; set; }
+
+        public virtual Owner Owner{ get; set; }
+
         public virtual ICollection<Request> Requests { get; set; }
 
         public virtual ICollection<Note> Notes { get; set; }
