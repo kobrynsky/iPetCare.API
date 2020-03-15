@@ -62,6 +62,15 @@ namespace API
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IUserService, UserService>();
+
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);
@@ -97,6 +106,7 @@ namespace API
 
             app.UseRouting();
             app.UseAuthentication();
+            app.UseCors("CorsPolicy");
             app.UseMvc();
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
@@ -106,10 +116,6 @@ namespace API
             });
 
             app.UseAuthorization();
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
