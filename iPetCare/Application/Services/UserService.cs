@@ -63,21 +63,21 @@ namespace Application.Services
         public async Task<ServiceResponse<RegisterDtoResponse>> RegisterAsync(RegisterDtoRequest dto)
         {
             if (await _context.Users.Where(x => x.Email == dto.Email).AnyAsync())
-                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Email already exists");
+                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Email jest zajęty");
 
             if (await _context.Users.Where(x => x.UserName == dto.UserName).AnyAsync())
-                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Nick already exists");
+                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
 
             if (dto.Role == Role.Administrator)
             {
                 var currentUserName = _userAccessor.GetCurrentUsername();
 
                 if (currentUserName == null)
-                    return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "No permissions to register an account with this role");
+                    return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień do rejestracji konta z tą rolą");
 
                 var currentUser = await _userManager.FindByNameAsync(currentUserName);
                 if (currentUser == null || currentUser.Role != Role.Administrator)
-                    return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "No permissions to register an account with this role");
+                    return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień do rejestracji konta z tą rolą");
             }
 
             if (dto.Role == Role.Owner || dto.Role == Role.Vet)
@@ -97,6 +97,7 @@ namespace Application.Services
                 {
                     var responseDto = new RegisterDtoResponse()
                     {
+                        Id = user.Id,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         Email = user.Email,
@@ -106,9 +107,12 @@ namespace Application.Services
                     };
 
                     return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.OK, responseDto);
-                }
+                };
+                var errors = string.Join("\n", result.Errors.Select(x => x.Description));
+                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, errors);
             }
-            return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Unauthorized);
+            else
+                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Podana rola nie istnieje");
         }
 
         public async Task<ServiceResponse<GetAllDtoResponse>> GetAllAsync()
@@ -116,11 +120,11 @@ namespace Application.Services
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "No permissions to get all users");
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser == null || currentUser.Role != Role.Administrator)
-                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "No permissions to get all users");
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "Brak uprawnień");
 
             var users = await _context.Users.ToListAsync();
 
