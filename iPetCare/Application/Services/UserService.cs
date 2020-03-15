@@ -22,12 +22,12 @@ namespace Application.Services
         private readonly IUserAccessor _userAccessor;
         private readonly IMapper _mapper;
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator, DataContext context, IUserAccessor userAccessor, IMapper _mapper)
+        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator, DataContext context, IUserAccessor userAccessor, IMapper mapper)
         {
             _jwtGenerator = jwtGenerator;
             _context = context;
             _userAccessor = userAccessor;
-            this._mapper = _mapper;
+            _mapper = mapper;
             _signInManager = signInManager;
             _userManager = userManager;
         }
