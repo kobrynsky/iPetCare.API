@@ -38,7 +38,7 @@ namespace Persistence
             builder.Entity<ApplicationUser>()
                 .HasKey(x => x.Id);
 
-            var converter = new EnumToStringConverter<GenderEnum>();
+            var converter = new EnumToStringConverter<Gender>();
 
             // resolve enum with strings
             builder

@@ -17,7 +17,7 @@ namespace Domain.Models
 
         public float Height { get; set; }
 
-        public GenderEnum Gender { get; set; }
+        public Gender Gender { get; set; }
 
         public DateTime BirthDate { get; set; }
 

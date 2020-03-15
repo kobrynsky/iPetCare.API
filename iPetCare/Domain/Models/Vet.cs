@@ -10,7 +10,7 @@ namespace Domain.Models
         public Guid Id { get; set; }
 
         [Required]
-        [MaxLength(512)]
+        [MaxLength(255)]
         public string Specialization { get; set; }
 
         public string UserId { get; set; }
