@@ -68,16 +68,23 @@ namespace Application.Services
             if (await _context.Users.Where(x => x.UserName == dto.UserName).AnyAsync())
                 return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
 
+            var currentUserName = _userAccessor.GetCurrentUsername();
+
+            if (currentUserName != null)
+            {
+                var currentUser = await _userManager.FindByNameAsync(currentUserName);
+                if (currentUser != null && currentUser.Role != Role.Administrator)
+                    return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień do rejestracji konta z tą rolą");
+            }
+
+
             if (dto.Role == Role.Administrator)
             {
-                var currentUserName = _userAccessor.GetCurrentUsername();
-
-                if (currentUserName == null)
-                    return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień do rejestracji konta z tą rolą");
-
                 var currentUser = await _userManager.FindByNameAsync(currentUserName);
-                if (currentUser == null || currentUser.Role != Role.Administrator)
+                if (currentUser == null)
                     return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień do rejestracji konta z tą rolą");
+                if(currentUser.Role != Role.Administrator)
+                    return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień do rejestracji konta z tą rolą");
             }
 
             if (dto.Role == Role.Owner || dto.Role == Role.Vet)
