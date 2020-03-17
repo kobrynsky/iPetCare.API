@@ -127,11 +127,13 @@ namespace Application.Services
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "Brak uprawnień");
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
-            if (currentUser == null || currentUser.Role != Role.Administrator)
-                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.BadRequest, "Brak uprawnień");
+            if (currentUser == null)
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+            if(currentUser.Role != Role.Administrator)
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
 
             var users = await _context.Users.ToListAsync();
 
