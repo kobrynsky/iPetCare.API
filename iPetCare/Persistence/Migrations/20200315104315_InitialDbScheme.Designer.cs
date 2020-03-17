@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200315104315_InitialDbScheme")]
+    partial class InitialDbScheme
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -317,9 +319,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Owners");
                 });
@@ -366,12 +366,17 @@ namespace Persistence.Migrations
                     b.Property<int>("RaceId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("VetId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<float>("Weight")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RaceId");
+
+                    b.HasIndex("VetId");
 
                     b.ToTable("Pets");
                 });
@@ -450,34 +455,17 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Specialization")
                         .IsRequired()
-                        .HasColumnType("nvarchar(255)")
-                        .HasMaxLength(255);
+                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(512);
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Vets");
-                });
-
-            modelBuilder.Entity("Domain.Models.VetPet", b =>
-                {
-                    b.Property<Guid>("VetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("VetId", "PetId");
-
-                    b.HasIndex("PetId");
-
-                    b.ToTable("VetPets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -707,16 +695,15 @@ namespace Persistence.Migrations
                         .HasForeignKey("PetId");
 
                     b.HasOne("Domain.Models.ApplicationUser", "User")
-                        .WithMany("Notes")
+                        .WithMany()
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Domain.Models.Owner", b =>
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
-                        .WithOne("Owner")
-                        .HasForeignKey("Domain.Models.Owner", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Domain.Models.OwnerPet", b =>
@@ -741,6 +728,10 @@ namespace Persistence.Migrations
                         .HasForeignKey("RaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Models.Vet", null)
+                        .WithMany("Pets")
+                        .HasForeignKey("VetId");
                 });
 
             modelBuilder.Entity("Domain.Models.Race", b =>
@@ -768,24 +759,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Models.Vet", b =>
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
-                        .WithOne("Vet")
-                        .HasForeignKey("Domain.Models.Vet", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Domain.Models.VetPet", b =>
-                {
-                    b.HasOne("Domain.Models.Pet", "Pet")
-                        .WithMany("VetPets")
-                        .HasForeignKey("PetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Vet", "Vet")
-                        .WithMany("VetPets")
-                        .HasForeignKey("VetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

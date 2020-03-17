@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200315141750_AddedExplicitlyNotesToAppUserAndChangedLengthOfSpecializationInVet")]
+    partial class AddedExplicitlyNotesToAppUserAndChangedLengthOfSpecializationInVet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -317,9 +319,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Owners");
                 });
@@ -458,9 +458,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Vets");
                 });
@@ -714,9 +712,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Models.Owner", b =>
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
-                        .WithOne("Owner")
-                        .HasForeignKey("Domain.Models.Owner", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Domain.Models.OwnerPet", b =>
@@ -768,9 +765,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Models.Vet", b =>
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
-                        .WithOne("Vet")
-                        .HasForeignKey("Domain.Models.Vet", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Domain.Models.VetPet", b =>
