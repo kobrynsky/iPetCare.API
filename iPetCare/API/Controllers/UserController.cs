@@ -29,6 +29,8 @@ namespace API.Controllers
                 return Ok(response.ResponseContent);
             if (response.StatusCode == HttpStatusCode.Unauthorized)
                 return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
             return BadRequest(response.Message);
         }
 
@@ -42,6 +44,8 @@ namespace API.Controllers
                 return Ok(response.ResponseContent);
             if (response.StatusCode == HttpStatusCode.Unauthorized)
                 return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
             return BadRequest(response.Message);
         }
 
@@ -55,6 +59,8 @@ namespace API.Controllers
                 return Ok(response.ResponseContent);
             if (response.StatusCode == HttpStatusCode.Unauthorized)
                 return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
             return BadRequest(response.Message);
         }
     }
