@@ -66,5 +66,22 @@ namespace API.Controllers
                 return NoContent();
             return BadRequest(response.Message);
         }
+
+        [Authorize(Roles = Role.Administrator)]
+        [HttpPut("{raceId}")]
+        public async Task<ActionResult<PutDtoResponse>> PutRace(int raceId, PutDtoRequest dto)
+        {
+            var response = await _raceService.PutAsync(raceId, dto);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
+            if (response.StatusCode == HttpStatusCode.NoContent)
+                return Content(response.Message);
+            return BadRequest(response.Message);
+        }
     }
 }

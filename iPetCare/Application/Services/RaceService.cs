@@ -106,5 +106,43 @@ namespace Application.Services
 
             return new ServiceResponse<GetDtoResponse>(HttpStatusCode.OK, dto);
         }
+
+        public async Task<ServiceResponse<PutDtoResponse>> PutAsync(int raceId, PutDtoRequest dto)
+        {
+            var currentUserName = _userAccessor.GetCurrentUsername();
+
+            if (currentUserName == null)
+                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await _userManager.FindByNameAsync(currentUserName);
+            if (currentUser != null && currentUser.Role != Role.Administrator)
+                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+
+            var race = _context.Races.Find(raceId);
+
+            if(race == null)
+                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.NoContent, "Nie istnieje taka rasa w bazie danych");
+
+            race.Name = dto.Name;
+            race.SpeciesId = dto.SpeciesId;
+
+            int result = await _context.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                var responseDto = new PutDtoResponse()
+                {
+                    Name = race.Name,
+                    SpeciesId = race.SpeciesId
+                };
+
+                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.OK, responseDto);
+            }
+
+            if (result == 0)
+                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+
+            return new ServiceResponse<PutDtoResponse>(HttpStatusCode.BadRequest);
+        }
     }
 }
