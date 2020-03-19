@@ -79,5 +79,20 @@ namespace API.Controllers
                 return Forbid(response.Message);
             return BadRequest(response.Message);
         }
+
+        [Authorize(Roles = Role.Administrator)]
+        [HttpDelete("{raceId}")]
+        public async Task<ActionResult<DeleteDtoResponse>> DeleteRace(int raceId)
+        {
+            var response = await _raceService.DeleteAsync(raceId);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
+            return BadRequest(response.Message);
+        }
     }
 }

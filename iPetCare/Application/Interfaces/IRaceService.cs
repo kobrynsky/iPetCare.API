@@ -10,5 +10,6 @@ namespace Application.Interfaces
         Task<ServiceResponse<GetAllDtoResponse>> GetAllAsync();
         Task<ServiceResponse<GetDtoResponse>> GetAsync(int raceId);
         Task<ServiceResponse<PutDtoResponse>> PutAsync(int raceId, PutDtoRequest dto);
+        Task<ServiceResponse<DeleteDtoResponse>> DeleteAsync(int raceId);
     }
 }

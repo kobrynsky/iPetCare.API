@@ -147,5 +147,32 @@ namespace Application.Services
 
             return new ServiceResponse<PutDtoResponse>(HttpStatusCode.BadRequest);
         }
+
+        public async Task<ServiceResponse<DeleteDtoResponse>> DeleteAsync(int raceId)
+        {
+            var currentUserName = _userAccessor.GetCurrentUsername();
+
+            if (currentUserName == null)
+                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await _userManager.FindByNameAsync(currentUserName);
+            if (currentUser != null && currentUser.Role != Role.Administrator)
+                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+
+            var race = _context.Races.Find(raceId);
+
+            if (race == null)
+                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+
+            var dto = _mapper.Map<DeleteDtoResponse>(race);
+
+            _context.Races.Remove(race);
+            int result = await _context.SaveChangesAsync();
+
+            if (result > 0)
+                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.OK, dto);
+            
+            return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.BadRequest);
+        }
     }
 }
