@@ -7,5 +7,6 @@ namespace Application.Interfaces
     public interface IRaceService
     {
         Task<ServiceResponse<CreateDtoResponse>> CreateAsync(CreateDtoRequest dto);
+        Task<ServiceResponse<GetAllDtoResponse>> GetAllAsync();
     }
 }

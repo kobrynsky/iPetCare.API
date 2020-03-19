@@ -5,6 +5,7 @@ using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using API.Security;
 
 namespace API.Controllers
 {
@@ -20,10 +21,25 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = Role.Administrator)]
-        [HttpPost]
+        [HttpPost("")]
         public async Task<ActionResult<CreateDtoResponse>> Create(CreateDtoRequest dto)
         {
             var response = await _raceService.CreateAsync(dto);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
+            return BadRequest(response.Message);
+        }
+
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet("")]
+        public async Task<ActionResult<GetAllDtoResponse>> GetRaces()
+        {
+            var response = await _raceService.GetAllAsync();
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);

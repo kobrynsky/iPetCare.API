@@ -18,12 +18,14 @@ namespace Application.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly DataContext _context;
         private readonly IUserAccessor _userAccessor;
+        private readonly IMapper _mapper;
 
-        public RaceService(UserManager<ApplicationUser> userManager, DataContext context, IUserAccessor userAccessor)
+        public RaceService(UserManager<ApplicationUser> userManager, DataContext context, IUserAccessor userAccessor, IMapper mapper)
         {
             _context = context;
             _userAccessor = userAccessor;
             _userManager = userManager;
+            _mapper = mapper;
         }
         public async Task<ServiceResponse<CreateDtoResponse>> CreateAsync(CreateDtoRequest dto)
         {
@@ -44,7 +46,7 @@ namespace Application.Services
                 return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
             }
 
-                var race = new Race()
+            var race = new Race()
             {
                 Name = dto.Name,
                 SpeciesId = dto.SpeciesId
@@ -66,6 +68,25 @@ namespace Application.Services
             }
 
             return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.BadRequest);
+        }
+
+        public async Task<ServiceResponse<GetAllDtoResponse>> GetAllAsync()
+        {
+            var currentUserName = _userAccessor.GetCurrentUsername();
+
+            if (currentUserName == null)
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await _userManager.FindByNameAsync(currentUserName);
+            if (currentUser == null)
+                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var races = await _context.Races.ToListAsync();
+
+            var dto = new GetAllDtoResponse();
+            dto.Races = _mapper.Map<List<RaceGetAllDtoResponse>>(races);
+
+            return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }
