@@ -102,6 +102,9 @@ namespace Application.Services
 
             var race = _context.Races.Find(raceId);
 
+            if (race == null)
+                return new ServiceResponse<GetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+
             var dto = _mapper.Map<GetDtoResponse>(race);
 
             return new ServiceResponse<GetDtoResponse>(HttpStatusCode.OK, dto);
@@ -121,7 +124,7 @@ namespace Application.Services
             var race = _context.Races.Find(raceId);
 
             if(race == null)
-                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.NoContent, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
             race.Name = dto.Name;
             race.SpeciesId = dto.SpeciesId;

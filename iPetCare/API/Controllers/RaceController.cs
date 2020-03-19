@@ -62,8 +62,6 @@ namespace API.Controllers
                 return Unauthorized(response.Message);
             if (response.StatusCode == HttpStatusCode.Forbidden)
                 return Forbid(response.Message);
-            if (response.StatusCode == HttpStatusCode.NoContent)
-                return NoContent();
             return BadRequest(response.Message);
         }
 
@@ -79,8 +77,6 @@ namespace API.Controllers
                 return Unauthorized(response.Message);
             if (response.StatusCode == HttpStatusCode.Forbidden)
                 return Forbid(response.Message);
-            if (response.StatusCode == HttpStatusCode.NoContent)
-                return Content(response.Message);
             return BadRequest(response.Message);
         }
     }
