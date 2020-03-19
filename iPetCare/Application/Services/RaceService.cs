@@ -39,7 +39,12 @@ namespace Application.Services
                     return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
             }
 
-            var race = new Race()
+            if (currentUserName == null)
+            {
+                return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+            }
+
+                var race = new Race()
             {
                 Name = dto.Name,
                 SpeciesId = dto.SpeciesId
