@@ -49,5 +49,22 @@ namespace API.Controllers
                 return Forbid(response.Message);
             return BadRequest(response.Message);
         }
+
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet("{raceId}")]
+        public async Task<ActionResult<GetDtoResponse>> GetRace(int raceId)
+        {
+            var response = await _raceService.GetAsync(raceId);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
+            if (response.StatusCode == HttpStatusCode.NoContent)
+                return NoContent();
+            return BadRequest(response.Message);
+        }
     }
 }

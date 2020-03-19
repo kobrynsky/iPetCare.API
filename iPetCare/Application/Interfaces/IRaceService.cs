@@ -8,5 +8,6 @@ namespace Application.Interfaces
     {
         Task<ServiceResponse<CreateDtoResponse>> CreateAsync(CreateDtoRequest dto);
         Task<ServiceResponse<GetAllDtoResponse>> GetAllAsync();
+        Task<ServiceResponse<GetDtoResponse>> GetAsync(int raceId);
     }
 }

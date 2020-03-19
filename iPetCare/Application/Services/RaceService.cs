@@ -88,5 +88,23 @@ namespace Application.Services
 
             return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.OK, dto);
         }
+
+        public async Task<ServiceResponse<GetDtoResponse>> GetAsync(int raceId)
+        {
+            var currentUserName = _userAccessor.GetCurrentUsername();
+
+            if (currentUserName == null)
+                return new ServiceResponse<GetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await _userManager.FindByNameAsync(currentUserName);
+            if (currentUser == null)
+                return new ServiceResponse<GetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var race = _context.Races.Find(raceId);
+
+            var dto = _mapper.Map<GetDtoResponse>(race);
+
+            return new ServiceResponse<GetDtoResponse>(HttpStatusCode.OK, dto);
+        }
     }
 }
