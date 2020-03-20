@@ -100,9 +100,7 @@ namespace Application.Services
             if (currentUser == null)
                 return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
-            var race = _context.Races.Find(raceId);
-            int speciesId = race.SpeciesId;
-            var species = await _context.Species.Where(x => x.Id == speciesId).ToListAsync();
+            var race = await _context.Races.FindAsync(raceId);
     
             if (race == null)
                 return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
