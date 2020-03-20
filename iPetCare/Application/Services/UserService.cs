@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -112,6 +113,32 @@ namespace Application.Services
                         Role = user.Role,
                         Token = _jwtGenerator.CreateToken(user)
                     };
+
+                    // assign to vet or owner table here
+                    if (user.Role == Role.Vet)
+                    {
+                        var vet = new Vet
+                        {
+                            Id = Guid.Parse(user.Id),
+                            User = user
+                        };
+
+                        _context.Vets.Add(vet);
+                        if(await _context.SaveChangesAsync() <= 0)
+                            return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "An error occured while creating vet");
+                    }
+                    else
+                    {
+                        var owner = new Owner
+                        {
+                            Id = Guid.Parse(user.Id),
+                            User = user
+                        };
+
+                        _context.Owners.Add(owner);
+                        if (await _context.SaveChangesAsync() <= 0)
+                            return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "An error occured while creating owner");
+                    }
 
                     return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.OK, responseDto);
                 };

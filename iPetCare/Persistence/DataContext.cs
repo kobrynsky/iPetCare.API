@@ -62,5 +62,11 @@ namespace Persistence
             builder.Entity<OwnerPet>().HasKey(x => new {x.OwnerId, x.PetId});
             builder.Entity<VetPet>().HasKey(x => new {x.VetId, x.PetId});
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseLazyLoadingProxies();
+        }
     }
 }
