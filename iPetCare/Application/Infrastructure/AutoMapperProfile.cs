@@ -26,6 +26,8 @@ namespace Application.Infrastructure
             CreateMap<Race, RaceDetailGetAllDtoResponse>();
             CreateMap<Race, RaceGetDtoResponse>();
             CreateMap<Race, RaceDeleteDtoResponse>();
+            CreateMap<Race, RaceUpdateDtoResponse>();
+            CreateMap<Species, SpeciesDetailsGetDtoResponse>();
         }
     }
 }

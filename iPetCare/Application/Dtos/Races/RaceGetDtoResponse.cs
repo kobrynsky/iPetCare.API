@@ -8,6 +8,11 @@ namespace Application.Dtos.Races
     {
         public string Name { get; set; }
         public int Id { get; set; }
-        public int SpeciesId { get; set; }
+        public SpeciesDetailsGetDtoResponse Species { get; set; }
+    }
+    public class SpeciesDetailsGetDtoResponse
+    {
+        public string Name { get; set; }
+        public int Id { get; set; }
     }
 }

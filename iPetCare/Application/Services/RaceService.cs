@@ -101,7 +101,9 @@ namespace Application.Services
                 return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var race = _context.Races.Find(raceId);
-
+            int speciesId = race.SpeciesId;
+            var species = await _context.Species.Where(x => x.Id == speciesId).ToListAsync();
+    
             if (race == null)
                 return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
@@ -133,13 +135,9 @@ namespace Application.Services
 
             if (result > 0)
             {
-                var responseDto = new RaceUpdateDtoResponse()
-                {
-                    Name = race.Name,
-                    SpeciesId = race.SpeciesId
-                };
-
+                var responseDto = _mapper.Map<RaceUpdateDtoResponse>(race);
                 return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.OK, responseDto);
+
             }
 
             if (result == 0)
