@@ -123,9 +123,17 @@ namespace Application.Services
             if (currentUser != null && currentUser.Role != Role.Administrator)
                 return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
 
+            if (await _context.Races.Where(x => x.Name == dto.Name).AnyAsync())
+                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
+            
             var race = _context.Races.Find(raceId);
 
-            if(race == null)
+            var species = _context.Species.Find(dto.SpeciesId);
+
+            if (species == null)
+                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taki gatunek w bazie danych");
+
+            if (race == null)
                 return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
             race.Name = dto.Name;
