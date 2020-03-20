@@ -4,11 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.Races
 {
-    public class GetAllDtoResponse
-    {
-        public List<RaceGetAllDtoResponse> Races { get; set; }
-    }
-    public class RaceGetAllDtoResponse
+    public class RaceDeleteDtoResponse
     {
         public string Name { get; set; }
         public int Id { get; set; }

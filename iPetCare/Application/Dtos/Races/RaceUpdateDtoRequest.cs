@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.Races
 {
-    public class PutDtoRequest
+    public class RaceUpdateDtoRequest
     {
         public string Name { get; set; }
         public int SpeciesId { get; set; }

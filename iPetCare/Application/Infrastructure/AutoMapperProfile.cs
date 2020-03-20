@@ -23,9 +23,9 @@ namespace Application.Infrastructure
 
         private void MapsForRaces()
         {
-            CreateMap<Race, RaceGetAllDtoResponse>();
-            CreateMap<Race, GetDtoResponse>();
-            CreateMap<Race, DeleteDtoResponse>();
+            CreateMap<Race, RaceDetailGetAllDtoResponse>();
+            CreateMap<Race, RaceGetDtoResponse>();
+            CreateMap<Race, RaceDeleteDtoResponse>();
         }
     }
 }

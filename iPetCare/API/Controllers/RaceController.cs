@@ -21,8 +21,8 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = Role.Administrator)]
-        [HttpPost("")]
-        public async Task<ActionResult<CreateDtoResponse>> Create(CreateDtoRequest dto)
+        [HttpPost]
+        public async Task<ActionResult<RaceCreateDtoResponse>> Create(RaceCreateDtoRequest dto)
         {
             var response = await _raceService.CreateAsync(dto);
 
@@ -36,8 +36,8 @@ namespace API.Controllers
         }
 
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
-        [HttpGet("")]
-        public async Task<ActionResult<GetAllDtoResponse>> GetRaces()
+        [HttpGet]
+        public async Task<ActionResult<RaceGetAllDtoResponse>> GetRaces()
         {
             var response = await _raceService.GetAllAsync();
 
@@ -52,7 +52,7 @@ namespace API.Controllers
 
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{raceId}")]
-        public async Task<ActionResult<GetDtoResponse>> GetRace(int raceId)
+        public async Task<ActionResult<RaceGetDtoResponse>> GetRace(int raceId)
         {
             var response = await _raceService.GetAsync(raceId);
 
@@ -67,9 +67,9 @@ namespace API.Controllers
 
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{raceId}")]
-        public async Task<ActionResult<PutDtoResponse>> PutRace(int raceId, PutDtoRequest dto)
+        public async Task<ActionResult<RaceUpdateDtoResponse>> UpdateRace(int raceId, RaceUpdateDtoRequest dto)
         {
-            var response = await _raceService.PutAsync(raceId, dto);
+            var response = await _raceService.UpdateAsync(raceId, dto);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -82,7 +82,7 @@ namespace API.Controllers
 
         [Authorize(Roles = Role.Administrator)]
         [HttpDelete("{raceId}")]
-        public async Task<ActionResult<DeleteDtoResponse>> DeleteRace(int raceId)
+        public async Task<ActionResult<RaceDeleteDtoResponse>> DeleteRace(int raceId)
         {
             var response = await _raceService.DeleteAsync(raceId);
 

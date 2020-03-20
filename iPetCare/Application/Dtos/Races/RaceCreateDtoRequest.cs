@@ -2,7 +2,7 @@
 
 namespace Application.Dtos.Races
 {
-    public class CreateDtoRequest
+    public class RaceCreateDtoRequest
     {
         [Required]
         public string Name { get; set; }

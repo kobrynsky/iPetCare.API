@@ -27,10 +27,10 @@ namespace Application.Services
             _userManager = userManager;
             _mapper = mapper;
         }
-        public async Task<ServiceResponse<CreateDtoResponse>> CreateAsync(CreateDtoRequest dto)
+        public async Task<ServiceResponse<RaceCreateDtoResponse>> CreateAsync(RaceCreateDtoRequest dto)
         {
             if (await _context.Races.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
+                return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
 
             var currentUserName = _userAccessor.GetCurrentUsername();
 
@@ -38,12 +38,12 @@ namespace Application.Services
             {
                 var currentUser = await _userManager.FindByNameAsync(currentUserName);
                 if (currentUser != null && currentUser.Role != Role.Administrator)
-                    return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+                    return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
             }
 
             if (currentUserName == null)
             {
-                return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
             }
 
             var race = new Race()
@@ -57,74 +57,74 @@ namespace Application.Services
 
             if(result > 0)
             {
-                var responseDto = new CreateDtoResponse()
+                var responseDto = new RaceCreateDtoResponse()
                 {
                     Name = race.Name,
                     SpeciesId = race.SpeciesId,
                     Id = race.Id
                 };
 
-                return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.OK, responseDto);
+                return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            return new ServiceResponse<CreateDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.BadRequest);
         }
 
-        public async Task<ServiceResponse<GetAllDtoResponse>> GetAllAsync()
+        public async Task<ServiceResponse<RaceGetAllDtoResponse>> GetAllAsync()
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<RaceGetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser == null)
-                return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<RaceGetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var races = await _context.Races.ToListAsync();
 
-            var dto = new GetAllDtoResponse();
-            dto.Races = _mapper.Map<List<RaceGetAllDtoResponse>>(races);
+            var dto = new RaceGetAllDtoResponse();
+            dto.Races = _mapper.Map<List<RaceDetailGetAllDtoResponse>>(races);
 
-            return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<RaceGetAllDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<GetDtoResponse>> GetAsync(int raceId)
+        public async Task<ServiceResponse<RaceGetDtoResponse>> GetAsync(int raceId)
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<GetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser == null)
-                return new ServiceResponse<GetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var race = _context.Races.Find(raceId);
 
             if (race == null)
-                return new ServiceResponse<GetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
-            var dto = _mapper.Map<GetDtoResponse>(race);
+            var dto = _mapper.Map<RaceGetDtoResponse>(race);
 
-            return new ServiceResponse<GetDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<PutDtoResponse>> PutAsync(int raceId, PutDtoRequest dto)
+        public async Task<ServiceResponse<RaceUpdateDtoResponse>> UpdateAsync(int raceId, RaceUpdateDtoRequest dto)
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser != null && currentUser.Role != Role.Administrator)
-                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
 
             var race = _context.Races.Find(raceId);
 
             if(race == null)
-                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
             race.Name = dto.Name;
             race.SpeciesId = dto.SpeciesId;
@@ -133,46 +133,46 @@ namespace Application.Services
 
             if (result > 0)
             {
-                var responseDto = new PutDtoResponse()
+                var responseDto = new RaceUpdateDtoResponse()
                 {
                     Name = race.Name,
                     SpeciesId = race.SpeciesId
                 };
 
-                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.OK, responseDto);
+                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
             if (result == 0)
-                return new ServiceResponse<PutDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
 
-            return new ServiceResponse<PutDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest);
         }
 
-        public async Task<ServiceResponse<DeleteDtoResponse>> DeleteAsync(int raceId)
+        public async Task<ServiceResponse<RaceDeleteDtoResponse>> DeleteAsync(int raceId)
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser != null && currentUser.Role != Role.Administrator)
-                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+                return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
 
             var race = _context.Races.Find(raceId);
 
             if (race == null)
-                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
-            var dto = _mapper.Map<DeleteDtoResponse>(race);
+            var dto = _mapper.Map<RaceDeleteDtoResponse>(race);
 
             _context.Races.Remove(race);
             int result = await _context.SaveChangesAsync();
 
             if (result > 0)
-                return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.OK, dto);
+                return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.OK, dto);
             
-            return new ServiceResponse<DeleteDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.BadRequest);
         }
     }
 }

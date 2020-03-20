@@ -1,6 +1,6 @@
 ﻿namespace Application.Dtos.Races
 {
-    public class CreateDtoResponse
+    public class RaceCreateDtoResponse
     {
         public string Name { get; set; }
         public int Id { get; set; }

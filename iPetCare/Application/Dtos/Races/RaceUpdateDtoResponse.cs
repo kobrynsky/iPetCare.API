@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.Races
 {
-    public class DeleteDtoResponse
+    public class RaceUpdateDtoResponse
     {
         public string Name { get; set; }
         public int Id { get; set; }
