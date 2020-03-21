@@ -28,6 +28,7 @@ namespace Application.Infrastructure
             CreateMap<Pet, PetsGetPetDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
             CreateMap<PetsUpdatePetDtoRequest, PetsUpdatePetDtoResponse>();
+            CreateMap<PetsUpdatePetDtoRequest, Pet>();
         }
     }
 }

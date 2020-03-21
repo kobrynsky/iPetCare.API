@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
+using API.Security;
 using Application.Dtos.Pet;
 using Application.Interfaces;
 using Application.Services.Utilities;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PetsController : ControllerBase
+    public class PetsController : BaseController
     {
         private readonly IPetService _petService;
 
@@ -60,36 +57,6 @@ namespace API.Controllers
         {
             var response = await _petService.DeletePetAsync(petId);
             return SendResponse(response);
-        }
-
-        private IActionResult SendResponse(ServiceResponse response)
-        {
-            switch (response.ResponseType)
-            {
-                case HttpStatusCode.OK:
-                    return Ok();
-                case HttpStatusCode.Unauthorized:
-                    return Unauthorized(response.Message);
-                case HttpStatusCode.Forbidden:
-                    return Forbid(response.Message);
-                default:
-                    return BadRequest(response.Message);
-            }
-        }
-
-        private IActionResult SendResponse<T>(ServiceResponse<T> response)
-        {
-            switch (response.StatusCode)
-            {
-                case HttpStatusCode.OK:
-                    return Ok(response.ResponseContent);
-                case HttpStatusCode.Unauthorized:
-                    return StatusCode(401, response.Message);
-                case HttpStatusCode.Forbidden:
-                    return Forbid();
-                default:
-                    return BadRequest(response.Message);
-            }
         }
     }
 }
