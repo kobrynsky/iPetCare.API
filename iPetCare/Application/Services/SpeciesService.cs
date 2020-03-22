@@ -137,8 +137,10 @@ namespace Application.Services
 
             var races = await _context.Races.ToListAsync();
 
-            if (races != null)
-                dto.Races = _mapper.Map<List<RaceDetailsGetDtoResponse>>(races);
+            var filteredRaces = races.Where(race => race.SpeciesId == speciesId).ToList();
+
+            if (filteredRaces != null)
+                dto.Races = _mapper.Map<List<RaceDetailsGetDtoResponse>>(filteredRaces);
 
             return new ServiceResponse<SpeciesGetDtoResponse>(HttpStatusCode.OK, dto);
         }
