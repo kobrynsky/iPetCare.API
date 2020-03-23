@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.Species
 {
-    public class SpeciesGetDtoResponse
+    public class SpeciesGetSpeciesDtoResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }

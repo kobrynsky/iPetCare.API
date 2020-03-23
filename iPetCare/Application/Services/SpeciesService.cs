@@ -31,10 +31,10 @@ namespace Application.Services
         }
 
 
-        public async Task<ServiceResponse<SpeciesCreateDtoResponse>> CreateAsync(SpeciesCreateDtoRequest dto)
+        public async Task<ServiceResponse<SpeciesCreateSpeciesDtoResponse>> CreateAsync(SpeciesCreateSpeciesDtoRequest dto)
         {
             if (await _context.Species.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<SpeciesCreateDtoResponse>(HttpStatusCode.BadRequest, "Podany gatunek już istnieje");
+                return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Podany gatunek już istnieje");
 
             var currentUserName = _userAccessor.GetCurrentUsername();
 
@@ -42,11 +42,11 @@ namespace Application.Services
             {
                 var currentUser = await _userManager.FindByNameAsync(currentUserName);
                 if (currentUser != null && currentUser.Role != Role.Administrator || currentUser == null)
-                    return new ServiceResponse<SpeciesCreateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+                    return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
             }
             else
             {
-                return new ServiceResponse<SpeciesCreateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
             }
 
             var species = new Species()
@@ -59,81 +59,81 @@ namespace Application.Services
 
             if (result > 0)
             {
-                var responseDto = new SpeciesCreateDtoResponse()
+                var responseDto = new SpeciesCreateSpeciesDtoResponse()
                 {
                     Name = species.Name,
                     Id = species.Id
                 };
 
-                return new ServiceResponse<SpeciesCreateDtoResponse>(HttpStatusCode.OK, responseDto);
+                return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            return new ServiceResponse<SpeciesCreateDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.BadRequest);
         }
 
-        public async Task<ServiceResponse<SpeciesDeleteDtoResponse>> DeleteAsync(int speciesId)
+        public async Task<ServiceResponse<SpeciesDeleteSpeciesDtoResponse>> DeleteAsync(int speciesId)
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<SpeciesDeleteDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser != null && currentUser.Role != Role.Administrator)
-                return new ServiceResponse<SpeciesDeleteDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+                return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
 
             var species = _context.Species.Find(speciesId);
 
             if (species == null)
-                return new ServiceResponse<SpeciesDeleteDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
-            var dto = _mapper.Map<SpeciesDeleteDtoResponse>(species);
+            var dto = _mapper.Map<SpeciesDeleteSpeciesDtoResponse>(species);
 
             _context.Species.Remove(species);
             int result = await _context.SaveChangesAsync();
 
             if (result > 0)
-                return new ServiceResponse<SpeciesDeleteDtoResponse>(HttpStatusCode.OK, dto);
+                return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.OK, dto);
 
-            return new ServiceResponse<SpeciesDeleteDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.BadRequest);
         }
 
-        public async Task<ServiceResponse<SpeciesGetAllDtoResponse>> GetAllAsync()
+        public async Task<ServiceResponse<SpeciesGetAllSpeciesDtoResponse>> GetAllAsync()
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<SpeciesGetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<SpeciesGetAllSpeciesDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser == null)
-                return new ServiceResponse<SpeciesGetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<SpeciesGetAllSpeciesDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var species = await _context.Species.ToListAsync();
 
-            var dto = new SpeciesGetAllDtoResponse();
+            var dto = new SpeciesGetAllSpeciesDtoResponse();
             dto.Species = _mapper.Map<List<SpeciesDetailGetAllDtoResponse>>(species);
 
-            return new ServiceResponse<SpeciesGetAllDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<SpeciesGetAllSpeciesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<SpeciesGetDtoResponse>> GetAsync(int speciesId)
+        public async Task<ServiceResponse<SpeciesGetSpeciesDtoResponse>> GetAsync(int speciesId)
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<SpeciesGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<SpeciesGetSpeciesDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
             if (currentUser == null)
-                return new ServiceResponse<SpeciesGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<SpeciesGetSpeciesDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var species = await _context.Species.FindAsync(speciesId);
 
             if (species == null)
-                return new ServiceResponse<SpeciesGetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<SpeciesGetSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
-            var dto = _mapper.Map<SpeciesGetDtoResponse>(species);
+            var dto = _mapper.Map<SpeciesGetSpeciesDtoResponse>(species);
 
             var races = await _context.Races.ToListAsync();
 
@@ -142,42 +142,44 @@ namespace Application.Services
             if (filteredRaces != null)
                 dto.Races = _mapper.Map<List<RaceDetailsGetDtoResponse>>(filteredRaces);
 
-            return new ServiceResponse<SpeciesGetDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<SpeciesGetSpeciesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<SpeciesUpdateDtoResponse>> UpdateAsync(int speciesId, SpeciesUpdateDtoRequest dto)
+        public async Task<ServiceResponse<SpeciesUpdateSpeciesDtoResponse>> UpdateAsync(int speciesId, SpeciesUpdateSpeciesDtoRequest dto)
         {
             var currentUserName = _userAccessor.GetCurrentUsername();
 
             if (currentUserName == null)
-                return new ServiceResponse<SpeciesUpdateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var currentUser = await _userManager.FindByNameAsync(currentUserName);
-            if (currentUser != null && currentUser.Role != Role.Administrator)
-                return new ServiceResponse<SpeciesUpdateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+            if (currentUser != null && currentUser.Role != Role.Administrator || currentUser == null)
+                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
 
             if (await _context.Species.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<SpeciesUpdateDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
+                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
 
             var species = _context.Species.Find(speciesId);
 
             if (species == null)
-                return new ServiceResponse<SpeciesUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taki gatunek w bazie danych");
+                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taki gatunek w bazie danych");
+
+            if (species.Name.Equals(dto.Name))
+            {
+                var responseDto = _mapper.Map<SpeciesUpdateSpeciesDtoResponse>(species);
+                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto);
+            }
 
             species.Name = dto.Name;
             int result = await _context.SaveChangesAsync();
 
             if (result > 0)
             {
-                var responseDto = _mapper.Map<SpeciesUpdateDtoResponse>(species);
-                return new ServiceResponse<SpeciesUpdateDtoResponse>(HttpStatusCode.OK, responseDto);
-
+                var responseDto = _mapper.Map<SpeciesUpdateSpeciesDtoResponse>(species);
+                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            if (result == 0)
-                return new ServiceResponse<SpeciesUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
-
-            return new ServiceResponse<SpeciesUpdateDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.BadRequest);
         }
     }
 }

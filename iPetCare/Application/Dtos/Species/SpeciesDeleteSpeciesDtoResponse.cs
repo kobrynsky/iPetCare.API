@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dtos.Species
 {
-    public class SpeciesCreateDtoRequest
+    public class SpeciesDeleteSpeciesDtoResponse
     {
-        [Required]
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

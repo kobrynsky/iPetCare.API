@@ -10,10 +10,10 @@ namespace Application.Interfaces
 {
     public interface ISpeciesService
     {
-        Task<ServiceResponse<SpeciesCreateDtoResponse>> CreateAsync(SpeciesCreateDtoRequest dto);
-        Task<ServiceResponse<SpeciesGetAllDtoResponse>> GetAllAsync();
-        Task<ServiceResponse<SpeciesGetDtoResponse>> GetAsync(int speciesId);
-        Task<ServiceResponse<SpeciesUpdateDtoResponse>> UpdateAsync(int speciesId, SpeciesUpdateDtoRequest dto);
-        Task<ServiceResponse<SpeciesDeleteDtoResponse>> DeleteAsync(int speciesId);
+        Task<ServiceResponse<SpeciesCreateSpeciesDtoResponse>> CreateAsync(SpeciesCreateSpeciesDtoRequest dto);
+        Task<ServiceResponse<SpeciesGetAllSpeciesDtoResponse>> GetAllAsync();
+        Task<ServiceResponse<SpeciesGetSpeciesDtoResponse>> GetAsync(int speciesId);
+        Task<ServiceResponse<SpeciesUpdateSpeciesDtoResponse>> UpdateAsync(int speciesId, SpeciesUpdateSpeciesDtoRequest dto);
+        Task<ServiceResponse<SpeciesDeleteSpeciesDtoResponse>> DeleteAsync(int speciesId);
     }
 }
