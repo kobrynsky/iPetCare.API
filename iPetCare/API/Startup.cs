@@ -62,6 +62,7 @@ namespace API
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ISpeciesService, SpeciesService>();
 
 
             services.AddCors(options =>
