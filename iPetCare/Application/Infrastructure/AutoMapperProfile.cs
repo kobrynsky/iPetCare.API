@@ -5,6 +5,7 @@ using Application.Dtos.Users;
 using Application.Dtos.Races;
 using AutoMapper;
 using Domain.Models;
+using Application.Dtos.Species;
 
 namespace Application.Infrastructure
 {
@@ -14,6 +15,7 @@ namespace Application.Infrastructure
         {
             MapsForUser();
             MapsForRaces();
+            MapsForSpecies();
         }
 
         private void MapsForUser()
@@ -28,6 +30,15 @@ namespace Application.Infrastructure
             CreateMap<Race, RaceDeleteDtoResponse>();
             CreateMap<Race, RaceUpdateDtoResponse>();
             CreateMap<Species, SpeciesDetailsGetDtoResponse>();
+        }
+        
+        private void MapsForSpecies()
+        {
+            CreateMap<Species, SpeciesDetailGetAllDtoResponse>();
+            CreateMap<Species, SpeciesGetDtoResponse>();
+            CreateMap<Species, SpeciesDeleteDtoResponse>();
+            CreateMap<Species, SpeciesUpdateDtoResponse>();
+            CreateMap<Race, RaceDetailsGetDtoResponse>();
         }
     }
 }
