@@ -37,6 +37,10 @@ namespace Application.Services
             if (currentUserName != null)
             {
                 var currentUser = await _userManager.FindByNameAsync(currentUserName);
+
+                if (currentUser == null)
+                    return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
                 if (currentUser != null && currentUser.Role != Role.Administrator)
                     return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
             }
