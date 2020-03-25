@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using API.Security;
 using Application.Dtos.Pet;
 using Application.Interfaces;
 using Application.Services.Utilities;

@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 using Application.Dtos.Pet;
 using Application.Interfaces;
 using Application.Services.Utilities;
-using AutoMapper;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Services
 {
@@ -34,7 +32,7 @@ namespace Application.Services
             if(petId == Guid.Empty)
                 return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Invalid pet id");
 
-            var username = UserAccessor.GetCurrentUsername();
+            var username = CurrentlyLoggedUserName;
             if(string.IsNullOrWhiteSpace(username))
                 return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Unauthorized);
 
@@ -80,8 +78,7 @@ namespace Application.Services
             if(dto.Gender == null)
                 return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Gender must be specified");
 
-            var username = UserAccessor.GetCurrentUsername();
-
+            var username = CurrentlyLoggedUserName;
             var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
             if (user == null)
                 return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "User not found");
@@ -134,7 +131,7 @@ namespace Application.Services
                 return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
                     "Gender must be specified");
 
-            var username = UserAccessor.GetCurrentUsername();
+            var username = CurrentlyLoggedUserName;
 
             var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
             if (user == null)
@@ -194,7 +191,7 @@ namespace Application.Services
 
         public async Task<ServiceResponse> DeletePetAsync(Guid petId)
         {
-            var username = UserAccessor.GetCurrentUsername();
+            var username = CurrentlyLoggedUserName;
 
             var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
             if (user == null)
