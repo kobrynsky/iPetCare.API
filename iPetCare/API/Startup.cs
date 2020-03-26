@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using Persistence;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 using Application.Infrastructure;
 using Application.Interfaces;
 using Application.Services;
@@ -62,6 +63,7 @@ namespace API
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IPetService, PetService>();
             services.AddTransient<IRaceService, RaceService>();
             services.AddTransient<ISpeciesService, SpeciesService>();
 
@@ -75,7 +77,11 @@ namespace API
             });
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddMvc(option => option.EnableEndpointRouting = false);
+            services.AddMvc(option => option.EnableEndpointRouting = false).AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
 
             services.AddSwaggerGen(c =>
             {
@@ -112,16 +118,10 @@ namespace API
             app.UseMvc();
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/V1/swagger.json", "API V1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/V1/swagger.json", "API V1"); });
 
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }
