@@ -64,6 +64,8 @@ namespace API
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IPetService, PetService>();
+            services.AddTransient<IRaceService, RaceService>();
+            services.AddTransient<ISpeciesService, SpeciesService>();
 
 
             services.AddCors(options =>
@@ -87,10 +89,10 @@ namespace API
                 {
                     Version = "v1",
                     Title = "iPetCare",
-                    Description = "Elektroniczna ksi¹¿eczka zdrowia pupili",
+                    Description = "Elektroniczna ksiÂ¹Â¿eczka zdrowia pupili",
                     Contact = new OpenApiContact()
                     {
-                        Name = "Pawe³ Kobryñski",
+                        Name = "PaweÂ³ KobryÃ±ski",
                         Email = "pawelkobrynski97@gmail.com",
                         Url = new Uri("https://www.github.com/blc132")
                     }
