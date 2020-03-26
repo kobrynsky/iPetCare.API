@@ -30,7 +30,7 @@ namespace Application.Services
         public async Task<ServiceResponse<PetsGetPetDtoResponse>> GetPetAsync(Guid petId)
         {
             if(petId == Guid.Empty)
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Invalid pet id");
+                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy Pet Id");
 
             var username = CurrentlyLoggedUserName;
             if(string.IsNullOrWhiteSpace(username))
@@ -38,17 +38,17 @@ namespace Application.Services
 
             var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
             if(user == null)
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "User not found");
+                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
 
             var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id == petId);
             if (pet == null)
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Pet not found");
+                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
             if (user.Role == Role.Owner)
             {
                 var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == user.Id);
                 if (owner == null)
-                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Owner not found");
+                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono opiekuna");
 
                 if (!await Context.OwnerPets.AnyAsync(op => op.PetId == pet.Id && op.OwnerId == owner.Id))
                     return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Forbidden);
@@ -61,7 +61,7 @@ namespace Application.Services
             {
                 var vet = await Context.Vets.SingleOrDefaultAsync(v => v.UserId == user.Id);
                 if (vet == null)
-                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Vet not found");
+                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono weterynarza");
 
                 if (!await Context.VetPets.AnyAsync(vp => vp.PetId == pet.Id && vp.VetId == vet.Id))
                     return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Forbidden);
@@ -76,25 +76,25 @@ namespace Application.Services
         public async Task<ServiceResponse<PetsCreatePetDtoResponse>> CreatePetAsync(PetsCreatePetDtoRequest dto)
         {
             if(dto.Gender == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Gender must be specified");
+                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Należy podać płeć");
 
             var username = CurrentlyLoggedUserName;
             var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
             if (user == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "User not found");
+                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
 
             var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == user.Id);
             if (owner == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Owner not found");
+                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono opiekuna");
 
             if(await Context.Pets.AnyAsync(p => p.Id == dto.Id))
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Pet with given id already exists, try again with other id");
+                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Istnieje już zwierzak o podanym id.");
 
             Pet pet = Mapper.Map<Pet>(dto);
 
             var race = await Context.Races.SingleOrDefaultAsync(r => r.Id == dto.RaceId);
             if (race == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Invalid race");
+                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowa rasa");
 
             pet.Race = race;
 
@@ -111,7 +111,7 @@ namespace Application.Services
 
             if (await Context.SaveChangesAsync() <= 0)
                 return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest,
-                    "An error occured while creating pet");
+                    "Wystąpił błąd podczas tworzenia zwierzaka");
 
             var petToReturn = Mapper.Map<PetsCreatePetDtoResponse>(pet);
             return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.OK, petToReturn);
@@ -122,32 +122,29 @@ namespace Application.Services
         {
             if (petId == Guid.Empty)
                 return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                    "Pet id must be specified");
-
-            if (petId != dto.Id)
-                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Pet ids mismatch");
+                    "Id zwierzaka nie może być pusty");
 
             if (dto.Gender == null)
                 return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                    "Gender must be specified");
+                    "Należy podać płeć");
 
             var username = CurrentlyLoggedUserName;
 
             var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
             if (user == null)
-                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "User not found");
+                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
 
-            var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id == dto.Id);
+            var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id == petId);
             if (pet == null)
-                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Pet not found");
+                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
             if (user.Role == Role.Owner)
             {
                 var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == user.Id);
                 if (owner == null)
-                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Owner not found");
+                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono opiekuna");
 
-                if (!await Context.OwnerPets.AnyAsync(op => op.PetId == dto.Id && op.OwnerId == owner.Id))
+                if (!await Context.OwnerPets.AnyAsync(op => op.PetId == petId && op.OwnerId == owner.Id))
                     return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Forbidden);
 
                 Mapper.Map(dto, pet);
@@ -155,17 +152,16 @@ namespace Application.Services
                     ? new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.OK,
                         Mapper.Map<PetsUpdatePetDtoResponse>(dto))
                     : new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                        "An error occured while updating pet");
-
+                        "Wystąpił błąd podczas aktualizacji zwierzaka");
             }
 
             if (user.Role == Role.Vet)
             {
                 var vet = await Context.Vets.SingleOrDefaultAsync(v => v.UserId == user.Id);
                 if (vet == null)
-                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Vet not found");
+                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono weterynarza");
 
-                if (!await Context.VetPets.AnyAsync(vp => vp.PetId == dto.Id && vp.VetId == vet.Id))
+                if (!await Context.VetPets.AnyAsync(vp => vp.PetId == petId && vp.VetId == vet.Id))
                     return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Forbidden);
 
                 Mapper.Map(dto, pet);
@@ -173,7 +169,7 @@ namespace Application.Services
                     ? new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.OK,
                         Mapper.Map<PetsUpdatePetDtoResponse>(dto))
                     : new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                        "An error occured while updating pet");
+                        "Wystąpił błąd podczas aktualizacji zwierzaka");
 
             }
 
@@ -184,7 +180,7 @@ namespace Application.Services
                     ? new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.OK,
                         Mapper.Map<PetsUpdatePetDtoResponse>(dto))
                     : new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                        "An error occured while updating pet");
+                        "Wystąpił błąd podczas aktualizacji zwierzaka");
             }
             return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Forbidden);
         }
@@ -195,24 +191,24 @@ namespace Application.Services
 
             var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
             if (user == null)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "User not found");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
 
             var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == user.Id);
             if (owner == null)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Owner not found");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono opiekuna");
 
             if (petId == Guid.Empty)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Invalid pet id");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nieprawidłowy id zwierzaka");
 
             var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id== petId);
             if (pet == null)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Pet not found");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
             if (!await Context.OwnerPets.AnyAsync(op => op.OwnerId == owner.Id && op.PetId == petId))
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
             Context.Pets.Remove(pet);
-            return await Context.SaveChangesAsync() > 0 ? new ServiceResponse(HttpStatusCode.OK) : new ServiceResponse(HttpStatusCode.BadRequest, "An error occured while deleteing pet");
+            return await Context.SaveChangesAsync() > 0 ? new ServiceResponse(HttpStatusCode.OK) : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania zwierzaka");
         }
     }
 }

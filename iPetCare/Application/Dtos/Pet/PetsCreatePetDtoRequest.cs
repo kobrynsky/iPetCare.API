@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Domain.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Domain.Models;
 
 namespace Application.Dtos.Pet
 {
     public class PetsCreatePetDtoRequest
     {
         public Guid Id { get; set; }
+
         public string ImageUrl { get; set; }
 
         [Required]

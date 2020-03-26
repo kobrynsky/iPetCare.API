@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Domain.Models;
+﻿using Domain.Models;
+using System;
 
 namespace Application.Dtos.Pet
 {
     public class PetsCreatePetDtoResponse
     {
         public Guid Id { get; set; }
+
         public string ImageUrl { get; set; }
 
         public string Name { get; set; }

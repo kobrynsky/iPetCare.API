@@ -7,6 +7,7 @@ namespace Domain.Models
     public class Pet
     {
         public Guid Id { get; set; }
+
         public string ImageUrl { get; set; }
 
         [Required]

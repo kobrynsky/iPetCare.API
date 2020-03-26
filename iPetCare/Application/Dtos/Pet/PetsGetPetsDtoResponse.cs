@@ -1,8 +1,6 @@
-﻿
-
+﻿using Domain.Models;
 using System;
 using System.Collections.Generic;
-using Domain.Models;
 
 namespace Application.Dtos.Pet
 {
@@ -14,6 +12,7 @@ namespace Application.Dtos.Pet
     public class PetForPetsGetPetsDtoResponse
     {
         public Guid Id { get; set; }
+
         public string ImageUrl { get; set; }
 
         public string Name { get; set; }
