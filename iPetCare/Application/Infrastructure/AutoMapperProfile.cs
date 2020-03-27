@@ -1,4 +1,6 @@
-﻿using Application.Dtos.Pet;
+﻿using System.Linq;
+using Application.Dtos.Institutions;
+using Application.Dtos.Pet;
 using Application.Dtos.Users;
 using Application.Dtos.Races;
 using AutoMapper;
@@ -15,6 +17,7 @@ namespace Application.Infrastructure
             MapsForPets();
             MapsForRaces();
             MapsForSpecies();
+            MapsForInstitutions();
         }
 
         private void MapsForUser()
@@ -34,7 +37,7 @@ namespace Application.Infrastructure
             CreateMap<PetsUpdatePetDtoRequest, PetsUpdatePetDtoResponse>();
             CreateMap<PetsUpdatePetDtoRequest, Pet>();
         }
-        
+
         private void MapsForRaces()
         {
             CreateMap<Race, RaceDetailGetAllDtoResponse>();
@@ -43,7 +46,7 @@ namespace Application.Infrastructure
             CreateMap<Race, RaceUpdateDtoResponse>();
             CreateMap<Species, SpeciesDetailsGetDtoResponse>();
         }
-        
+
         private void MapsForSpecies()
         {
             CreateMap<Species, SpeciesDetailGetAllDtoResponse>();
@@ -52,5 +55,18 @@ namespace Application.Infrastructure
             CreateMap<Species, SpeciesUpdateSpeciesDtoResponse>();
             CreateMap<Race, RaceDetailsGetDtoResponse>();
         }
+
+        private void MapsForInstitutions()
+        {
+            CreateMap<Vet, VetForInstitutionGetInstitutionDtoResponse>();
+            CreateMap<Institution, InstitutionsGetInstitutionDtoResponse>()
+                .ForMember(d => d.Vets, opt => opt.MapFrom(i => i.InstitutionVets.Select(x => x.Vet)));
+            CreateMap<Institution, InstitutionForInstitutionGetInstitutionDtoResponse>();
+            CreateMap<InstitutionsCreateInstitutionDtoRequest, Institution>();
+            CreateMap<InstitutionsCreateInstitutionDtoResponse, Institution>();
+            CreateMap<Institution, InstitutionsCreateInstitutionDtoResponse>();
+            CreateMap<Institution, InstitutionsUpdateInstitutionDtoResponse>();
+        }
+
     }
 }
