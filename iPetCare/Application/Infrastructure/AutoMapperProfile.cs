@@ -47,9 +47,9 @@ namespace Application.Infrastructure
         private void MapsForSpecies()
         {
             CreateMap<Species, SpeciesDetailGetAllDtoResponse>();
-            CreateMap<Species, SpeciesGetDtoResponse>();
-            CreateMap<Species, SpeciesDeleteDtoResponse>();
-            CreateMap<Species, SpeciesUpdateDtoResponse>();
+            CreateMap<Species, SpeciesGetSpeciesDtoResponse>();
+            CreateMap<Species, SpeciesDeleteSpeciesDtoResponse>();
+            CreateMap<Species, SpeciesUpdateSpeciesDtoResponse>();
             CreateMap<Race, RaceDetailsGetDtoResponse>();
         }
     }
