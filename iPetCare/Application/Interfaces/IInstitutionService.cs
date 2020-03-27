@@ -14,5 +14,7 @@ namespace Application.Interfaces
         Task<ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>> UpdateInstitutionAsync(Guid institutionId, InstitutionsUpdateInstitutionDtoRequest dto);
         Task<ServiceResponse<InstitutionsCreateInstitutionDtoResponse>> CreateInstitutionAsync(InstitutionsCreateInstitutionDtoRequest dto);
         Task<ServiceResponse> DeleteInstitutionAsync(Guid institutionId);
+        Task<ServiceResponse> SignUpAsync(Guid institutionId);
+        Task<ServiceResponse> SignOutAsync(Guid institutionId);
     }
 }

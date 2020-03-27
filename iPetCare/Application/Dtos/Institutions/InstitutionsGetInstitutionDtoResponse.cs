@@ -8,10 +8,10 @@ namespace Application.Dtos.Institutions
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
-        public ICollection<VetForInstitutionGetInstitutionDtoResponse> Vets { get; set; }
+        public ICollection<UserForInstitutionGetInstitutionDtoResponse> Vets { get; set; }
     }
 
-    public class VetForInstitutionGetInstitutionDtoResponse
+    public class UserForInstitutionGetInstitutionDtoResponse
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -62,5 +62,24 @@ namespace API.Controllers
             var response = await _institutionService.DeleteInstitutionAsync(institutionId);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse))]
+        [Authorize(Roles = Role.Vet)]
+        [HttpPost("signup/{institutionId}")]
+        public async Task<IActionResult> SignUp(Guid institutionId)
+        {
+            var response = await _institutionService.SignUpAsync(institutionId);
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse))]
+        [Authorize(Roles = Role.Vet)]
+        [HttpDelete("signout/{institutionId}")]
+        public async Task<IActionResult> SignOut(Guid institutionId)
+        {
+            var response = await _institutionService.SignOutAsync(institutionId);
+            return SendResponse(response);
+        }
+
     }
 }

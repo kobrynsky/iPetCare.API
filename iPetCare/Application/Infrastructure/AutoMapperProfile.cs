@@ -58,9 +58,9 @@ namespace Application.Infrastructure
 
         private void MapsForInstitutions()
         {
-            CreateMap<Vet, VetForInstitutionGetInstitutionDtoResponse>();
+            CreateMap<ApplicationUser, UserForInstitutionGetInstitutionDtoResponse>();
             CreateMap<Institution, InstitutionsGetInstitutionDtoResponse>()
-                .ForMember(d => d.Vets, opt => opt.MapFrom(i => i.InstitutionVets.Select(x => x.Vet)));
+                .ForMember(d => d.Vets, opt => opt.MapFrom(i => i.InstitutionVets.Select(x => x.Vet.User)));
             CreateMap<Institution, InstitutionForInstitutionGetInstitutionDtoResponse>();
             CreateMap<InstitutionsCreateInstitutionDtoRequest, Institution>();
             CreateMap<InstitutionsCreateInstitutionDtoResponse, Institution>();

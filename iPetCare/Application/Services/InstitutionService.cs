@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Application.Dtos.Institutions;
@@ -144,6 +145,75 @@ namespace Application.Services
 
             if(await Context.SaveChangesAsync() <= 0)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania instytucji");
+
+            return new ServiceResponse(HttpStatusCode.OK);
+        }
+
+        public async Task<ServiceResponse> SignUpAsync(Guid institutionId)
+        {
+            if (institutionId == Guid.Empty)
+                return new ServiceResponse(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+
+            var username = CurrentlyLoggedUserName;
+            if (string.IsNullOrWhiteSpace(username))
+                return new ServiceResponse(HttpStatusCode.Unauthorized);
+
+            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
+
+            if (user.Role != Role.Vet)
+                return new ServiceResponse(HttpStatusCode.Forbidden);
+
+            var institution = Context.Institutions.Find(institutionId);
+
+            if(institution == null)
+                return new ServiceResponse(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+
+            var institutionVets = await  Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == user.Vet.Id).ToListAsync();
+
+            if(institutionVets.Any())
+                return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz jest już zapisany do instytucji {institution.Name}");
+
+            var institutionVet = new InstitutionVet() {Vet = user.Vet, Institution = institution};
+            Context.Add(institutionVet);
+
+            if(await Context.SaveChangesAsync() <= 0)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy weterynarza do instytucji");
+
+            return new ServiceResponse(HttpStatusCode.OK);
+        }
+
+        public async Task<ServiceResponse> SignOutAsync(Guid institutionId)
+        {
+            if (institutionId == Guid.Empty)
+                return new ServiceResponse(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+
+            var username = CurrentlyLoggedUserName;
+            if (string.IsNullOrWhiteSpace(username))
+                return new ServiceResponse(HttpStatusCode.Unauthorized);
+
+            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
+
+            if (user.Role != Role.Vet)
+                return new ServiceResponse(HttpStatusCode.Forbidden);
+
+            var institution = Context.Institutions.Find(institutionId);
+
+            if (institution == null)
+                return new ServiceResponse(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+
+            var institutionVets = await Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == user.Vet.Id).ToListAsync();
+
+            if (!institutionVets.Any())
+                return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz nie jest zapisany do instytucji {institution.Name}");
+
+            Context.RemoveRange(institutionVets);
+
+            if (await Context.SaveChangesAsync() <= 0)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy wypisania weterynarza z instytucji");
 
             return new ServiceResponse(HttpStatusCode.OK);
         }
