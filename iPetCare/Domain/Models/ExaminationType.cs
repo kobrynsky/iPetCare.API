@@ -12,8 +12,8 @@ namespace Domain.Models
         [MaxLength(512)]
         public string Name { get; set; }
         
-        public int RaceId { get; set; }
-        public virtual Race Race { get; set; }
+        public int SpeciesId { get; set; }
+        public virtual Species Species { get; set; }
 
         public virtual ICollection<Examination> Examinations { get; set; }
 
