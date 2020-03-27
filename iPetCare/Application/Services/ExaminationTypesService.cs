@@ -61,5 +61,45 @@ namespace Application.Services
 
             return new ServiceResponse<ExaminationTypesCreateDtoResponse>(HttpStatusCode.BadRequest);
         }
+
+        public async Task<ServiceResponse<ExaminationTypesGetAllDtoResponse>> GetAllExaminationTypesAsync()
+        {
+            var currentUserName = CurrentlyLoggedUserName;
+
+            if (currentUserName == null)
+                return new ServiceResponse<ExaminationTypesGetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await UserManager.FindByNameAsync(currentUserName);
+            if (currentUser == null)
+                return new ServiceResponse<ExaminationTypesGetAllDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var examinationType = await Context.ExaminationTypes.ToListAsync();
+
+            var dto = new ExaminationTypesGetAllDtoResponse();
+            dto.ExaminationTypes = Mapper.Map<List<ExaminationTypesDetailGetAllDtoResponse>>(examinationType);
+
+            return new ServiceResponse<ExaminationTypesGetAllDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
+        public async Task<ServiceResponse<ExaminationTypeGetDtoResponse>> GetExaminationTypeAsync(int examinationTypeId)
+        {
+            var currentUserName = CurrentlyLoggedUserName;
+
+            if (currentUserName == null)
+                return new ServiceResponse<ExaminationTypeGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await UserManager.FindByNameAsync(currentUserName);
+            if (currentUser == null)
+                return new ServiceResponse<ExaminationTypeGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
+
+            if (examinationType == null)
+                return new ServiceResponse<ExaminationTypeGetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
+
+            var dto = Mapper.Map<ExaminationTypeGetDtoResponse>(examinationType);
+
+            return new ServiceResponse<ExaminationTypeGetDtoResponse>(HttpStatusCode.OK, dto);
+        }
     }
 }

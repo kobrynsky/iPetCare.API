@@ -6,6 +6,7 @@ using Application.Dtos.ExaminationTypes;
 using Application.Services.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Domain.Models;
+using API.Security;
 
 namespace API.Controllers
 {
@@ -27,5 +28,22 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet]
+        public async Task<IActionResult> GetAllExaminationTypes()
+        {
+            var response = await _examinationTypesService.GetAllExaminationTypesAsync();
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet("{examinationTypeId}")]
+        public async Task<IActionResult> GetExaminationType(int examinationTypeId)
+        {
+            var response = await _examinationTypesService.GetExaminationTypeAsync(examinationTypeId);
+            return SendResponse(response);
+        }
     }
 }
