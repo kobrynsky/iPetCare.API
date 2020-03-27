@@ -10,5 +10,6 @@ namespace Application.Interfaces
         Task<ServiceResponse<ExaminationTypesCreateDtoResponse>> CreateExaminationTypesAsync(ExaminationTypesCreateDtoRequest dto);
         Task<ServiceResponse<ExaminationTypesGetAllDtoResponse>> GetAllExaminationTypesAsync();
         Task<ServiceResponse<ExaminationTypeGetDtoResponse>> GetExaminationTypeAsync(int examinationTypeId);
+        Task<ServiceResponse<ExaminationTypeUpdateDtoResponse>> UpdateExaminationTypeAsync(int examinationTypeId, ExaminationTypeUpdateDtoRequest dto);
     }
 }

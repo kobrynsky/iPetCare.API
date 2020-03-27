@@ -45,5 +45,14 @@ namespace API.Controllers
             var response = await _examinationTypesService.GetExaminationTypeAsync(examinationTypeId);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse<ExaminationTypesCreateDtoResponse>))]
+        [Authorize(Roles = Role.Administrator)]
+        [HttpPut("{examinationTypeId}")]
+        public async Task<IActionResult> UpdateExaminationType(int examinationTypeId, ExaminationTypeUpdateDtoRequest dto)
+        {
+            var response = await _examinationTypesService.UpdateExaminationTypeAsync(examinationTypeId, dto);
+            return SendResponse(response);
+        }
     }
 }

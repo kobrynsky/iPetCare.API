@@ -59,6 +59,7 @@ namespace Application.Infrastructure
         {
             CreateMap<ExaminationType, ExaminationTypesDetailGetAllDtoResponse>();
             CreateMap<ExaminationType, ExaminationTypeGetDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeUpdateDtoResponse>();
         }
     }
 }

@@ -101,5 +101,47 @@ namespace Application.Services
 
             return new ServiceResponse<ExaminationTypeGetDtoResponse>(HttpStatusCode.OK, dto);
         }
+
+        public async Task<ServiceResponse<ExaminationTypeUpdateDtoResponse>> UpdateExaminationTypeAsync(int raceId, ExaminationTypeUpdateDtoRequest dto)
+        {
+            var currentUserName = CurrentlyLoggedUserName;
+
+            if (currentUserName == null)
+                return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await UserManager.FindByNameAsync(currentUserName);
+            if (currentUser != null && currentUser.Role != Role.Administrator)
+                return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.Forbidden, "Brak uprawnień");
+
+            if (await Context.ExaminationTypes.Where(x => x.Name == dto.Name).AnyAsync())
+                return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
+
+            var examinationType = Context.ExaminationTypes.Find(raceId);
+
+            var species = Context.Species.Find(dto.SpeciesId);
+
+            if (species == null)
+                return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taki gatunek w bazie danych");
+
+            if (examinationType == null)
+                return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
+
+            examinationType.Name = dto.Name;
+            examinationType.SpeciesId = dto.SpeciesId;
+
+            int result = await Context.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                var responseDto = Mapper.Map<ExaminationTypeUpdateDtoResponse>(examinationType);
+                return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.OK, responseDto);
+
+            }
+
+            if (result == 0)
+                return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+
+            return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.BadRequest);
+        }
     }
 }
