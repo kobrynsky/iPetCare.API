@@ -93,7 +93,6 @@ namespace Application.Services
                 return new ServiceResponse<ExaminationTypeGetDtoResponse>(HttpStatusCode.Unauthorized, "Brak uprawnień");
 
             var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
-
             if (examinationType == null)
                 return new ServiceResponse<ExaminationTypeGetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
 
@@ -117,7 +116,6 @@ namespace Application.Services
                 return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
 
             var examinationType = Context.ExaminationTypes.Find(raceId);
-
             var species = Context.Species.Find(dto.SpeciesId);
 
             if (species == null)
@@ -130,12 +128,10 @@ namespace Application.Services
             examinationType.SpeciesId = dto.SpeciesId;
 
             int result = await Context.SaveChangesAsync();
-
             if (result > 0)
             {
                 var responseDto = Mapper.Map<ExaminationTypeUpdateDtoResponse>(examinationType);
                 return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.OK, responseDto);
-
             }
 
             if (result == 0)
@@ -156,7 +152,6 @@ namespace Application.Services
                 return new ServiceResponse(HttpStatusCode.Forbidden, "Brak uprawnień");
 
             var examinationType = Context.ExaminationTypes.Find(examinationTypeId);
-
             if (examinationType == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
             
