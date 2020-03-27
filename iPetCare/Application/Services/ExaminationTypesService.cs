@@ -143,5 +143,30 @@ namespace Application.Services
 
             return new ServiceResponse<ExaminationTypeUpdateDtoResponse>(HttpStatusCode.BadRequest);
         }
+
+        public async Task<ServiceResponse> DeleteExaminationTypeAsync(int examinationTypeId)
+        {
+            var currentUserName = CurrentlyLoggedUserName;
+
+            if (currentUserName == null)
+                return new ServiceResponse(HttpStatusCode.Unauthorized, "Brak uprawnień");
+
+            var currentUser = await UserManager.FindByNameAsync(currentUserName);
+            if (currentUser != null && currentUser.Role != Role.Administrator)
+                return new ServiceResponse(HttpStatusCode.Forbidden, "Brak uprawnień");
+
+            var examinationType = Context.ExaminationTypes.Find(examinationTypeId);
+
+            if (examinationType == null)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
+            
+            Context.ExaminationTypes.Remove(examinationType);
+            int result = await Context.SaveChangesAsync();
+
+            if (result > 0)
+                return new ServiceResponse(HttpStatusCode.OK);
+
+            return new ServiceResponse(HttpStatusCode.BadRequest);
+        }
     }
 }

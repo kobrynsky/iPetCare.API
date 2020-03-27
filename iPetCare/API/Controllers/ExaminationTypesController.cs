@@ -54,5 +54,14 @@ namespace API.Controllers
             var response = await _examinationTypesService.UpdateExaminationTypeAsync(examinationTypeId, dto);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse))]
+        [Authorize(Roles = Role.Administrator)]
+        [HttpDelete("{examinationTypeId}")]
+        public async Task<IActionResult> DeleteExaminationType(int examinationTypeId)
+        {
+            var response = await _examinationTypesService.DeleteExaminationTypeAsync(examinationTypeId);
+            return SendResponse(response);
+        }
     }
 }
