@@ -26,6 +26,10 @@ namespace Application.Infrastructure
         {
             CreateMap<Pet, PetForPetsGetPetsDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
+            CreateMap<Pet, PetForPetsGetMyPetsDtoResponse>()
+                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
+            CreateMap<Pet, PetForPetsGetSharedPetsDtoResponse>()
+                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
             CreateMap<PetsCreatePetDtoRequest, Pet>();
             CreateMap<Pet, PetsCreatePetDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
@@ -34,7 +38,7 @@ namespace Application.Infrastructure
             CreateMap<PetsUpdatePetDtoRequest, PetsUpdatePetDtoResponse>();
             CreateMap<PetsUpdatePetDtoRequest, Pet>();
         }
-        
+
         private void MapsForRaces()
         {
             CreateMap<Race, RaceDetailGetAllDtoResponse>();
@@ -43,7 +47,7 @@ namespace Application.Infrastructure
             CreateMap<Race, RaceUpdateDtoResponse>();
             CreateMap<Species, SpeciesDetailsGetDtoResponse>();
         }
-        
+
         private void MapsForSpecies()
         {
             CreateMap<Species, SpeciesDetailGetAllDtoResponse>();

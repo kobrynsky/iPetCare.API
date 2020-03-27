@@ -13,5 +13,7 @@ namespace Application.Interfaces
         Task<ServiceResponse<PetsCreatePetDtoResponse>> CreatePetAsync(PetsCreatePetDtoRequest dto);
         Task<ServiceResponse<PetsUpdatePetDtoResponse>> UpdatePetAsync(Guid petId, PetsUpdatePetDtoRequest dto);
         Task<ServiceResponse> DeletePetAsync(Guid petId);
+        Task<ServiceResponse<PetsGetMyPetsDtoResponse>> GetMyPetsAsync();
+        Task<ServiceResponse<PetsGetSharedPetsDtoResponse>> GetSharedPetsAsync();
     }
 }
