@@ -67,6 +67,7 @@ namespace API
             services.AddTransient<IRaceService, RaceService>();
             services.AddTransient<ISpeciesService, SpeciesService>();
             services.AddTransient<IExaminationTypeService, ExaminationTypeService>();
+            services.AddTransient<IExaminationParameterService, ExaminationParameterService>();
 
 
             services.AddCors(options =>
