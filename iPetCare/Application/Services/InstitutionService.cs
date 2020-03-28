@@ -19,13 +19,8 @@ namespace Application.Services
 
         public async Task<ServiceResponse<InstitutionsGetInstitutionDtoResponse>> GetInstitutionAsync(Guid institutionId)
         {
-            var username = CurrentlyLoggedUserName;
-            if (string.IsNullOrWhiteSpace(username))
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
-
-            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
 
             if (institutionId == Guid.Empty)
                 return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
@@ -33,7 +28,7 @@ namespace Application.Services
             var institution = await Context.Institutions.FindAsync(institutionId);
 
             if(institution == null)
-                return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+                return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.NotFound);
 
             var dto = Mapper.Map<InstitutionsGetInstitutionDtoResponse>(institution);
 
@@ -42,13 +37,8 @@ namespace Application.Services
 
         public async Task<ServiceResponse<InstitutionsGetInstitutionsDtoResponse>> GetInstitutionsAsync()
         {
-            var username = CurrentlyLoggedUserName;
-            if (string.IsNullOrWhiteSpace(username))
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<InstitutionsGetInstitutionsDtoResponse>(HttpStatusCode.Unauthorized);
-
-            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                return new ServiceResponse<InstitutionsGetInstitutionsDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
 
             var institutions = await Context.Institutions.ToListAsync();
 
@@ -61,17 +51,12 @@ namespace Application.Services
         public async Task<ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>> UpdateInstitutionAsync(Guid institutionId, InstitutionsUpdateInstitutionDtoRequest dto)
         {
             if (institutionId == Guid.Empty)
-                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
 
-            var username = CurrentlyLoggedUserName;
-            if (string.IsNullOrWhiteSpace(username))
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
-
-            if(user.Role != Role.Administrator)
+            if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.Forbidden);
 
             var institution = await Context.Institutions.FindAsync(institutionId);
@@ -93,15 +78,10 @@ namespace Application.Services
 
         public async Task<ServiceResponse<InstitutionsCreateInstitutionDtoResponse>> CreateInstitutionAsync(InstitutionsCreateInstitutionDtoRequest dto)
         {
-            var username = CurrentlyLoggedUserName;
-            if (string.IsNullOrWhiteSpace(username))
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<InstitutionsCreateInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                return new ServiceResponse<InstitutionsCreateInstitutionDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
-
-            if(user.Role != Role.Administrator)
+            if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse<InstitutionsCreateInstitutionDtoResponse>(HttpStatusCode.Forbidden);
 
             if(dto.Id == Guid.Empty)
@@ -123,17 +103,12 @@ namespace Application.Services
         public async Task<ServiceResponse> DeleteInstitutionAsync(Guid institutionId)
         {
             if (institutionId == Guid.Empty)
-                return new ServiceResponse(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
 
-            var username = CurrentlyLoggedUserName;
-            if (string.IsNullOrWhiteSpace(username))
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
-
-            if (user.Role != Role.Administrator)
+            if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
             var institution = await Context.Institutions.FindAsync(institutionId);
@@ -152,17 +127,12 @@ namespace Application.Services
         public async Task<ServiceResponse> SignUpAsync(Guid institutionId)
         {
             if (institutionId == Guid.Empty)
-                return new ServiceResponse(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
 
-            var username = CurrentlyLoggedUserName;
-            if (string.IsNullOrWhiteSpace(username))
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
-
-            if (user.Role != Role.Vet)
+            if (CurrentlyLoggedUser.Role != Role.Vet)
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
             var institution = Context.Institutions.Find(institutionId);
@@ -170,12 +140,12 @@ namespace Application.Services
             if(institution == null)
                 return new ServiceResponse(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
 
-            var institutionVets = await  Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == user.Vet.Id).ToListAsync();
+            var institutionVets = await  Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == CurrentlyLoggedUser.Vet.Id).ToListAsync();
 
             if(institutionVets.Any())
                 return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz jest już zapisany do instytucji {institution.Name}");
 
-            var institutionVet = new InstitutionVet() {Vet = user.Vet, Institution = institution};
+            var institutionVet = new InstitutionVet() {Vet = CurrentlyLoggedUser.Vet, Institution = institution};
             Context.Add(institutionVet);
 
             if(await Context.SaveChangesAsync() <= 0)
@@ -187,17 +157,12 @@ namespace Application.Services
         public async Task<ServiceResponse> SignOutAsync(Guid institutionId)
         {
             if (institutionId == Guid.Empty)
-                return new ServiceResponse(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
 
-            var username = CurrentlyLoggedUserName;
-            if (string.IsNullOrWhiteSpace(username))
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-            var user = await Context.Users.SingleOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
-
-            if (user.Role != Role.Vet)
+            if (CurrentlyLoggedUser.Role != Role.Vet)
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
             var institution = Context.Institutions.Find(institutionId);
@@ -205,12 +170,12 @@ namespace Application.Services
             if (institution == null)
                 return new ServiceResponse(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
 
-            var institutionVets = await Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == user.Vet.Id).ToListAsync();
+            var institutionVets = await Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == CurrentlyLoggedUser.Vet.Id).SingleOrDefaultAsync();
 
-            if (!institutionVets.Any())
+            if (institutionVets == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz nie jest zapisany do instytucji {institution.Name}");
 
-            Context.RemoveRange(institutionVets);
+            Context.Remove(institutionVets);
 
             if (await Context.SaveChangesAsync() <= 0)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy wypisania weterynarza z instytucji");
