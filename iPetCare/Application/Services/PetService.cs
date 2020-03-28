@@ -215,8 +215,6 @@ namespace Application.Services
 
         public async Task<ServiceResponse<PetsGetMyPetsDtoResponse>> GetMyPetsAsync()
         {
-            AssignCurrentlyLoggedUser();
-
             if(CurrentlyLoggedUser == null)
                 return new ServiceResponse<PetsGetMyPetsDtoResponse>(HttpStatusCode.Unauthorized);
 

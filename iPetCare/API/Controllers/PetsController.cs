@@ -23,7 +23,6 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<PetsGetPetsDtoResponse>))]
         [AuthorizeRoles(Roles = Role.Administrator)]
         [HttpGet]
-        [AuthorizeRoles(Roles = Role.Administrator)]
         public async Task<IActionResult> GetPets()
         {
             var response = await _petService.GetPetsAsync();
@@ -31,7 +30,7 @@ namespace API.Controllers
         }
 
         [Produces(typeof(ServiceResponse<PetsGetMyPetsDtoResponse>))]
-        [AuthorizeRoles(Roles = Role.Owner)]
+        [Authorize(Role.Owner)]
         [HttpGet("my")]
         public async Task<IActionResult> GetMyPets()
         {
