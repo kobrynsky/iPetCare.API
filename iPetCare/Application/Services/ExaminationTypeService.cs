@@ -98,10 +98,10 @@ namespace Application.Services
             var species = Context.Species.Find(dto.SpeciesId);
 
             if (species == null)
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound, "Nie istnieje taki gatunek w bazie danych");
+                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
 
             if (examinationType == null)
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound, "Nie istnieje takie badanie w bazie danych");
+                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
 
             examinationType.Name = dto.Name;
             examinationType.SpeciesId = dto.SpeciesId;
@@ -129,7 +129,7 @@ namespace Application.Services
 
             var examinationType = Context.ExaminationTypes.Find(examinationTypeId);
             if (examinationType == null)
-                return new ServiceResponse(HttpStatusCode.NotFound, "Nie istnieje takie badanie w bazie danych");
+                return new ServiceResponse(HttpStatusCode.NotFound);
             
             Context.ExaminationTypes.Remove(examinationType);
             int result = await Context.SaveChangesAsync();
