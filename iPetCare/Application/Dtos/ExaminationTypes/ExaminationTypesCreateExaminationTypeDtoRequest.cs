@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dtos.ExaminationTypes
 {
-    public class ExaminationTypesCreateDtoResponse
+    public class ExaminationTypesCreateExaminationTypeDtoRequest
     {
-        public int Id { get; set; }
+        [Required]
         public string Name { get; set; }
         public int SpeciesId { get; set; }
     }

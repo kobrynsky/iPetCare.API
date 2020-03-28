@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.ExaminationTypes
 {
-    public class ExaminationTypesGetAllDtoResponse
+    public class ExaminationTypesGetAllExaminationTypesDtoResponse
     {
         public List<ExaminationTypesDetailGetAllDtoResponse> ExaminationTypes { get; set; }
     }

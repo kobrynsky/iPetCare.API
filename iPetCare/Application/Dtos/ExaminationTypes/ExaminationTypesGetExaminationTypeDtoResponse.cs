@@ -5,7 +5,7 @@ using Application.Dtos.Races;
 
 namespace Application.Dtos.ExaminationTypes
 {
-    public class ExaminationTypeGetDtoResponse
+    public class ExaminationTypesGetExaminationTypeDtoResponse
     {
         public string Name { get; set; }
         public int Id { get; set; }

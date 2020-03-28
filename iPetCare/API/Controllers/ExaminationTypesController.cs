@@ -13,22 +13,22 @@ namespace API.Controllers
     [ApiController]
     public class ExaminationTypesController : BaseController
     {
-        private readonly IExaminationTypes _examinationTypesService;
-        public ExaminationTypesController(IExaminationTypes examinationTypesService)
+        private readonly IExaminationTypeService _examinationTypesService;
+        public ExaminationTypesController(IExaminationTypeService examinationTypesService)
         {
             _examinationTypesService = examinationTypesService;
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesCreateDtoResponse>))]
+        [Produces(typeof(ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<IActionResult> CreateExaminationTypes(ExaminationTypesCreateDtoRequest dto)
+        public async Task<IActionResult> CreateExaminationType(ExaminationTypesCreateExaminationTypeDtoRequest dto)
         {
-            var response = await _examinationTypesService.CreateExaminationTypesAsync(dto);
+            var response = await _examinationTypesService.CreateExaminationTypeAsync(dto);
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllDtoResponse>))]
+        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet]
         public async Task<IActionResult> GetAllExaminationTypes()
@@ -37,7 +37,7 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllDtoResponse>))]
+        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{examinationTypeId}")]
         public async Task<IActionResult> GetExaminationType(int examinationTypeId)
@@ -46,10 +46,10 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesCreateDtoResponse>))]
+        [Produces(typeof(ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{examinationTypeId}")]
-        public async Task<IActionResult> UpdateExaminationType(int examinationTypeId, ExaminationTypeUpdateDtoRequest dto)
+        public async Task<IActionResult> UpdateExaminationType(int examinationTypeId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
         {
             var response = await _examinationTypesService.UpdateExaminationTypeAsync(examinationTypeId, dto);
             return SendResponse(response);
