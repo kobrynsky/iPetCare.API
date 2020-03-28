@@ -123,7 +123,7 @@ namespace Application.Services
 
             return await Context.SaveChangesAsync() > 0
                 ? new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.OK, dto)
-                : new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.BadRequest);
+                : new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
     }
 }
