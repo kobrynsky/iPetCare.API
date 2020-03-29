@@ -73,5 +73,19 @@ namespace Application.Services
 
             return new ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>(HttpStatusCode.OK, dto);
         }
+
+        public async Task<ServiceResponse<ExaminationParametersGetExaminationParameterDtoResponse>> GetExaminationParameterAsync(int examinationParameterId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<ExaminationParametersGetExaminationParameterDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var examinationParameter = await Context.ExaminationParameters.FindAsync(examinationParameterId);
+            if (examinationParameter == null)
+                return new ServiceResponse<ExaminationParametersGetExaminationParameterDtoResponse>(HttpStatusCode.NotFound);
+
+            var dto = Mapper.Map<ExaminationParametersGetExaminationParameterDtoResponse>(examinationParameter);
+
+            return new ServiceResponse<ExaminationParametersGetExaminationParameterDtoResponse>(HttpStatusCode.OK, dto);
+        }
     }
 }

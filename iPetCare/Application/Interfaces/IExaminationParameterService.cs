@@ -9,5 +9,6 @@ namespace Application.Interfaces
     {
         Task<ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>> CreateExaminationParameterAsync(ExaminationParametersCreateExaminationParameterDtoRequest dto);
         Task<ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>> GetAllExaminationParametersAsync();
+        Task<ServiceResponse<ExaminationParametersGetExaminationParameterDtoResponse>> GetExaminationParameterAsync(int examinationParameterId);
     }
 }
