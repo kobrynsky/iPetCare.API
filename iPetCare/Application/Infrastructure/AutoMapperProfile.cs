@@ -6,6 +6,7 @@ using Application.Dtos.Races;
 using AutoMapper;
 using Domain.Models;
 using Application.Dtos.Species;
+using Application.Dtos.ExaminationTypes;
 
 namespace Application.Infrastructure
 {
@@ -18,6 +19,7 @@ namespace Application.Infrastructure
             MapsForRaces();
             MapsForSpecies();
             MapsForInstitutions();
+            MapsForExaminationTypes();
         }
 
         private void MapsForUser()
@@ -28,6 +30,10 @@ namespace Application.Infrastructure
         private void MapsForPets()
         {
             CreateMap<Pet, PetForPetsGetPetsDtoResponse>()
+                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
+            CreateMap<Pet, PetForPetsGetMyPetsDtoResponse>()
+                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
+            CreateMap<Pet, PetForPetsGetSharedPetsDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
             CreateMap<PetsCreatePetDtoRequest, Pet>();
             CreateMap<Pet, PetsCreatePetDtoResponse>()
@@ -56,6 +62,7 @@ namespace Application.Infrastructure
             CreateMap<Race, RaceDetailsGetDtoResponse>();
         }
 
+
         private void MapsForInstitutions()
         {
             CreateMap<ApplicationUser, UserForInstitutionGetInstitutionDtoResponse>();
@@ -68,5 +75,11 @@ namespace Application.Infrastructure
             CreateMap<Institution, InstitutionsUpdateInstitutionDtoResponse>();
         }
 
+        private void MapsForExaminationTypes()
+        {
+            CreateMap<ExaminationType, ExaminationTypesDetailGetAllDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypesGetExaminationTypeDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypesUpdateExaminationTypeDtoResponse>();
+        }
     }
 }
