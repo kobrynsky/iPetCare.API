@@ -1,4 +1,6 @@
-﻿using Application.Dtos.Pet;
+﻿using System.Linq;
+using Application.Dtos.Institutions;
+using Application.Dtos.Pet;
 using Application.Dtos.Users;
 using Application.Dtos.Races;
 using AutoMapper;
@@ -16,6 +18,7 @@ namespace Application.Infrastructure
             MapsForPets();
             MapsForRaces();
             MapsForSpecies();
+            MapsForInstitutions();
             MapsForExaminationTypes();
         }
 
@@ -57,6 +60,19 @@ namespace Application.Infrastructure
             CreateMap<Species, SpeciesDeleteSpeciesDtoResponse>();
             CreateMap<Species, SpeciesUpdateSpeciesDtoResponse>();
             CreateMap<Race, RaceDetailsGetDtoResponse>();
+        }
+
+
+        private void MapsForInstitutions()
+        {
+            CreateMap<ApplicationUser, UserForInstitutionGetInstitutionDtoResponse>();
+            CreateMap<Institution, InstitutionsGetInstitutionDtoResponse>()
+                .ForMember(d => d.Vets, opt => opt.MapFrom(i => i.InstitutionVets.Select(x => x.Vet.User)));
+            CreateMap<Institution, InstitutionForInstitutionGetInstitutionDtoResponse>();
+            CreateMap<InstitutionsCreateInstitutionDtoRequest, Institution>();
+            CreateMap<InstitutionsCreateInstitutionDtoResponse, Institution>();
+            CreateMap<Institution, InstitutionsCreateInstitutionDtoResponse>();
+            CreateMap<Institution, InstitutionsUpdateInstitutionDtoResponse>();
         }
 
         private void MapsForExaminationTypes()
