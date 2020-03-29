@@ -122,5 +122,26 @@ namespace Application.Services
 
             return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest);
         }
+
+        public async Task<ServiceResponse> DeleteExaminationParameterAsync(int examinationParameterId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse(HttpStatusCode.Unauthorized);
+
+            if (CurrentlyLoggedUser.Role != Role.Administrator)
+                return new ServiceResponse(HttpStatusCode.Forbidden);
+
+            var examinationParameter = Context.ExaminationParameters.Find(examinationParameterId);
+            if (examinationParameter == null)
+                return new ServiceResponse(HttpStatusCode.NotFound);
+
+            Context.ExaminationParameters.Remove(examinationParameter);
+            int result = await Context.SaveChangesAsync();
+
+            if (result > 0)
+                return new ServiceResponse(HttpStatusCode.OK);
+
+            return new ServiceResponse(HttpStatusCode.BadRequest);
+        }
     }
 }

@@ -53,5 +53,14 @@ namespace API.Controllers
             var response = await _examinationParameterService.UpdateExaminationParameterAsync(examinationParameterId, dto);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse))]
+        [Authorize(Roles = Role.Administrator)]
+        [HttpDelete("{examinationParameterId}")]
+        public async Task<IActionResult> DeleteExaminationParameter(int examinationParameterId)
+        {
+            var response = await _examinationParameterService.DeleteExaminationParameterAsync(examinationParameterId);
+            return SendResponse(response);
+        }
     }
 }
