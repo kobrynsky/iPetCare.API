@@ -9,6 +9,5 @@ namespace Application.Dtos.ExaminationParameters
         public string Name { get; set; }
         public float UpperLimit { get; set; }
         public float LowerLimit { get; set; }
-        public int ExaminationTypeId { get; set; }
     }
 }

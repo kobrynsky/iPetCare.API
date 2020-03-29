@@ -20,6 +20,12 @@ namespace Application.Services
 
         public async Task<ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>> CreateExaminationParameterAsync(ExaminationParametersCreateExaminationParameterDtoRequest dto)
         {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if (CurrentlyLoggedUser.Role != Role.Administrator)
+                return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.Forbidden);
+
             var examinationType = Context.ExaminationTypes.Find(dto.ExaminationTypeId);
 
             if (examinationType == null)
@@ -27,12 +33,6 @@ namespace Application.Services
 
             if (await Context.ExaminationParameters.Where(x => x.Name == dto.Name && x.ExaminationTypeId == dto.ExaminationTypeId).AnyAsync())
                 return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Podany parametr już istnieje dla tego badania");
-
-            if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.Unauthorized);
-
-            if (CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationParameter = new ExaminationParameter()
             {
@@ -45,14 +45,7 @@ namespace Application.Services
             Context.ExaminationParameters.Add(examinationParameter);
             int result = await Context.SaveChangesAsync();
 
-            var responseDto = new ExaminationParametersCreateExaminationParameterDtoResponse()
-            {
-                Id = examinationParameter.Id,
-                Name = examinationParameter.Name,
-                UpperLimit = examinationParameter.UpperLimit,
-                LowerLimit = examinationParameter.LowerLimit,
-                ExaminationTypeId = examinationParameter.ExaminationTypeId
-            };
+            var responseDto = Mapper.Map<ExaminationParametersCreateExaminationParameterDtoResponse>(examinationParameter);
 
             return result > 0
                 ? new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.OK, responseDto)
@@ -98,15 +91,14 @@ namespace Application.Services
 
             var examinationParameter = await Context.ExaminationParameters.FindAsync(examinationParameterId);
             if (examinationParameter == null)
-                return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie ma takiego parametru");
+                return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.NotFound);
 
-            var examinationType = Context.ExaminationTypes.Find(dto.ExaminationTypeId);
+            var examinationType = Context.ExaminationTypes.Find(examinationParameter.ExaminationTypeId);
 
-            if (examinationType == null)
-                return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie ma takiego badania");
+            if (await Context.ExaminationParameters.Where(x => x.Name == dto.Name && x.ExaminationTypeId == examinationParameter.ExaminationTypeId && x.Id != examinationParameter.Id).AnyAsync())
+                return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Istnieje już taki parametr dla tego badania");
 
             examinationParameter.Name = dto.Name;
-            examinationParameter.ExaminationTypeId = dto.ExaminationTypeId;
             examinationParameter.UpperLimit = dto.UpperLimit;
             examinationParameter.LowerLimit = dto.LowerLimit;
 
@@ -116,9 +108,6 @@ namespace Application.Services
                 var responseDto = Mapper.Map<ExaminationParametersUpdateExaminationParameterDtoResponse>(examinationParameter);
                 return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.OK, responseDto);
             }
-
-            if ((await Context.ExaminationParameters.Where(x => x.Name == dto.Name && x.ExaminationTypeId == dto.ExaminationTypeId).AnyAsync()) && result == 0)
-                return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
 
             return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest);
         }

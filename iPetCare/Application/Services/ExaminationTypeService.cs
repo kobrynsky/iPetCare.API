@@ -73,20 +73,6 @@ namespace Application.Services
             return new ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>> GetExaminationTypeAsync(int examinationTypeId)
-        {
-            if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
-
-            var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
-            if (examinationType == null)
-                return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
-
-            var dto = Mapper.Map<ExaminationTypesGetExaminationTypeDtoResponse>(examinationType);
-
-            return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
-        }
-
         public async Task<ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int raceId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
