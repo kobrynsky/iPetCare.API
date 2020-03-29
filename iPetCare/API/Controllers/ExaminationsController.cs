@@ -47,27 +47,27 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{petId}/{examinationId}")]
-        public async Task<IActionResult> GetExamination(string petId, int examinationTypeId)
+        public async Task<IActionResult> GetExamination(string petId, string examinationId)
         {
-            var response = await _examinationsService.GetExaminationAsync(petId, examinationTypeId);
+            var response = await _examinationsService.GetExaminationAsync(petId, examinationId);
             return SendResponse(response);
         }
 
         [Produces(typeof(ServiceResponse<ExaminationsCreateExaminationDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPut("{petId}/{examinationId}")]
-        public async Task<IActionResult> UpdateExamination(string petId, int examinationTypeId, ExaminationsUpdateExaminationDtoRequest dto)
+        public async Task<IActionResult> UpdateExamination(string petId, string examinationId, ExaminationsUpdateExaminationDtoRequest dto)
         {
-            var response = await _examinationsService.UpdateExaminationAsync(petId, examinationTypeId, dto);
+            var response = await _examinationsService.UpdateExaminationAsync(petId, examinationId, dto);
             return SendResponse(response);
         }
 
         [Produces(typeof(ServiceResponse))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpDelete("{petId}/{examinationId}")]
-        public async Task<IActionResult> DeleteExamination(string petId, int examinationTypeId)
+        public async Task<IActionResult> DeleteExamination(string petId, string examinationId)
         {
-            var response = await _examinationsService.DeleteExaminationAsync(petId, examinationTypeId);
+            var response = await _examinationsService.DeleteExaminationAsync(petId, examinationId);
             return SendResponse(response);
         }
     }
