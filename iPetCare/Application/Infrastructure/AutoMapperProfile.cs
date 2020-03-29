@@ -69,6 +69,7 @@ namespace Application.Infrastructure
             CreateMap<ExaminationParameter, ExaminationParametersDetailsGetAllDtoResponse>();
             CreateMap<ExaminationParameter, ExaminationParametersGetExaminationParameterDtoResponse>();
             CreateMap<ExaminationType, ExaminationTypeDetailsGetDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParametersUpdateExaminationParameterDtoResponse>();
         }
     }
 }
