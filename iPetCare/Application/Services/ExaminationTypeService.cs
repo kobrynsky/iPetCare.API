@@ -153,7 +153,7 @@ namespace Application.Services
             if (examinationType == null)
                 return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
 
-            var examinationParameter = await Context.ExaminationParameters.ToListAsync();
+            var examinationParameter = await Context.ExaminationParameters.Where(x => x.ExaminationTypeId == examinationTypeId).ToListAsync();
 
             var dto = new ExaminationParametersGetAllForOneExaminationTypeDtoResponse()
             {
