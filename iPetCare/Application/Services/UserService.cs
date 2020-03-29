@@ -83,6 +83,16 @@ namespace Application.Services
             return new ServiceResponse<GetAllDtoResponse>(HttpStatusCode.OK, dto);
         }
 
+        private async Task<ServiceResponse<RegisterDtoResponse>> ValidateRegisterRequestAsync(RegisterDtoRequest dto)
+        {
+            if (await Context.Users.Where(x => x.Email == dto.Email).AnyAsync())
+                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Email jest zajęty");
+
+            if (await Context.Users.Where(x => x.UserName == dto.UserName).AnyAsync())
+                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
+            return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.OK);
+        }
+
         private async Task<ServiceResponse<RegisterDtoResponse>> RegisterOthersAsync(RegisterDtoRequest dto, ApplicationUser userToRegister)
         {
             if (CurrentlyLoggedUser != null && CurrentlyLoggedUser.Role != Role.Administrator)
@@ -132,16 +142,6 @@ namespace Application.Services
                 Token = _jwtGenerator.CreateToken(userToRegister)
             };
             return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.OK, responseDto);
-        }
-
-        private async Task<ServiceResponse<RegisterDtoResponse>> ValidateRegisterRequestAsync(RegisterDtoRequest dto)
-        {
-            if (await Context.Users.Where(x => x.Email == dto.Email).AnyAsync())
-                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Email jest zajęty");
-
-            if (await Context.Users.Where(x => x.UserName == dto.UserName).AnyAsync())
-                return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
-            return new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.OK);
         }
 
         private async Task<ServiceResponse<RegisterDtoResponse>> CreateUserAsync(RegisterDtoRequest dto, ApplicationUser userToRegister)

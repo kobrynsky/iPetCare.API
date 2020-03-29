@@ -18,7 +18,6 @@ namespace Application.Services
         {
         }
 
-
         public async Task<ServiceResponse<SpeciesCreateSpeciesDtoResponse>> CreateAsync(SpeciesCreateSpeciesDtoRequest dto)
         {
             if (await Context.Species.Where(x => x.Name == dto.Name).AnyAsync())
@@ -123,9 +122,6 @@ namespace Application.Services
                 return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.NotFound);
 
             var responseDto = Mapper.Map<SpeciesUpdateSpeciesDtoResponse>(species);
-
-            if (species.Name.Equals(dto.Name))
-                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto);
 
             species.Name = dto.Name;
 
