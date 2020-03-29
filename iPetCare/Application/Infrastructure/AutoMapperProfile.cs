@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Models;
 using Application.Dtos.Species;
 using Application.Dtos.ExaminationTypes;
+using Application.Dtos.Examinations;
 
 namespace Application.Infrastructure
 {
@@ -17,6 +18,7 @@ namespace Application.Infrastructure
             MapsForRaces();
             MapsForSpecies();
             MapsForExaminationTypes();
+            MapsForExaminations();
         }
 
         private void MapsForUser()
@@ -60,6 +62,13 @@ namespace Application.Infrastructure
             CreateMap<ExaminationType, ExaminationTypesDetailGetAllDtoResponse>();
             CreateMap<ExaminationType, ExaminationTypesGetExaminationTypeDtoResponse>();
             CreateMap<ExaminationType, ExaminationTypesUpdateExaminationTypeDtoResponse>();
+        }
+        private void MapsForExaminations()
+        {
+            CreateMap<Examination, ExaminationsDetailGetAllDtoResponse>();
+            CreateMap<Examination, ExaminationsGetExaminationDtoResponse>();
+            CreateMap<Examination, ExaminationsUpdateExaminationDtoResponse>(); 
+            CreateMap<Examination, ExaminationParameteterValueDetailsGetDtoResponse>();
         }
     }
 }

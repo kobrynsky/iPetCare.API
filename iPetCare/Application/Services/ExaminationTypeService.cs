@@ -83,7 +83,7 @@ namespace Application.Services
             return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int raceId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
+        public async Task<ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int examinationTypeId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
@@ -94,7 +94,7 @@ namespace Application.Services
             if (await Context.ExaminationTypes.Where(x => x.Name == dto.Name).AnyAsync())
                 return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
 
-            var examinationType = Context.ExaminationTypes.Find(raceId);
+            var examinationType = Context.ExaminationTypes.Find(examinationTypeId);
             var species = Context.Species.Find(dto.SpeciesId);
 
             if (species == null)
