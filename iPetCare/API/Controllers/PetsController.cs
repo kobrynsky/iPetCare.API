@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using API.Security;
 using Application.Dtos.Pet;
 using Application.Interfaces;
 using Application.Services.Utilities;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,10 +21,29 @@ namespace API.Controllers
         }
 
         [Produces(typeof(ServiceResponse<PetsGetPetsDtoResponse>))]
+        [AuthorizeRoles(Roles = Role.Administrator)]
         [HttpGet]
         public async Task<IActionResult> GetPets()
         {
             var response = await _petService.GetPetsAsync();
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse<PetsGetMyPetsDtoResponse>))]
+        [Authorize(Role.Owner)]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyPets()
+        {
+            var response = await _petService.GetMyPetsAsync();
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse<PetsGetSharedPetsDtoResponse>))]
+        [AuthorizeRoles(Role.Owner, Role.Vet)]
+        [HttpGet("shared")]
+        public async Task<IActionResult> GetSharedPets()
+        {
+            var response = await _petService.GetSharedPetsAsync();
             return SendResponse(response);
         }
 
