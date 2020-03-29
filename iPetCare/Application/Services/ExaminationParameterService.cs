@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Collections.Generic;
 using Application.Interfaces;
 using Application.Services.Utilities;
 using Application.Dtos.ExaminationParameters;
@@ -56,6 +57,21 @@ namespace Application.Services
             return result > 0
                 ? new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.OK, responseDto)
                 : new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest);
+        }
+
+        public async Task<ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>> GetAllExaminationParametersAsync()
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var examinationParameter = await Context.ExaminationParameters.ToListAsync();
+
+            var dto = new ExaminationParametersGetAllExaminationParametersDtoResponse()
+            {
+                ExaminationParameters = Mapper.Map<List<ExaminationParametersDetailsGetAllDtoResponse>>(examinationParameter)
+            };
+
+            return new ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }

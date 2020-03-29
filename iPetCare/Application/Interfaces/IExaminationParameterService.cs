@@ -8,5 +8,6 @@ namespace Application.Interfaces
     public interface IExaminationParameterService
     {
         Task<ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>> CreateExaminationParameterAsync(ExaminationParametersCreateExaminationParameterDtoRequest dto);
+        Task<ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>> GetAllExaminationParametersAsync();
     }
 }

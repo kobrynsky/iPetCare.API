@@ -26,5 +26,14 @@ namespace API.Controllers
             var response = await _examinationParameterService.CreateExaminationParameterAsync(dto);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet]
+        public async Task<IActionResult> GetAllExaminationParameters()
+        {
+            var response = await _examinationParameterService.GetAllExaminationParametersAsync();
+            return SendResponse(response);
+        }
     }
 }
