@@ -143,5 +143,26 @@ namespace Application.Services
 
             return new ServiceResponse(HttpStatusCode.BadRequest);
         }
+
+        public async Task<ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>> GetAllForOneExaminationTypeAsync(int examinationTypeId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
+            if (examinationType == null)
+                return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
+
+            var examinationParameter = await Context.ExaminationParameters.ToListAsync();
+
+            var dto = new ExaminationParametersGetAllForOneExaminationTypeDtoResponse()
+            {
+                Id = examinationType.Id,
+                Name = examinationType.Name,
+                ExaminationParameters = Mapper.Map<List<ExaminationParameterDetailsForExaminationTypeGetDtoResponse>>(examinationParameter)
+            };
+
+            return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
+        }
     }
 }

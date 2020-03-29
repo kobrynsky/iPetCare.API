@@ -62,6 +62,7 @@ namespace Application.Infrastructure
             CreateMap<ExaminationType, ExaminationTypesDetailGetAllDtoResponse>();
             CreateMap<ExaminationType, ExaminationTypesGetExaminationTypeDtoResponse>();
             CreateMap<ExaminationType, ExaminationTypesUpdateExaminationTypeDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterDetailsForExaminationTypeGetDtoResponse>();
         }
 
         private void MapsForExaminationParameters()
