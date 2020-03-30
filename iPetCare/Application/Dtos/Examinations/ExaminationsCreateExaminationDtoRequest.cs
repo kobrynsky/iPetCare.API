@@ -9,7 +9,8 @@ namespace Application.Dtos.Examinations
         [Required]
         public DateTime Date { get; set; }
         public int ExaminationTypeId { get; set; }
-        public string NoteId { get; set; }
+        public Guid? NoteId { get; set; }
+        [Required]
         public string PetId { get; set; }
     }
 }

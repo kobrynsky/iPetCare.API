@@ -37,7 +37,7 @@ namespace Application.Services
             };
 
             if (dto.NoteId != null)
-                examination.NoteId = Guid.Parse(dto.NoteId);
+                examination.NoteId = dto.NoteId;
             else
                 examination.NoteId = null;
 
@@ -48,11 +48,11 @@ namespace Application.Services
             {
                 var responseDto = new ExaminationsCreateExaminationDtoResponse()
                 {
-                    Id = examination.Id.ToString(),
+                    Id = examination.Id,
                     Date = examination.Date,
                     ExaminationTypeId = examination.ExaminationTypeId,
-                    NoteId = examination.NoteId.ToString(),
-                    PetId = examination.PetId.ToString()
+                    NoteId = examination.NoteId,
+                    PetId = examination.PetId
                 };
 
                 return new ServiceResponse<ExaminationsCreateExaminationDtoResponse>(HttpStatusCode.OK, responseDto);
@@ -71,7 +71,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
-            if (!checkIfCanEditExamination(pet))
+            if (!CheckIfCanEditExamination(pet))
             {
                 return new ServiceResponse(HttpStatusCode.Forbidden);
             }
@@ -114,7 +114,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<ExaminationsGetExaminationDtoResponse>(HttpStatusCode.NotFound);
 
-            if (!checkIfCanEditExamination(pet))
+            if (!CheckIfCanEditExamination(pet))
             {
                 return new ServiceResponse<ExaminationsGetExaminationDtoResponse>(HttpStatusCode.Forbidden);
             }
@@ -125,17 +125,15 @@ namespace Application.Services
 
             var dto = Mapper.Map<ExaminationsGetExaminationDtoResponse>(examination);
 
-            var parameterValues = await Context.ExaminationParameterValues.ToListAsync();
+            var parameterValues = await Context.ExaminationParameterValues.Where(param => param.ExaminationParameter.ExaminationTypeId == examination.ExaminationTypeId).ToListAsync();
 
-            var filteredParameterValues = parameterValues.Where(param => param.ExaminationParameter.ExaminationTypeId == examination.ExaminationTypeId).ToList();
-
-            if (filteredParameterValues != null)
-                dto.ParameterValues = Mapper.Map<List<ExaminationParameteterValueDetailsGetDtoResponse>>(filteredParameterValues);
+            if (parameterValues != null)
+                dto.ParameterValues = Mapper.Map<List<ExaminationParameteterValueDetailsGetDtoResponse>>(parameterValues);
 
             return new ServiceResponse<ExaminationsGetExaminationDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>> GetPetAllExaminationsAsync(string petId)
+        public async Task<ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>> GetPetExaminationsAsync(string petId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>(HttpStatusCode.Unauthorized);
@@ -145,7 +143,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>(HttpStatusCode.NotFound);
 
-            if (!checkIfCanEditExamination(pet))
+            if (!CheckIfCanEditExamination(pet))
             {
                 return new ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>(HttpStatusCode.Forbidden);
             }
@@ -170,7 +168,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<ExaminationsUpdateExaminationDtoResponse>(HttpStatusCode.NotFound);
 
-            if (!checkIfCanEditExamination(pet))
+            if (!CheckIfCanEditExamination(pet))
             {
                 return new ServiceResponse<ExaminationsUpdateExaminationDtoResponse>(HttpStatusCode.Forbidden);
             }
@@ -188,11 +186,11 @@ namespace Application.Services
             if (note == null)
                 examination.NoteId = null;
             else
-                examination.NoteId = Guid.Parse(dto.NoteId);
+                examination.NoteId = dto.NoteId;
 
             examination.Date = dto.Date;
             examination.ExaminationTypeId = dto.ExaminationTypeId;         
-            examination.PetId = Guid.Parse(dto.PetId);
+            examination.PetId = dto.PetId;
 
             int result = await Context.SaveChangesAsync();
             if (result > 0)
@@ -204,15 +202,22 @@ namespace Application.Services
             return new ServiceResponse<ExaminationsUpdateExaminationDtoResponse>(HttpStatusCode.BadRequest);
         }
 
-        private Boolean checkIfCanEditExamination( Pet pet)
+        private bool CheckIfCanEditExamination(Pet pet)
         {
             if (CurrentlyLoggedUser.Role != Role.Administrator)
             {
-                var owners = pet.OwnerPets.Where(ownerpet => ownerpet.OwnerId.ToString().Equals(CurrentlyLoggedUser.Id));
-                var vets = pet.VetPets.Where(vetpet => vetpet.VetId.ToString().Equals(CurrentlyLoggedUser.Id));
-
-                if (owners == null && vets == null)
-                    return false;
+                if (CurrentlyLoggedUser.Role == Role.Owner)
+                {
+                    var owners = pet.OwnerPets.Where(ownerpet => ownerpet.OwnerId == CurrentlyLoggedUser.Owner.Id);
+                    if (!owners.Any())
+                        return false;
+                }
+                else
+                {
+                    var vets = pet.VetPets.Where(vetpet => vetpet.VetId == CurrentlyLoggedUser.Vet.Id);
+                    if (!vets.Any())
+                        return false;
+                }
             }
             return true;
         }

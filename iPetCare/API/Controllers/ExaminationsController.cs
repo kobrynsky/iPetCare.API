@@ -10,9 +10,9 @@ using API.Security;
 
 namespace API.Controllers
 {
-    [ApiController]
     public class ExaminationsController : BaseController
     {
+
         private readonly IExaminationService _examinationsService;
         public ExaminationsController(IExaminationService examinationsService)
         {
@@ -39,9 +39,9 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{petId}")]
-        public async Task<IActionResult> GetPetAllExaminations(string petId)
+        public async Task<IActionResult> GetPetExaminations(string petId)
         {
-            var response = await _examinationsService.GetPetAllExaminationsAsync(petId);
+            var response = await _examinationsService.GetPetExaminationsAsync(petId);
             return SendResponse(response);
         }
         [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]

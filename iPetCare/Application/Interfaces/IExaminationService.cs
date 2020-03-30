@@ -12,6 +12,6 @@ namespace Application.Interfaces
         Task<ServiceResponse<ExaminationsGetExaminationDtoResponse>> GetExaminationAsync(string petId, string examinationId);
         Task<ServiceResponse<ExaminationsUpdateExaminationDtoResponse>> UpdateExaminationAsync(string petId, string examinationId, ExaminationsUpdateExaminationDtoRequest dto);
         Task<ServiceResponse> DeleteExaminationAsync(string petId, string examinationId);
-        Task<ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>> GetPetAllExaminationsAsync(string petId);
+        Task<ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>> GetPetExaminationsAsync(string petId);
     }
 }

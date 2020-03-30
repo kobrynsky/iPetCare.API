@@ -11,10 +11,10 @@ namespace Application.Dtos.Examinations
 
     public class ExaminationsDetailGetAllDtoResponse
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime Date { get; set; }
         public int ExaminationTypeId { get; set; }
-        public string NoteId { get; set; }
-        public string PetId { get; set; }
+        public Guid? NoteId { get; set; }
+        public Guid PetId { get; set; }
     }
 }
