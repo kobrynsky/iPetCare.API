@@ -8,7 +8,6 @@ namespace Application.Interfaces
     {
         Task<ServiceResponse<CreateExaminationTypeDtoResponse>> CreateExaminationTypeAsync(CreateExaminationTypeDtoRequest dto);
         Task<ServiceResponse<GetAllExaminationTypesDtoResponse>> GetAllExaminationTypesAsync();
-        Task<ServiceResponse<GetExaminationTypeDtoResponse>> GetExaminationTypeAsync(int examinationTypeId);
         Task<ServiceResponse<UpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int examinationTypeId, UpdateExaminationTypeDtoRequest dto);
         Task<ServiceResponse> DeleteExaminationTypeAsync(int examinationTypeId);
         Task<ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>> GetAllForOneExaminationTypeAsync(int examinationTypeId);
