@@ -223,7 +223,7 @@ namespace Application.Services
                     if (!owners.Any())
                         return false;
                 }
-                else
+                if(CurrentlyLoggedUser.Role == Role.Vet)
                 {
                     var vets = pet.VetPets.Where(vetpet => vetpet.VetId == CurrentlyLoggedUser.Vet.Id);
                     if (!vets.Any())
