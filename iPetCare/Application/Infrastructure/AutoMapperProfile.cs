@@ -7,6 +7,7 @@ using AutoMapper;
 using Domain.Models;
 using Application.Dtos.Species;
 using Application.Dtos.ExaminationTypes;
+using Application.Dtos.ExaminationParameters;
 using Application.Dtos.Examinations;
 
 namespace Application.Infrastructure
@@ -21,6 +22,7 @@ namespace Application.Infrastructure
             MapsForSpecies();
             MapsForInstitutions();
             MapsForExaminationTypes();
+            MapsForExaminationParameters();
             MapsForExaminations();
         }
 
@@ -80,8 +82,18 @@ namespace Application.Infrastructure
         private void MapsForExaminationTypes()
         {
             CreateMap<ExaminationType, ExaminationTypesDetailGetAllDtoResponse>();
-            CreateMap<ExaminationType, ExaminationTypesGetExaminationTypeDtoResponse>();
             CreateMap<ExaminationType, ExaminationTypesUpdateExaminationTypeDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterDetailsForExaminationTypeGetDtoResponse>();
+        }
+
+        private void MapsForExaminationParameters()
+        {
+            CreateMap<ExaminationParameter, ExaminationParametersCreateExaminationParameterDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParametersDetailsGetAllDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParametersGetExaminationParameterDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeDetailsGetDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParametersUpdateExaminationParameterDtoResponse>();
+            CreateMap<ExaminationParametersCreateExaminationParameterDtoRequest, ExaminationParameter>();
         }
         private void MapsForExaminations()
         {

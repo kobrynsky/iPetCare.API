@@ -30,6 +30,10 @@ namespace Application.Services
             if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.Forbidden);
 
+            var species = await Context.Species.FindAsync(dto.SpeciesId);
+            if (species == null)
+                return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie ma takiego gatunku");
+
             var examinationType = new ExaminationType()
             {
                 Name = dto.Name,
@@ -69,21 +73,7 @@ namespace Application.Services
             return new ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>> GetExaminationTypeAsync(int examinationTypeId)
-        {
-            if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
-
-            var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
-            if (examinationType == null)
-                return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
-
-            var dto = Mapper.Map<ExaminationTypesGetExaminationTypeDtoResponse>(examinationType);
-
-            return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
-        }
-
-        public async Task<ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int examinationTypeId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
+        public async Task<ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int raceId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
@@ -138,6 +128,27 @@ namespace Application.Services
                 return new ServiceResponse(HttpStatusCode.OK);
 
             return new ServiceResponse(HttpStatusCode.BadRequest);
+        }
+
+        public async Task<ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>> GetAllForOneExaminationTypeAsync(int examinationTypeId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
+            if (examinationType == null)
+                return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
+
+            var examinationParameter = await Context.ExaminationParameters.Where(x => x.ExaminationTypeId == examinationTypeId).ToListAsync();
+
+            var dto = new ExaminationParametersGetAllForOneExaminationTypeDtoResponse()
+            {
+                Id = examinationType.Id,
+                Name = examinationType.Name,
+                ExaminationParameters = Mapper.Map<List<ExaminationParameterDetailsForExaminationTypeGetDtoResponse>>(examinationParameter)
+            };
+
+            return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }

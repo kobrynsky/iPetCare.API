@@ -37,16 +37,7 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>))]
-        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
-        [HttpGet("{examinationTypeId}")]
-        public async Task<IActionResult> GetExaminationType(int examinationTypeId)
-        {
-            var response = await _examinationTypesService.GetExaminationTypeAsync(examinationTypeId);
-            return SendResponse(response);
-        }
-
-        [Produces(typeof(ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>))]
+        [Produces(typeof(ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{examinationTypeId}")]
         public async Task<IActionResult> UpdateExaminationType(int examinationTypeId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
@@ -61,6 +52,15 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteExaminationType(int examinationTypeId)
         {
             var response = await _examinationTypesService.DeleteExaminationTypeAsync(examinationTypeId);
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet("{examinationTypeId}")]
+        public async Task<IActionResult> GetAllForOneExaminationType(int examinationTypeId)
+        {
+            var response = await _examinationTypesService.GetAllForOneExaminationTypeAsync(examinationTypeId);
             return SendResponse(response);
         }
     }
