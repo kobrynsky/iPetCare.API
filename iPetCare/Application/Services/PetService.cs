@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Application.Dtos.Pet;
 using Application.Interfaces;
@@ -209,6 +211,41 @@ namespace Application.Services
 
             Context.Pets.Remove(pet);
             return await Context.SaveChangesAsync() > 0 ? new ServiceResponse(HttpStatusCode.OK) : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania zwierzaka");
+        }
+
+        public async Task<ServiceResponse<PetsGetMyPetsDtoResponse>> GetMyPetsAsync()
+        {
+            if(CurrentlyLoggedUser == null)
+                return new ServiceResponse<PetsGetMyPetsDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var pets = await Context.Pets
+                .Where(x => x.OwnerPets
+                    .Any(y => y.OwnerId == CurrentlyLoggedUser.Owner.Id))
+                .ToListAsync();
+
+            var dto = new PetsGetMyPetsDtoResponse();
+            dto.Pets = Mapper.Map<List<PetForPetsGetMyPetsDtoResponse>>(pets);
+
+            return new ServiceResponse<PetsGetMyPetsDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
+        public async Task<ServiceResponse<PetsGetSharedPetsDtoResponse>> GetSharedPetsAsync()
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<PetsGetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<PetsGetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var pets = await Context.Requests
+                .Where(x => x.IsAccepted && x.User.Id == CurrentlyLoggedUser.Id)
+                .Select(x => x.Pet)
+                .ToListAsync();
+
+            var dto = new PetsGetSharedPetsDtoResponse();
+            dto.Pets = Mapper.Map<List<PetForPetsGetSharedPetsDtoResponse>>(pets);
+
+            return new ServiceResponse<PetsGetSharedPetsDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }

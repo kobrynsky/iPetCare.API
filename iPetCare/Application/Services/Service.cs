@@ -28,7 +28,7 @@ namespace Application.Services
             AssignCurrentlyLoggedUser();
         }
 
-        protected void AssignCurrentlyLoggedUser()
+        private void AssignCurrentlyLoggedUser()
         {
             if (CurrentlyLoggedUserName == null)
             {
