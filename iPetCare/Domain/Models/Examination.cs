@@ -11,8 +11,11 @@ namespace Domain.Models
         public int ExaminationTypeId { get; set; }
         public virtual ExaminationType ExaminationType { get; set; }
 
-        public Guid NoteId { get; set; }
+        public Guid? NoteId { get; set; }
         public virtual Note Note { get; set; }
+
+        public Guid PetId { get; set; }
+        public virtual Pet Pet { get; set; }
 
         public virtual ICollection<ExaminationParameterValue> ExaminationParameterValues { get; set; }
     }
