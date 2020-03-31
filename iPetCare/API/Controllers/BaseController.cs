@@ -18,6 +18,8 @@ namespace API.Controllers
                     return Unauthorized();
                 case HttpStatusCode.Forbidden:
                     return Forbid();
+                case HttpStatusCode.NotFound:
+                    return NotFound();
                 default:
                     return BadRequest(response.Message);
             }
@@ -31,6 +33,8 @@ namespace API.Controllers
                     return Ok(response.ResponseContent);
                 case HttpStatusCode.Unauthorized:
                     return Unauthorized();
+                case HttpStatusCode.NotFound:
+                    return NotFound();
                 case HttpStatusCode.Forbidden:
                     return Forbid();
                 default:
