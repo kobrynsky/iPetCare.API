@@ -26,7 +26,7 @@ namespace Application.Services
             if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.Forbidden);
 
-            var examinationType = Context.ExaminationTypes.Find(dto.ExaminationTypeId);
+            var examinationType = await Context.ExaminationTypes.FindAsync(dto.ExaminationTypeId);
 
             if (examinationType == null)
                 return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje take badanie w bazie danych");
@@ -34,13 +34,7 @@ namespace Application.Services
             if (await Context.ExaminationParameters.Where(x => x.Name == dto.Name && x.ExaminationTypeId == dto.ExaminationTypeId).AnyAsync())
                 return new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Podany parametr już istnieje dla tego badania");
 
-            var examinationParameter = new ExaminationParameter()
-            {
-                Name = dto.Name,
-                UpperLimit = dto.UpperLimit,
-                LowerLimit = dto.LowerLimit,
-                ExaminationTypeId = dto.ExaminationTypeId
-            };
+            ExaminationParameter examinationParameter = Mapper.Map<ExaminationParameter>(dto);
 
             Context.ExaminationParameters.Add(examinationParameter);
             int result = await Context.SaveChangesAsync();
@@ -49,7 +43,7 @@ namespace Application.Services
 
             return result > 0
                 ? new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.OK, responseDto)
-                : new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest);
+                : new ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiło zapisanie do bazy danych");
         }
 
         public async Task<ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>> GetAllExaminationParametersAsync()
@@ -109,7 +103,7 @@ namespace Application.Services
                 return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiło zapisanie do bazy danych");
         }
 
         public async Task<ServiceResponse> DeleteExaminationParameterAsync(int examinationParameterId)
@@ -120,7 +114,7 @@ namespace Application.Services
             if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
-            var examinationParameter = Context.ExaminationParameters.Find(examinationParameterId);
+            var examinationParameter = await Context.ExaminationParameters.FindAsync(examinationParameterId);
             if (examinationParameter == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
@@ -130,7 +124,7 @@ namespace Application.Services
             if (result > 0)
                 return new ServiceResponse(HttpStatusCode.OK);
 
-            return new ServiceResponse(HttpStatusCode.BadRequest);
+            return new ServiceResponse(HttpStatusCode.BadRequest, "Parametr nie został usunięty");
         }
     }
 }

@@ -8,9 +8,11 @@ namespace Application.Dtos.ExaminationParameters
     {
         [Required]
         public string Name { get; set; }
-        [Required]
+
+        [Range(0, float.MaxValue, ErrorMessage = "Please enter valid float Number")]
         public float UpperLimit { get; set; }
-        [Required]
+
+        [Range(0, float.MaxValue, ErrorMessage = "Please enter valid float Number")]
         public float LowerLimit { get; set; }
         [Required]
         public int ExaminationTypeId { get; set; }

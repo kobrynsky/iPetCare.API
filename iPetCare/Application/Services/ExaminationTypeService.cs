@@ -30,7 +30,7 @@ namespace Application.Services
             if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.Forbidden);
 
-            var species = Context.Species.Find(dto.SpeciesId);
+            var species = await Context.Species.FindAsync(dto.SpeciesId);
             if (species == null)
                 return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie ma takiego gatunku");
 
