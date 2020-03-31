@@ -84,7 +84,7 @@ namespace Application.Services
             if (await Context.ExaminationTypes.Where(x => x.Name == dto.Name).AnyAsync())
                 return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
 
-            var examinationType = Context.ExaminationTypes.Find(raceId);
+            var examinationType = Context.ExaminationTypes.Find(examinationTypeId);
             var species = Context.Species.Find(dto.SpeciesId);
 
             if (species == null)
