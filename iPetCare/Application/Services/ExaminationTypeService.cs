@@ -30,7 +30,7 @@ namespace Application.Services
 
             var species = await Context.Species.FindAsync(dto.SpeciesId);
             if (species == null)
-                return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie ma takiego gatunku");
+                return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie ma takiego gatunku");
 
             var examinationType = new ExaminationType()
             {

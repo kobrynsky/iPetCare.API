@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dtos.ExaminationParameters
 {
-    public class ExaminationParametersCreateExaminationParameterDtoRequest
+    public class CreateExaminationParameterDtoRequest
     {
         [Required]
         public string Name { get; set; }

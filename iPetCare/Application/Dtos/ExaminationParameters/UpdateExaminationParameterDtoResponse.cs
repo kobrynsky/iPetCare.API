@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.Dtos.ExaminationParameters
+﻿namespace Application.Dtos.ExaminationParameters
 {
-    public class ExaminationParametersUpdateExaminationParameterDtoResponse
+    public class UpdateExaminationParameterDtoResponse
     {
         public string Name { get; set; }
         public int Id { get; set; }

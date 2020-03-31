@@ -88,12 +88,12 @@ namespace Application.Infrastructure
 
         private void MapsForExaminationParameters()
         {
-            CreateMap<ExaminationParameter, ExaminationParametersCreateExaminationParameterDtoResponse>();
-            CreateMap<ExaminationParameter, ExaminationParametersDetailsGetAllDtoResponse>();
-            CreateMap<ExaminationParameter, ExaminationParametersGetExaminationParameterDtoResponse>();
-            CreateMap<ExaminationType, ExaminationTypeDetailsGetDtoResponse>();
-            CreateMap<ExaminationParameter, ExaminationParametersUpdateExaminationParameterDtoResponse>();
-            CreateMap<ExaminationParametersCreateExaminationParameterDtoRequest, ExaminationParameter>();
+            CreateMap<ExaminationParameter, CreateExaminationParameterDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterForGetAllExaminationParametersDtoResponse>();
+            CreateMap<ExaminationParameter, GetExaminationParameterDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeForGetExaminationParameterDtoResponse>();
+            CreateMap<ExaminationParameter, UpdateExaminationParameterDtoResponse>();
+            CreateMap<CreateExaminationParameterDtoRequest, ExaminationParameter>();
         }
 
         private void MapsForExaminations()
