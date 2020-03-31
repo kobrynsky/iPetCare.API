@@ -18,7 +18,7 @@ namespace Application.Dtos.Examinations
     public class ExaminationParameteterValueDetailsGetDtoResponse
     {
         public Guid Id { get; set; }
-        public string Value { get; set; }
+        public float Value { get; set; }
         public int ExaminationParameterId { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{petId}")]
-        public async Task<IActionResult> GetPetExaminations(string petId)
+        public async Task<IActionResult> GetPetExaminations(Guid petId)
         {
             var response = await _examinationsService.GetPetExaminationsAsync(petId);
             return SendResponse(response);
@@ -47,7 +47,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{petId}/{examinationId}")]
-        public async Task<IActionResult> GetExamination(string petId, string examinationId)
+        public async Task<IActionResult> GetExamination(Guid petId, Guid examinationId)
         {
             var response = await _examinationsService.GetExaminationAsync(petId, examinationId);
             return SendResponse(response);
@@ -56,7 +56,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<ExaminationsCreateExaminationDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPut("{petId}/{examinationId}")]
-        public async Task<IActionResult> UpdateExamination(string petId, string examinationId, ExaminationsUpdateExaminationDtoRequest dto)
+        public async Task<IActionResult> UpdateExamination(Guid petId, Guid examinationId, ExaminationsUpdateExaminationDtoRequest dto)
         {
             var response = await _examinationsService.UpdateExaminationAsync(petId, examinationId, dto);
             return SendResponse(response);
@@ -65,7 +65,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpDelete("{petId}/{examinationId}")]
-        public async Task<IActionResult> DeleteExamination(string petId, string examinationId)
+        public async Task<IActionResult> DeleteExamination(Guid petId, Guid examinationId)
         {
             var response = await _examinationsService.DeleteExaminationAsync(petId, examinationId);
             return SendResponse(response);

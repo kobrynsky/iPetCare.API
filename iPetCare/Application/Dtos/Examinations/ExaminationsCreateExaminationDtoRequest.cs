@@ -11,6 +11,6 @@ namespace Application.Dtos.Examinations
         public int ExaminationTypeId { get; set; }
         public Guid? NoteId { get; set; }
         [Required]
-        public string PetId { get; set; }
+        public Guid PetId { get; set; }
     }
 }
