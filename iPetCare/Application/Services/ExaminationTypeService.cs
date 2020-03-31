@@ -7,9 +7,7 @@ using Application.Services.Utilities;
 using Application.Dtos.ExaminationTypes;
 using Domain.Models;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Services
 {
@@ -51,7 +49,7 @@ namespace Application.Services
                 return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu badania");
         }
 
         public async Task<ServiceResponse<GetAllExaminationTypesDtoResponse>> GetAllExaminationTypesAsync()
@@ -98,7 +96,7 @@ namespace Application.Services
             var species = Context.Species.Find(dto.SpeciesId);
 
             if (species == null)
-                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowa rasa");
 
             if (examinationType == null)
                 return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
@@ -116,7 +114,7 @@ namespace Application.Services
             if (result == 0)
                 return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
 
-            return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu badania");
         }
 
         public async Task<ServiceResponse> DeleteExaminationTypeAsync(int examinationTypeId)
@@ -130,14 +128,14 @@ namespace Application.Services
             var examinationType = Context.ExaminationTypes.Find(examinationTypeId);
             if (examinationType == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
-            
+
             Context.ExaminationTypes.Remove(examinationType);
             int result = await Context.SaveChangesAsync();
 
             if (result > 0)
                 return new ServiceResponse(HttpStatusCode.OK);
 
-            return new ServiceResponse(HttpStatusCode.BadRequest);
+            return new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania badania");
         }
     }
 }

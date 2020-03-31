@@ -7,9 +7,7 @@ using Application.Services.Utilities;
 using Application.Dtos.Examinations;
 using Domain.Models;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Services
 {
@@ -27,18 +25,15 @@ namespace Application.Services
             var pet = Context.Pets.Find(dto.PetId);
 
             if (pet == null)
-                return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CheckIfCanEditExamination(pet))
-            {
+            if (!CanEditExamination(pet))
                 return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.Forbidden);
-            }
-
 
             var examinationType = Context.ExaminationTypes.Find(dto.ExaminationTypeId);
 
             if(examinationType == null)
-                return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy typ badania");
 
             var examination = new Examination()
             {
@@ -69,7 +64,7 @@ namespace Application.Services
                 return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas tworzenia badania");
         }
 
         public async Task<ServiceResponse> DeleteExaminationAsync(Guid petId, Guid examinationId)
@@ -80,12 +75,10 @@ namespace Application.Services
             var pet = Context.Pets.Find(petId);
 
             if (pet == null)
-                return new ServiceResponse(HttpStatusCode.NotFound);
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CheckIfCanEditExamination(pet))
-            {
+            if (!CanEditExamination(pet))
                 return new ServiceResponse(HttpStatusCode.Forbidden);
-            }
 
             var examination = Context.Examinations.Find(examinationId);
             if (examination == null)
@@ -94,10 +87,9 @@ namespace Application.Services
             Context.Examinations.Remove(examination);
             int result = await Context.SaveChangesAsync();
 
-            if (result > 0)
-                return new ServiceResponse(HttpStatusCode.OK);
-
-            return new ServiceResponse(HttpStatusCode.BadRequest);
+            return result > 0
+                ? new ServiceResponse(HttpStatusCode.OK)
+                : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania badania");
         }
 
         public async Task<ServiceResponse<GetAllExaminationsDtoResponse>> GetAllExaminationsAsync()
@@ -109,7 +101,7 @@ namespace Application.Services
 
             var dto = new GetAllExaminationsDtoResponse()
             {
-                Examinations = Mapper.Map<List<DetailGetAllDtoResponse>>(examinations)
+                Examinations = Mapper.Map<List<ExaminationForGetAllExaminationsDtoResponse>>(examinations)
             };
 
             return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.OK, dto);
@@ -123,12 +115,10 @@ namespace Application.Services
             var pet = Context.Pets.Find(petId);
 
             if (pet == null)
-                return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CheckIfCanEditExamination(pet))
-            {
+            if (!CanEditExamination(pet))
                 return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.Forbidden);
-            }
 
             var examination = await Context.Examinations.FindAsync(examinationId);
             if (examination == null)
@@ -139,7 +129,7 @@ namespace Application.Services
             var parameterValues = await Context.ExaminationParameterValues.Where(param => param.ExaminationParameter.ExaminationTypeId == examination.ExaminationTypeId).ToListAsync();
 
             if (parameterValues != null)
-                dto.ParameterValues = Mapper.Map<List<ParameterValueDetailsGetDtoResponse>>(parameterValues);
+                dto.ParameterValues = Mapper.Map<List<ParameterValueForGetExaminationDtoResponse>>(parameterValues);
 
             return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.OK, dto);
         }
@@ -154,17 +144,15 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.NotFound);
 
-            if (!CheckIfCanEditExamination(pet))
-            {
+            if (!CanEditExamination(pet))
                 return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.Forbidden);
-            }
 
             var examinations = await Context.Examinations.ToListAsync();
             var filteredExaminations = examinations.Where(ex => ex.PetId == petId).ToList();
 
             var dto = new GetAllExaminationsDtoResponse()
             {
-                Examinations = Mapper.Map<List<DetailGetAllDtoResponse>>(filteredExaminations)
+                Examinations = Mapper.Map<List<ExaminationForGetAllExaminationsDtoResponse>>(filteredExaminations)
             };
 
             return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.OK, dto);
@@ -177,12 +165,10 @@ namespace Application.Services
 
             var pet = Context.Pets.Find(petId);
             if (pet == null)
-                return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CheckIfCanEditExamination(pet))
-            {
+            if (!CanEditExamination(pet))
                 return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.Forbidden);
-            }
 
             var examination = Context.Examinations.Find(examinationId);
             var examinationType = Context.ExaminationTypes.Find(dto.ExaminationTypeId);
@@ -193,14 +179,14 @@ namespace Application.Services
             if (examination == null)
                 return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.NotFound);
             if (examinationType == null)
-                return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono typu badania");
             if (note == null)
                 examination.NoteId = null;
             else
                 examination.NoteId = dto.NoteId;
 
             examination.Date = dto.Date;
-            examination.ExaminationTypeId = dto.ExaminationTypeId;         
+            examination.ExaminationTypeId = dto.ExaminationTypeId;
             examination.PetId = dto.PetId;
 
             int result = await Context.SaveChangesAsync();
@@ -210,10 +196,10 @@ namespace Application.Services
                 return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu badania");
         }
 
-        private bool CheckIfCanEditExamination(Pet pet)
+        private bool CanEditExamination(Pet pet)
         {
             if (CurrentlyLoggedUser.Role != Role.Administrator)
             {

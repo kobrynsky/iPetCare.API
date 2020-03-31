@@ -1,6 +1,6 @@
 ﻿namespace Application.Dtos.Races
 {
-    public class RaceDeleteDtoResponse
+    public class DeleteRaceDtoResponse
     {
         public string Name { get; set; }
         public int Id { get; set; }

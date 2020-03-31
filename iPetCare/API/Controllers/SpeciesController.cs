@@ -25,7 +25,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<CreateSpeciesDtoResponse>> CreateSpecies(CreateSpeciesDtoRequest dto)
         {
-            var response = await _speciesService.CreateAsync(dto);
+            var response = await _speciesService.CreateSpeciesAsync(dto);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -40,7 +40,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<GetAllSpeciesDtoResponse>> GetAllSpecies()
         {
-            var response = await _speciesService.GetAllAsync();
+            var response = await _speciesService.GetAllSpeciesAsync();
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -55,7 +55,7 @@ namespace API.Controllers
         [HttpGet("{speciesId}")]
         public async Task<ActionResult<GetSpeciesDtoResponse>> GetSpecies(int speciesId)
         {
-            var response = await _speciesService.GetAsync(speciesId);
+            var response = await _speciesService.GetSpeciesAsync(speciesId);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -70,7 +70,7 @@ namespace API.Controllers
         [HttpPut("{speciesId}")]
         public async Task<ActionResult<UpdateSpeciesDtoResponse>> UpdateSpecies(int speciesId, UpdateSpeciesDtoRequest dto)
         {
-            var response = await _speciesService.UpdateAsync(speciesId, dto);
+            var response = await _speciesService.UpdateSpeciesAsync(speciesId, dto);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -85,7 +85,7 @@ namespace API.Controllers
         [HttpDelete("{speciesId}")]
         public async Task<ActionResult<DeleteSpeciesDtoResponse>> DeleteSpecies(int speciesId)
         {
-            var response = await _speciesService.DeleteAsync(speciesId);
+            var response = await _speciesService.DeleteSpeciesAsync(speciesId);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);

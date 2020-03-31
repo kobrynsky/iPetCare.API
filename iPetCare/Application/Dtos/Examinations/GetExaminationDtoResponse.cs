@@ -10,10 +10,10 @@ namespace Application.Dtos.Examinations
         public int ExaminationTypeId { get; set; }
         public Guid? NoteId { get; set; }
         public Guid PetId { get; set; }
-        public List<ParameterValueDetailsGetDtoResponse> ParameterValues { get; set; }
+        public List<ParameterValueForGetExaminationDtoResponse> ParameterValues { get; set; }
     }
 
-    public class ParameterValueDetailsGetDtoResponse
+    public class ParameterValueForGetExaminationDtoResponse
     {
         public Guid Id { get; set; }
         public float Value { get; set; }

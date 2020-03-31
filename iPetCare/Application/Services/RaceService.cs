@@ -17,7 +17,7 @@ namespace Application.Services
         public RaceService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
-        public async Task<ServiceResponse<CreateRaceDtoResponse>> CreateAsync(CreateRaceDtoRequest dto)
+        public async Task<ServiceResponse<CreateRaceDtoResponse>> CreateRaceAsync(CreateRaceDtoRequest dto)
         {
             if (await Context.Races.Where(x => x.Name == dto.Name).AnyAsync())
                 return new ServiceResponse<CreateRaceDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
@@ -49,7 +49,7 @@ namespace Application.Services
                 : new ServiceResponse<CreateRaceDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas tworzenia rasy");
         }
 
-        public async Task<ServiceResponse<GetAllRacesDtoResponse>> GetAllAsync()
+        public async Task<ServiceResponse<GetAllRacesDtoResponse>> GetAllRacesAsync()
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetAllRacesDtoResponse>(HttpStatusCode.Unauthorized);
@@ -61,7 +61,7 @@ namespace Application.Services
             return new ServiceResponse<GetAllRacesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<GetRaceDtoResponse>> GetAsync(int raceId)
+        public async Task<ServiceResponse<GetRaceDtoResponse>> GetRaceAsync(int raceId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetRaceDtoResponse>(HttpStatusCode.Unauthorized);
@@ -69,14 +69,14 @@ namespace Application.Services
             var race = await Context.Races.FindAsync(raceId);
 
             if (race == null)
-                return new ServiceResponse<GetRaceDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<GetRaceDtoResponse>(HttpStatusCode.NotFound);
 
             var dto = Mapper.Map<GetRaceDtoResponse>(race);
 
             return new ServiceResponse<GetRaceDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<UpdateRaceDtoResponse>> UpdateAsync(int raceId, UpdateRaceDtoRequest dto)
+        public async Task<ServiceResponse<UpdateRaceDtoResponse>> UpdateRaceAsync(int raceId, UpdateRaceDtoRequest dto)
         {
             if(CurrentlyLoggedUser == null)
                 return new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.Unauthorized);
@@ -105,7 +105,7 @@ namespace Application.Services
                 : new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
-        public async Task<ServiceResponse<DeleteRaceDtoResponse>> DeleteAsync(int raceId)
+        public async Task<ServiceResponse<DeleteRaceDtoResponse>> DeleteRaceAsync(int raceId)
         {
             if(CurrentlyLoggedUser == null)
                 return new ServiceResponse<DeleteRaceDtoResponse>(HttpStatusCode.Unauthorized);

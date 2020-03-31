@@ -23,7 +23,7 @@ namespace Application.Services
                 return new ServiceResponse<GetInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (institutionId == Guid.Empty)
-                return new ServiceResponse<GetInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+                return new ServiceResponse<GetInstitutionDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
 
             var institution = await Context.Institutions.FindAsync(institutionId);
 
@@ -62,14 +62,14 @@ namespace Application.Services
             var institution = await Context.Institutions.FindAsync(institutionId);
 
             if (institution == null)
-                return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+                return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.NotFound);
 
             institution.Address = dto.Address;
             institution.Name = dto.Name;
 
             if (await Context.SaveChangesAsync() <= 0)
                 return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.BadRequest,
-                    "Wystąpił błąd podczas aktualizacji instytucji");
+                    "Wystąpił błąd podczas aktualizacji placówki");
 
             var responseDto = Mapper.Map<UpdateInstitutionDtoResponse>(institution);
 
@@ -93,7 +93,7 @@ namespace Application.Services
 
             if(await Context.SaveChangesAsync() <= 0)
                 return new ServiceResponse<CreateInstitutionDtoResponse>(HttpStatusCode.BadRequest,
-                    "Wystąpił błąd podczas tworzenia instytucji");
+                    "Wystąpił błąd podczas tworzenia placówki");
 
             var responseDto = Mapper.Map<CreateInstitutionDtoResponse>(institution);
 
@@ -114,12 +114,12 @@ namespace Application.Services
             var institution = await Context.Institutions.FindAsync(institutionId);
 
             if (institution == null)
-                return new ServiceResponse(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+                return new ServiceResponse(HttpStatusCode.NotFound);
 
             Context.Remove(institution);
 
             if(await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania instytucji");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania placówki");
 
             return new ServiceResponse(HttpStatusCode.OK);
         }
@@ -138,18 +138,18 @@ namespace Application.Services
             var institution = Context.Institutions.Find(institutionId);
 
             if(institution == null)
-                return new ServiceResponse(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+                return new ServiceResponse(HttpStatusCode.NotFound);
 
             var institutionVets = await  Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == CurrentlyLoggedUser.Vet.Id).ToListAsync();
 
             if(institutionVets.Any())
-                return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz jest już zapisany do instytucji {institution.Name}");
+                return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz jest już zapisany do placówki {institution.Name}");
 
             var institutionVet = new InstitutionVet() {Vet = CurrentlyLoggedUser.Vet, Institution = institution};
             Context.Add(institutionVet);
 
             if(await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy weterynarza do instytucji");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy weterynarza do placówki");
 
             return new ServiceResponse(HttpStatusCode.OK);
         }
@@ -168,17 +168,17 @@ namespace Application.Services
             var institution = Context.Institutions.Find(institutionId);
 
             if (institution == null)
-                return new ServiceResponse(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+                return new ServiceResponse(HttpStatusCode.NotFound);
 
             var institutionVets = await Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == CurrentlyLoggedUser.Vet.Id).SingleOrDefaultAsync();
 
             if (institutionVets == null)
-                return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz nie jest zapisany do instytucji {institution.Name}");
+                return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz nie jest zapisany do placówki {institution.Name}");
 
             Context.Remove(institutionVets);
 
             if (await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy wypisania weterynarza z instytucji");
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy wypisania weterynarza z placówki");
 
             return new ServiceResponse(HttpStatusCode.OK);
         }

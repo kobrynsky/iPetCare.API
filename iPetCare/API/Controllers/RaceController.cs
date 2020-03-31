@@ -24,7 +24,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<CreateRaceDtoResponse>> Create(CreateRaceDtoRequest dto)
         {
-            var response = await _raceService.CreateAsync(dto);
+            var response = await _raceService.CreateRaceAsync(dto);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -39,7 +39,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<GetAllRacesDtoResponse>> GetRaces()
         {
-            var response = await _raceService.GetAllAsync();
+            var response = await _raceService.GetAllRacesAsync();
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -54,7 +54,7 @@ namespace API.Controllers
         [HttpGet("{raceId}")]
         public async Task<ActionResult<GetRaceDtoResponse>> GetRace(int raceId)
         {
-            var response = await _raceService.GetAsync(raceId);
+            var response = await _raceService.GetRaceAsync(raceId);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -69,7 +69,7 @@ namespace API.Controllers
         [HttpPut("{raceId}")]
         public async Task<ActionResult<UpdateRaceDtoResponse>> UpdateRace(int raceId, UpdateRaceDtoRequest dto)
         {
-            var response = await _raceService.UpdateAsync(raceId, dto);
+            var response = await _raceService.UpdateRaceAsync(raceId, dto);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
@@ -84,7 +84,7 @@ namespace API.Controllers
         [HttpDelete("{raceId}")]
         public async Task<ActionResult<DeleteRaceDtoResponse>> DeleteRace(int raceId)
         {
-            var response = await _raceService.DeleteAsync(raceId);
+            var response = await _raceService.DeleteRaceAsync(raceId);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);

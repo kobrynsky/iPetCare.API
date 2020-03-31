@@ -18,7 +18,7 @@ namespace Application.Services
         {
         }
 
-        public async Task<ServiceResponse<CreateSpeciesDtoResponse>> CreateAsync(CreateSpeciesDtoRequest dto)
+        public async Task<ServiceResponse<CreateSpeciesDtoResponse>> CreateSpeciesAsync(CreateSpeciesDtoRequest dto)
         {
             if (await Context.Species.Where(x => x.Name == dto.Name).AnyAsync())
                 return new ServiceResponse<CreateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Podany gatunek już istnieje");
@@ -47,7 +47,7 @@ namespace Application.Services
                 : new ServiceResponse<CreateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
-        public async Task<ServiceResponse<DeleteSpeciesDtoResponse>> DeleteAsync(int speciesId)
+        public async Task<ServiceResponse<DeleteSpeciesDtoResponse>> DeleteSpeciesAsync(int speciesId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<DeleteSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
@@ -69,7 +69,7 @@ namespace Application.Services
                 : new ServiceResponse<DeleteSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
-        public async Task<ServiceResponse<GetAllSpeciesDtoResponse>> GetAllAsync()
+        public async Task<ServiceResponse<GetAllSpeciesDtoResponse>> GetAllSpeciesAsync()
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetAllSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
@@ -84,7 +84,7 @@ namespace Application.Services
             return new ServiceResponse<GetAllSpeciesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<GetSpeciesDtoResponse>> GetAsync(int speciesId)
+        public async Task<ServiceResponse<GetSpeciesDtoResponse>> GetSpeciesAsync(int speciesId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
@@ -105,7 +105,7 @@ namespace Application.Services
             return new ServiceResponse<GetSpeciesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<UpdateSpeciesDtoResponse>> UpdateAsync(int speciesId, UpdateSpeciesDtoRequest dto)
+        public async Task<ServiceResponse<UpdateSpeciesDtoResponse>> UpdateSpeciesAsync(int speciesId, UpdateSpeciesDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<UpdateSpeciesDtoResponse>(HttpStatusCode.Unauthorized);

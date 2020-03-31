@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Application.Dtos.Pet;
 using Application.Interfaces;
