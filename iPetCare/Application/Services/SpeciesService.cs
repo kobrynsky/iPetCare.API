@@ -18,16 +18,16 @@ namespace Application.Services
         {
         }
 
-        public async Task<ServiceResponse<SpeciesCreateSpeciesDtoResponse>> CreateAsync(SpeciesCreateSpeciesDtoRequest dto)
+        public async Task<ServiceResponse<CreateSpeciesDtoResponse>> CreateAsync(CreateSpeciesDtoRequest dto)
         {
             if (await Context.Species.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Podany gatunek już istnieje");
+                return new ServiceResponse<CreateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Podany gatunek już istnieje");
 
             if(CurrentlyLoggedUser == null)
-                return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<CreateSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
 
             if(CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<CreateSpeciesDtoResponse>(HttpStatusCode.Forbidden);
 
             var species = new Species
             {
@@ -36,98 +36,98 @@ namespace Application.Services
 
             Context.Species.Add(species);
 
-            var responseDto = new SpeciesCreateSpeciesDtoResponse()
+            var responseDto = new CreateSpeciesDtoResponse()
             {
                 Name = species.Name,
                 Id = species.Id
             };
 
             return await Context.SaveChangesAsync() > 0
-                ? new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto)
-                : new ServiceResponse<SpeciesCreateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+                ? new ServiceResponse<CreateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto)
+                : new ServiceResponse<CreateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
-        public async Task<ServiceResponse<SpeciesDeleteSpeciesDtoResponse>> DeleteAsync(int speciesId)
+        public async Task<ServiceResponse<DeleteSpeciesDtoResponse>> DeleteAsync(int speciesId)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<DeleteSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<DeleteSpeciesDtoResponse>(HttpStatusCode.Forbidden);
 
             var species = Context.Species.Find(speciesId);
 
             if (species == null)
-                return new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<DeleteSpeciesDtoResponse>(HttpStatusCode.NotFound);
 
             Context.Species.Remove(species);
 
-            var dto = Mapper.Map<SpeciesDeleteSpeciesDtoResponse>(species);
+            var dto = Mapper.Map<DeleteSpeciesDtoResponse>(species);
 
             return await Context.SaveChangesAsync() > 0
-                ? new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.OK, dto)
-                : new ServiceResponse<SpeciesDeleteSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+                ? new ServiceResponse<DeleteSpeciesDtoResponse>(HttpStatusCode.OK, dto)
+                : new ServiceResponse<DeleteSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
-        public async Task<ServiceResponse<SpeciesGetAllSpeciesDtoResponse>> GetAllAsync()
+        public async Task<ServiceResponse<GetAllSpeciesDtoResponse>> GetAllAsync()
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<SpeciesGetAllSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetAllSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
 
             var species = await Context.Species.ToListAsync();
 
-            var dto = new SpeciesGetAllSpeciesDtoResponse
+            var dto = new GetAllSpeciesDtoResponse
             {
-                Species = Mapper.Map<List<SpeciesDetailGetAllDtoResponse>>(species)
+                Species = Mapper.Map<List<SpeciesForGetAllSpeciesDtoResponse>>(species)
             };
 
-            return new ServiceResponse<SpeciesGetAllSpeciesDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetAllSpeciesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<SpeciesGetSpeciesDtoResponse>> GetAsync(int speciesId)
+        public async Task<ServiceResponse<GetSpeciesDtoResponse>> GetAsync(int speciesId)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<SpeciesGetSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
 
             var species = await Context.Species.FindAsync(speciesId);
 
             if (species == null)
-                return new ServiceResponse<SpeciesGetSpeciesDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<GetSpeciesDtoResponse>(HttpStatusCode.NotFound);
 
-            var dto = Mapper.Map<SpeciesGetSpeciesDtoResponse>(species);
+            var dto = Mapper.Map<GetSpeciesDtoResponse>(species);
 
             var races = await Context.Races.ToListAsync();
 
             var filteredRaces = races.Where(race => race.SpeciesId == speciesId).ToList();
 
-            dto.Races = Mapper.Map<List<RaceDetailsGetDtoResponse>>(filteredRaces);
+            dto.Races = Mapper.Map<List<RaceForGetSpeciesDtoResponse>>(filteredRaces);
 
-            return new ServiceResponse<SpeciesGetSpeciesDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetSpeciesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<SpeciesUpdateSpeciesDtoResponse>> UpdateAsync(int speciesId, SpeciesUpdateSpeciesDtoRequest dto)
+        public async Task<ServiceResponse<UpdateSpeciesDtoResponse>> UpdateAsync(int speciesId, UpdateSpeciesDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<UpdateSpeciesDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<UpdateSpeciesDtoResponse>(HttpStatusCode.Forbidden);
 
             if (await Context.Species.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Podany gatunek już istnieje");
+                return new ServiceResponse<UpdateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Podany gatunek już istnieje");
 
             var species = Context.Species.Find(speciesId);
 
             if (species == null)
-                return new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdateSpeciesDtoResponse>(HttpStatusCode.NotFound);
 
-            var responseDto = Mapper.Map<SpeciesUpdateSpeciesDtoResponse>(species);
+            var responseDto = Mapper.Map<UpdateSpeciesDtoResponse>(species);
 
             species.Name = dto.Name;
 
             return await Context.SaveChangesAsync() > 0
-                ? new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto)
-                : new ServiceResponse<SpeciesUpdateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+                ? new ServiceResponse<UpdateSpeciesDtoResponse>(HttpStatusCode.OK, responseDto)
+                : new ServiceResponse<UpdateSpeciesDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
     }
 }

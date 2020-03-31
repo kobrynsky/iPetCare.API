@@ -17,16 +17,16 @@ namespace Application.Services
         public RaceService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
-        public async Task<ServiceResponse<RaceCreateDtoResponse>> CreateAsync(RaceCreateDtoRequest dto)
+        public async Task<ServiceResponse<CreateRaceDtoResponse>> CreateAsync(CreateRaceDtoRequest dto)
         {
             if (await Context.Races.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
+                return new ServiceResponse<CreateRaceDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
 
             if(CurrentlyLoggedUser == null)
-                return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<CreateRaceDtoResponse>(HttpStatusCode.Unauthorized);
 
             if(CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<CreateRaceDtoResponse>(HttpStatusCode.Forbidden);
 
             var race = new Race()
             {
@@ -34,7 +34,7 @@ namespace Application.Services
                 SpeciesId = dto.SpeciesId
             };
 
-            var responseDto = new RaceCreateDtoResponse()
+            var responseDto = new CreateRaceDtoResponse()
             {
                 Name = race.Name,
                 SpeciesId = race.SpeciesId,
@@ -45,85 +45,85 @@ namespace Application.Services
             var result = await Context.SaveChangesAsync();
 
             return result > 0
-                ? new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.OK, responseDto)
-                : new ServiceResponse<RaceCreateDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas tworzenia rasy");
+                ? new ServiceResponse<CreateRaceDtoResponse>(HttpStatusCode.OK, responseDto)
+                : new ServiceResponse<CreateRaceDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas tworzenia rasy");
         }
 
-        public async Task<ServiceResponse<RaceGetAllDtoResponse>> GetAllAsync()
+        public async Task<ServiceResponse<GetAllRacesDtoResponse>> GetAllAsync()
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<RaceGetAllDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetAllRacesDtoResponse>(HttpStatusCode.Unauthorized);
 
             var races = await Context.Races.ToListAsync();
 
-            var dto = new RaceGetAllDtoResponse {Races = Mapper.Map<List<RaceDetailGetAllDtoResponse>>(races)};
+            var dto = new GetAllRacesDtoResponse {Races = Mapper.Map<List<RaceForGetAllRacesDtoResponse>>(races)};
 
-            return new ServiceResponse<RaceGetAllDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetAllRacesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<RaceGetDtoResponse>> GetAsync(int raceId)
+        public async Task<ServiceResponse<GetRaceDtoResponse>> GetAsync(int raceId)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetRaceDtoResponse>(HttpStatusCode.Unauthorized);
 
             var race = await Context.Races.FindAsync(raceId);
 
             if (race == null)
-                return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
+                return new ServiceResponse<GetRaceDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka rasa w bazie danych");
 
-            var dto = Mapper.Map<RaceGetDtoResponse>(race);
+            var dto = Mapper.Map<GetRaceDtoResponse>(race);
 
-            return new ServiceResponse<RaceGetDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetRaceDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<RaceUpdateDtoResponse>> UpdateAsync(int raceId, RaceUpdateDtoRequest dto)
+        public async Task<ServiceResponse<UpdateRaceDtoResponse>> UpdateAsync(int raceId, UpdateRaceDtoRequest dto)
         {
             if(CurrentlyLoggedUser == null)
-                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.Unauthorized);
 
             if(CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.Forbidden);
 
             if (await Context.Races.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
+                return new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.BadRequest, "Podana rasa już istnieje");
 
             var race = Context.Races.Find(raceId);
             if (race == null)
-                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.NotFound);
 
             var species = Context.Species.Find(dto.SpeciesId);
             if (species == null)
-                return new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taki gatunek w bazie danych");
+                return new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taki gatunek w bazie danych");
 
             race.Name = dto.Name;
             race.SpeciesId = dto.SpeciesId;
 
-            var responseDto = Mapper.Map<RaceUpdateDtoResponse>(race);
+            var responseDto = Mapper.Map<UpdateRaceDtoResponse>(race);
 
             return await Context.SaveChangesAsync() > 0
-                ? new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.OK, responseDto)
-                : new ServiceResponse<RaceUpdateDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+                ? new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.OK, responseDto)
+                : new ServiceResponse<UpdateRaceDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
-        public async Task<ServiceResponse<RaceDeleteDtoResponse>> DeleteAsync(int raceId)
+        public async Task<ServiceResponse<DeleteRaceDtoResponse>> DeleteAsync(int raceId)
         {
             if(CurrentlyLoggedUser == null)
-                return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<DeleteRaceDtoResponse>(HttpStatusCode.Unauthorized);
 
             if(CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<DeleteRaceDtoResponse>(HttpStatusCode.Forbidden);
 
             var race = Context.Races.Find(raceId);
 
             if (race == null)
-                return new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<DeleteRaceDtoResponse>(HttpStatusCode.NotFound);
 
-            var dto = Mapper.Map<RaceDeleteDtoResponse>(race);
+            var dto = Mapper.Map<DeleteRaceDtoResponse>(race);
             Context.Races.Remove(race);
 
             return await Context.SaveChangesAsync() > 0
-                ? new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.OK, dto)
-                : new ServiceResponse<RaceDeleteDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+                ? new ServiceResponse<DeleteRaceDtoResponse>(HttpStatusCode.OK, dto)
+                : new ServiceResponse<DeleteRaceDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
     }
 }

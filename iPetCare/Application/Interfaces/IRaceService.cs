@@ -6,10 +6,10 @@ namespace Application.Interfaces
 {
     public interface IRaceService
     {
-        Task<ServiceResponse<RaceCreateDtoResponse>> CreateAsync(RaceCreateDtoRequest dto);
-        Task<ServiceResponse<RaceGetAllDtoResponse>> GetAllAsync();
-        Task<ServiceResponse<RaceGetDtoResponse>> GetAsync(int raceId);
-        Task<ServiceResponse<RaceUpdateDtoResponse>> UpdateAsync(int raceId, RaceUpdateDtoRequest dto);
-        Task<ServiceResponse<RaceDeleteDtoResponse>> DeleteAsync(int raceId);
+        Task<ServiceResponse<CreateRaceDtoResponse>> CreateAsync(CreateRaceDtoRequest dto);
+        Task<ServiceResponse<GetAllRacesDtoResponse>> GetAllAsync();
+        Task<ServiceResponse<GetRaceDtoResponse>> GetAsync(int raceId);
+        Task<ServiceResponse<UpdateRaceDtoResponse>> UpdateAsync(int raceId, UpdateRaceDtoRequest dto);
+        Task<ServiceResponse<DeleteRaceDtoResponse>> DeleteAsync(int raceId);
     }
 }

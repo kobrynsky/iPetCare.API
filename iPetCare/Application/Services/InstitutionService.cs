@@ -17,72 +17,72 @@ namespace Application.Services
         {
         }
 
-        public async Task<ServiceResponse<InstitutionsGetInstitutionDtoResponse>> GetInstitutionAsync(Guid institutionId)
+        public async Task<ServiceResponse<GetInstitutionDtoResponse>> GetInstitutionAsync(Guid institutionId)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (institutionId == Guid.Empty)
-                return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
+                return new ServiceResponse<GetInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nieprawidłowy institutionId");
 
             var institution = await Context.Institutions.FindAsync(institutionId);
 
             if(institution == null)
-                return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<GetInstitutionDtoResponse>(HttpStatusCode.NotFound);
 
-            var dto = Mapper.Map<InstitutionsGetInstitutionDtoResponse>(institution);
+            var dto = Mapper.Map<GetInstitutionDtoResponse>(institution);
 
-            return new ServiceResponse<InstitutionsGetInstitutionDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetInstitutionDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<InstitutionsGetInstitutionsDtoResponse>> GetInstitutionsAsync()
+        public async Task<ServiceResponse<GetInstitutionsDtoResponse>> GetInstitutionsAsync()
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<InstitutionsGetInstitutionsDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.Unauthorized);
 
             var institutions = await Context.Institutions.ToListAsync();
 
-            var dto = new InstitutionsGetInstitutionsDtoResponse();
-            dto.Institutions = Mapper.Map<ICollection<InstitutionForInstitutionGetInstitutionDtoResponse>>(institutions);
+            var dto = new GetInstitutionsDtoResponse();
+            dto.Institutions = Mapper.Map<ICollection<InstitutionForGetInstitutionDtoResponse>>(institutions);
 
-            return new ServiceResponse<InstitutionsGetInstitutionsDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>> UpdateInstitutionAsync(Guid institutionId, InstitutionsUpdateInstitutionDtoRequest dto)
+        public async Task<ServiceResponse<UpdateInstitutionDtoResponse>> UpdateInstitutionAsync(Guid institutionId, UpdateInstitutionDtoRequest dto)
         {
             if (institutionId == Guid.Empty)
-                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
+                return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
 
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.Forbidden);
 
             var institution = await Context.Institutions.FindAsync(institutionId);
 
             if (institution == null)
-                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
+                return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.NotFound, "Nie znaleziono instytucji");
 
             institution.Address = dto.Address;
             institution.Name = dto.Name;
 
             if (await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.BadRequest,
+                return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.BadRequest,
                     "Wystąpił błąd podczas aktualizacji instytucji");
 
-            var responseDto = Mapper.Map<InstitutionsUpdateInstitutionDtoResponse>(institution);
+            var responseDto = Mapper.Map<UpdateInstitutionDtoResponse>(institution);
 
-            return new ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>(HttpStatusCode.OK, responseDto);
+            return new ServiceResponse<UpdateInstitutionDtoResponse>(HttpStatusCode.OK, responseDto);
         }
 
-        public async Task<ServiceResponse<InstitutionsCreateInstitutionDtoResponse>> CreateInstitutionAsync(InstitutionsCreateInstitutionDtoRequest dto)
+        public async Task<ServiceResponse<CreateInstitutionDtoResponse>> CreateInstitutionAsync(CreateInstitutionDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<InstitutionsCreateInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<CreateInstitutionDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<InstitutionsCreateInstitutionDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<CreateInstitutionDtoResponse>(HttpStatusCode.Forbidden);
 
             if(dto.Id == Guid.Empty)
                 dto.Id = Guid.NewGuid();
@@ -92,12 +92,12 @@ namespace Application.Services
             await Context.Institutions.AddAsync(institution);
 
             if(await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse<InstitutionsCreateInstitutionDtoResponse>(HttpStatusCode.BadRequest,
+                return new ServiceResponse<CreateInstitutionDtoResponse>(HttpStatusCode.BadRequest,
                     "Wystąpił błąd podczas tworzenia instytucji");
 
-            var responseDto = Mapper.Map<InstitutionsCreateInstitutionDtoResponse>(institution);
+            var responseDto = Mapper.Map<CreateInstitutionDtoResponse>(institution);
 
-            return new ServiceResponse<InstitutionsCreateInstitutionDtoResponse>(HttpStatusCode.OK, responseDto);
+            return new ServiceResponse<CreateInstitutionDtoResponse>(HttpStatusCode.OK, responseDto);
         }
 
         public async Task<ServiceResponse> DeleteInstitutionAsync(Guid institutionId)

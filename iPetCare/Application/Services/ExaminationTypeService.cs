@@ -19,16 +19,16 @@ namespace Application.Services
         {
         }
 
-        public async Task<ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>> CreateExaminationTypeAsync(ExaminationTypesCreateExaminationTypeDtoRequest dto)
+        public async Task<ServiceResponse<CreateExaminationTypeDtoResponse>> CreateExaminationTypeAsync(CreateExaminationTypeDtoRequest dto)
         {
             if (await Context.ExaminationTypes.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
+                return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
 
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationType = new ExaminationType()
             {
@@ -41,67 +41,67 @@ namespace Application.Services
 
             if (result > 0)
             {
-                var responseDto = new ExaminationTypesCreateExaminationTypeDtoResponse()
+                var responseDto = new CreateExaminationTypeDtoResponse()
                 {
                     Name = examinationType.Name,
                     SpeciesId = examinationType.SpeciesId,
                     Id = examinationType.Id
                 };
 
-                return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.OK, responseDto);
+                return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest);
         }
 
-        public async Task<ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>> GetAllExaminationTypesAsync()
+        public async Task<ServiceResponse<GetAllExaminationTypesDtoResponse>> GetAllExaminationTypesAsync()
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetAllExaminationTypesDtoResponse>(HttpStatusCode.Unauthorized);
 
             var examinationType = await Context.ExaminationTypes.ToListAsync();
 
-            var dto = new ExaminationTypesGetAllExaminationTypesDtoResponse()
+            var dto = new GetAllExaminationTypesDtoResponse()
             {
-                ExaminationTypes = Mapper.Map<List<ExaminationTypesDetailGetAllDtoResponse>>(examinationType)
+                ExaminationTypes = Mapper.Map<List<ExaminationTypeForGetAllExaminationTypesDtoResponse>>(examinationType)
             };
 
-            return new ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetAllExaminationTypesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>> GetExaminationTypeAsync(int examinationTypeId)
+        public async Task<ServiceResponse<GetExaminationTypeDtoResponse>> GetExaminationTypeAsync(int examinationTypeId)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
 
             var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
             if (examinationType == null)
-                return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<GetExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
 
-            var dto = Mapper.Map<ExaminationTypesGetExaminationTypeDtoResponse>(examinationType);
+            var dto = Mapper.Map<GetExaminationTypeDtoResponse>(examinationType);
 
-            return new ServiceResponse<ExaminationTypesGetExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int examinationTypeId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
+        public async Task<ServiceResponse<UpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int examinationTypeId, UpdateExaminationTypeDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser.Role != Role.Administrator)
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.Forbidden);
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.Forbidden);
 
             if (await Context.ExaminationTypes.Where(x => x.Name == dto.Name).AnyAsync())
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Podane badanie już istnieje");
 
             var examinationType = Context.ExaminationTypes.Find(examinationTypeId);
             var species = Context.Species.Find(dto.SpeciesId);
 
             if (species == null)
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
 
             if (examinationType == null)
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
 
             examinationType.Name = dto.Name;
             examinationType.SpeciesId = dto.SpeciesId;
@@ -109,14 +109,14 @@ namespace Application.Services
             int result = await Context.SaveChangesAsync();
             if (result > 0)
             {
-                var responseDto = Mapper.Map<ExaminationTypesUpdateExaminationTypeDtoResponse>(examinationType);
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.OK, responseDto);
+                var responseDto = Mapper.Map<UpdateExaminationTypeDtoResponse>(examinationType);
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
             if (result == 0)
-                return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+                return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
 
-            return new ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest);
+            return new ServiceResponse<UpdateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest);
         }
 
         public async Task<ServiceResponse> DeleteExaminationTypeAsync(int examinationTypeId)

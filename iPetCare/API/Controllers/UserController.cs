@@ -51,7 +51,7 @@ namespace API.Controllers
 
         [Authorize(Roles = Role.Administrator)]
         [HttpGet("")]
-        public async Task<ActionResult<GetAllDtoResponse>> GetUsers()
+        public async Task<ActionResult<GetAllUsersDtoResponse>> GetUsers()
         {
             var response = await _userService.GetAllAsync();
 

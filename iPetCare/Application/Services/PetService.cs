@@ -18,82 +18,82 @@ namespace Application.Services
         {
         }
 
-        public async Task<ServiceResponse<PetsGetPetsDtoResponse>> GetPetsAsync()
+        public async Task<ServiceResponse<GetPetsDtoResponse>> GetPetsAsync()
         {
             var pets = await Context.Pets.ToListAsync();
 
-            var model = new PetsGetPetsDtoResponse
+            var model = new GetPetsDtoResponse
             {
-                Pets = Mapper.Map<List<PetForPetsGetPetsDtoResponse>>(pets)
+                Pets = Mapper.Map<List<PetForGetPetsDtoResponse>>(pets)
             };
-            return new ServiceResponse<PetsGetPetsDtoResponse>(HttpStatusCode.OK, model);
+            return new ServiceResponse<GetPetsDtoResponse>(HttpStatusCode.OK, model);
         }
 
-        public async Task<ServiceResponse<PetsGetPetDtoResponse>> GetPetAsync(Guid petId)
+        public async Task<ServiceResponse<GetPetDtoResponse>> GetPetAsync(Guid petId)
         {
             if(petId == Guid.Empty)
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy Pet Id");
+                return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy Pet Id");
 
             if(CurrentlyLoggedUser == null)
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Unauthorized);
 
             var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id == petId);
             if (pet == null)
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.NotFound);
 
             if (CurrentlyLoggedUser.Role == Role.Owner)
             {
                 var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == CurrentlyLoggedUser.Id);
                 if (owner == null)
-                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Unauthorized);
+                    return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Unauthorized);
 
                 if (!await Context.OwnerPets.AnyAsync(op => op.PetId == pet.Id && op.OwnerId == owner.Id))
-                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Forbidden);
+                    return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Forbidden);
 
-                var petToReturn = Mapper.Map<PetsGetPetDtoResponse>(pet);
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.OK, petToReturn);
+                var petToReturn = Mapper.Map<GetPetDtoResponse>(pet);
+                return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.OK, petToReturn);
             }
 
             if (CurrentlyLoggedUser.Role == Role.Vet)
             {
                 var vet = await Context.Vets.SingleOrDefaultAsync(v => v.UserId == CurrentlyLoggedUser.Id);
                 if (vet == null)
-                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Unauthorized);
+                    return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Unauthorized);
 
                 if (!await Context.VetPets.AnyAsync(vp => vp.PetId == pet.Id && vp.VetId == vet.Id))
-                    return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Forbidden);
+                    return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Forbidden);
 
-                var petToReturn = Mapper.Map<PetsGetPetDtoResponse>(pet);
-                return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.OK, petToReturn);
+                var petToReturn = Mapper.Map<GetPetDtoResponse>(pet);
+                return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.OK, petToReturn);
             }
 
-            return new ServiceResponse<PetsGetPetDtoResponse>(HttpStatusCode.Forbidden);
+            return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Forbidden);
         }
 
-        public async Task<ServiceResponse<PetsCreatePetDtoResponse>> CreatePetAsync(PetsCreatePetDtoRequest dto)
+        public async Task<ServiceResponse<CreatePetDtoResponse>> CreatePetAsync(CreatePetDtoRequest dto)
         {
             if(dto.Gender == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Należy podać płeć");
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest, "Należy podać płeć");
 
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.Unauthorized);
 
             var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == CurrentlyLoggedUser.Id);
             if (owner == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.Unauthorized);
 
             // if not given from the front
             if (dto.Id == Guid.Empty)
                 dto.Id = Guid.NewGuid();
 
             if(await Context.Pets.AnyAsync(p => p.Id == dto.Id))
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Istnieje już zwierzak o podanym id.");
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest, "Istnieje już zwierzak o podanym id.");
 
             Pet pet = Mapper.Map<Pet>(dto);
 
             var race = await Context.Races.SingleOrDefaultAsync(r => r.Id == dto.RaceId);
             if (race == null)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowa rasa");
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowa rasa");
 
             pet.Race = race;
 
@@ -105,45 +105,45 @@ namespace Application.Services
             });
 
             if (await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.BadRequest,
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest,
                     "Wystąpił błąd podczas tworzenia zwierzaka");
 
-            var petToReturn = Mapper.Map<PetsCreatePetDtoResponse>(pet);
-            return new ServiceResponse<PetsCreatePetDtoResponse>(HttpStatusCode.OK, petToReturn);
+            var petToReturn = Mapper.Map<CreatePetDtoResponse>(pet);
+            return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.OK, petToReturn);
         }
 
-        public async Task<ServiceResponse<PetsUpdatePetDtoResponse>> UpdatePetAsync(Guid petId,
-            PetsUpdatePetDtoRequest dto)
+        public async Task<ServiceResponse<UpdatePetDtoResponse>> UpdatePetAsync(Guid petId,
+            UpdatePetDtoRequest dto)
         {
             if (petId == Guid.Empty)
-                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
+                return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
                     "Id zwierzaka nie może być pusty");
 
             if (dto.Gender == null)
-                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
+                return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
                     "Należy podać płeć");
 
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Unauthorized);
 
             var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id == petId);
             if (pet == null)
-                return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.NotFound);
+                return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.NotFound);
 
             if (CurrentlyLoggedUser.Role == Role.Owner)
             {
                 var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == CurrentlyLoggedUser.Id);
                 if (owner == null)
-                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Unauthorized);
+                    return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Unauthorized);
 
                 if (!await Context.OwnerPets.AnyAsync(op => op.PetId == petId && op.OwnerId == owner.Id))
-                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Forbidden);
+                    return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Forbidden);
 
                 Mapper.Map(dto, pet);
                 return await Context.SaveChangesAsync() > 0
-                    ? new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.OK,
-                        Mapper.Map<PetsUpdatePetDtoResponse>(dto))
-                    : new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
+                    ? new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
+                        Mapper.Map<UpdatePetDtoResponse>(dto))
+                    : new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
                         "Wystąpił błąd podczas aktualizacji zwierzaka");
             }
 
@@ -151,16 +151,16 @@ namespace Application.Services
             {
                 var vet = await Context.Vets.SingleOrDefaultAsync(v => v.UserId == CurrentlyLoggedUser.Id);
                 if (vet == null)
-                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Unauthorized);
+                    return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Unauthorized);
 
                 if (!await Context.VetPets.AnyAsync(vp => vp.PetId == petId && vp.VetId == vet.Id))
-                    return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Forbidden);
+                    return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Forbidden);
 
                 Mapper.Map(dto, pet);
                 return await Context.SaveChangesAsync() > 0
-                    ? new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.OK,
-                        Mapper.Map<PetsUpdatePetDtoResponse>(dto))
-                    : new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
+                    ? new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
+                        Mapper.Map<UpdatePetDtoResponse>(dto))
+                    : new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
                         "Wystąpił błąd podczas aktualizacji zwierzaka");
 
             }
@@ -169,12 +169,12 @@ namespace Application.Services
             {
                 Mapper.Map(dto, pet);
                 return await Context.SaveChangesAsync() > 0
-                    ? new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.OK,
-                        Mapper.Map<PetsUpdatePetDtoResponse>(dto))
-                    : new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.BadRequest,
+                    ? new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
+                        Mapper.Map<UpdatePetDtoResponse>(dto))
+                    : new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
                         "Wystąpił błąd podczas aktualizacji zwierzaka");
             }
-            return new ServiceResponse<PetsUpdatePetDtoResponse>(HttpStatusCode.Forbidden);
+            return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Forbidden);
         }
 
         public async Task<ServiceResponse> DeletePetAsync(Guid petId)
@@ -200,39 +200,39 @@ namespace Application.Services
             return await Context.SaveChangesAsync() > 0 ? new ServiceResponse(HttpStatusCode.OK) : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania zwierzaka");
         }
 
-        public async Task<ServiceResponse<PetsGetMyPetsDtoResponse>> GetMyPetsAsync()
+        public async Task<ServiceResponse<GetMyPetsDtoResponse>> GetMyPetsAsync()
         {
             if(CurrentlyLoggedUser == null)
-                return new ServiceResponse<PetsGetMyPetsDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetMyPetsDtoResponse>(HttpStatusCode.Unauthorized);
 
             var pets = await Context.Pets
                 .Where(x => x.OwnerPets
                     .Any(y => y.OwnerId == CurrentlyLoggedUser.Owner.Id))
                 .ToListAsync();
 
-            var dto = new PetsGetMyPetsDtoResponse();
-            dto.Pets = Mapper.Map<List<PetForPetsGetMyPetsDtoResponse>>(pets);
+            var dto = new GetMyPetsDtoResponse();
+            dto.Pets = Mapper.Map<List<PetForGetMyPetsDtoResponse>>(pets);
 
-            return new ServiceResponse<PetsGetMyPetsDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetMyPetsDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<PetsGetSharedPetsDtoResponse>> GetSharedPetsAsync()
+        public async Task<ServiceResponse<GetSharedPetsDtoResponse>> GetSharedPetsAsync()
         {
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<PetsGetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<PetsGetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
 
             var pets = await Context.Requests
                 .Where(x => x.IsAccepted && x.User.Id == CurrentlyLoggedUser.Id)
                 .Select(x => x.Pet)
                 .ToListAsync();
 
-            var dto = new PetsGetSharedPetsDtoResponse();
-            dto.Pets = Mapper.Map<List<PetForPetsGetSharedPetsDtoResponse>>(pets);
+            var dto = new GetSharedPetsDtoResponse();
+            dto.Pets = Mapper.Map<List<PetForGetSharedPetsDtoResponse>>(pets);
 
-            return new ServiceResponse<PetsGetSharedPetsDtoResponse>(HttpStatusCode.OK, dto);
+            return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }

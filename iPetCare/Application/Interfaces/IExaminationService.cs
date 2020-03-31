@@ -7,11 +7,11 @@ namespace Application.Interfaces
 {
     public interface IExaminationService
     {
-        Task<ServiceResponse<ExaminationsCreateExaminationDtoResponse>> CreateExaminationAsync(ExaminationsCreateExaminationDtoRequest dto);
-        Task<ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>> GetAllExaminationsAsync();
-        Task<ServiceResponse<ExaminationsGetExaminationDtoResponse>> GetExaminationAsync(Guid petId, Guid examinationId);
-        Task<ServiceResponse<ExaminationsUpdateExaminationDtoResponse>> UpdateExaminationAsync(Guid petId, Guid examinationId, ExaminationsUpdateExaminationDtoRequest dto);
+        Task<ServiceResponse<CreateExaminationDtoResponse>> CreateExaminationAsync(CreateExaminationDtoRequest dto);
+        Task<ServiceResponse<GetAllExaminationsDtoResponse>> GetAllExaminationsAsync();
+        Task<ServiceResponse<GetExaminationDtoResponse>> GetExaminationAsync(Guid petId, Guid examinationId);
+        Task<ServiceResponse<UpdateExaminationDtoResponse>> UpdateExaminationAsync(Guid petId, Guid examinationId, UpdateExaminationDtoRequest dto);
         Task<ServiceResponse> DeleteExaminationAsync(Guid petId, Guid examinationId);
-        Task<ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>> GetPetExaminationsAsync(Guid petId);
+        Task<ServiceResponse<GetAllExaminationsDtoResponse>> GetPetExaminationsAsync(Guid petId);
     }
 }

@@ -23,7 +23,7 @@ namespace API.Controllers
 
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<ActionResult<SpeciesCreateSpeciesDtoResponse>> CreateSpecies(SpeciesCreateSpeciesDtoRequest dto)
+        public async Task<ActionResult<CreateSpeciesDtoResponse>> CreateSpecies(CreateSpeciesDtoRequest dto)
         {
             var response = await _speciesService.CreateAsync(dto);
 
@@ -38,7 +38,7 @@ namespace API.Controllers
 
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet]
-        public async Task<ActionResult<SpeciesGetAllSpeciesDtoResponse>> GetAllSpecies()
+        public async Task<ActionResult<GetAllSpeciesDtoResponse>> GetAllSpecies()
         {
             var response = await _speciesService.GetAllAsync();
 
@@ -53,7 +53,7 @@ namespace API.Controllers
 
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{speciesId}")]
-        public async Task<ActionResult<SpeciesGetSpeciesDtoResponse>> GetSpecies(int speciesId)
+        public async Task<ActionResult<GetSpeciesDtoResponse>> GetSpecies(int speciesId)
         {
             var response = await _speciesService.GetAsync(speciesId);
 
@@ -68,7 +68,7 @@ namespace API.Controllers
 
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{speciesId}")]
-        public async Task<ActionResult<SpeciesUpdateSpeciesDtoResponse>> UpdateSpecies(int speciesId, SpeciesUpdateSpeciesDtoRequest dto)
+        public async Task<ActionResult<UpdateSpeciesDtoResponse>> UpdateSpecies(int speciesId, UpdateSpeciesDtoRequest dto)
         {
             var response = await _speciesService.UpdateAsync(speciesId, dto);
 
@@ -83,7 +83,7 @@ namespace API.Controllers
 
         [Authorize(Roles = Role.Administrator)]
         [HttpDelete("{speciesId}")]
-        public async Task<ActionResult<SpeciesDeleteSpeciesDtoResponse>> DeleteSpecies(int speciesId)
+        public async Task<ActionResult<DeleteSpeciesDtoResponse>> DeleteSpecies(int speciesId)
         {
             var response = await _speciesService.DeleteAsync(speciesId);
 
