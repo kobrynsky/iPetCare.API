@@ -28,6 +28,10 @@ namespace Application.Services
             if (CurrentlyLoggedUser.Role != Role.Administrator)
                 return new ServiceResponse<CreateExaminationTypeDtoResponse>(HttpStatusCode.Forbidden);
 
+            var species = await Context.Species.FindAsync(dto.SpeciesId);
+            if (species == null)
+                return new ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>(HttpStatusCode.BadRequest, "Nie ma takiego gatunku");
+
             var examinationType = new ExaminationType()
             {
                 Name = dto.Name,
@@ -136,6 +140,27 @@ namespace Application.Services
                 return new ServiceResponse(HttpStatusCode.OK);
 
             return new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania badania");
+        }
+
+        public async Task<ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>> GetAllForOneExaminationTypeAsync(int examinationTypeId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var examinationType = await Context.ExaminationTypes.FindAsync(examinationTypeId);
+            if (examinationType == null)
+                return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.NotFound);
+
+            var examinationParameter = await Context.ExaminationParameters.Where(x => x.ExaminationTypeId == examinationTypeId).ToListAsync();
+
+            var dto = new ExaminationParametersGetAllForOneExaminationTypeDtoResponse()
+            {
+                Id = examinationType.Id,
+                Name = examinationType.Name,
+                ExaminationParameters = Mapper.Map<List<ExaminationParameterDetailsForExaminationTypeGetDtoResponse>>(examinationParameter)
+            };
+
+            return new ServiceResponse<ExaminationParametersGetAllForOneExaminationTypeDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }
