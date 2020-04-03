@@ -9,5 +9,6 @@ namespace Application.Interfaces
     {
         Task<ServiceResponse<CreateInvitationDtoResponse>> CreateInvitationAsync(CreateInvitationDtoRequest dto);
         Task<ServiceResponse> DeleteInvitationAsync(Guid invitationId);
+        Task<ServiceResponse<ChangeStatusInvitationDtoResponse>> ChangeStatusInvitationAsync(ChangeStatusInvitationDtoRequest dto, Guid invitationId);
     }
 }

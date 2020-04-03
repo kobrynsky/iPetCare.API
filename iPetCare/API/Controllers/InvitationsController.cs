@@ -35,5 +35,14 @@ namespace API.Controllers
             var response = await _invitationService.DeleteInvitationAsync(InvitationId);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse<CreateInvitationDtoResponse>))]
+        [AuthorizeRoles(Role.Vet, Role.Owner)]
+        [HttpPut("{InvitationId}")]
+        public async Task<IActionResult> ChangeStatusInvitation(ChangeStatusInvitationDtoRequest dto, Guid InvitationId)
+        {
+            var response = await _invitationService.ChangeStatusInvitationAsync(dto, InvitationId);
+            return SendResponse(response);
+        }
     }
 }

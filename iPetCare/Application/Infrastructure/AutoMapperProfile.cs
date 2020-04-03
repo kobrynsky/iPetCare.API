@@ -109,6 +109,7 @@ namespace Application.Infrastructure
         private void MapsForInvitations()
         {
             CreateMap<Request, CreateInvitationDtoResponse>();
+            CreateMap<Request, ChangeStatusInvitationDtoResponse>();
         }
     }
 }

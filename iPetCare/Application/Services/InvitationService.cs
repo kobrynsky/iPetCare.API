@@ -68,11 +68,11 @@ namespace Application.Services
 
         public async Task<ServiceResponse> DeleteInvitationAsync(Guid InvitationId)
         {
-            if (InvitationId == Guid.Empty)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie istnieje takie zaproszenie w bazie danych");
-
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse(HttpStatusCode.Unauthorized);
+
+            if (InvitationId == Guid.Empty)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie istnieje takie zaproszenie w bazie danych");
 
             var invitation = await Context.Requests.FindAsync(InvitationId);
 
@@ -85,6 +85,27 @@ namespace Application.Services
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania zaproszenia");
 
             return new ServiceResponse(HttpStatusCode.OK);
+        }
+
+        public async Task<ServiceResponse<ChangeStatusInvitationDtoResponse>> ChangeStatusInvitationAsync(ChangeStatusInvitationDtoRequest dto, Guid InvitationId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.Unauthorized);
+
+            var invitation = await Context.Requests.FindAsync(InvitationId);
+
+            if (invitation == null)
+                return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.NotFound);
+
+            invitation.IsAccepted = dto.IsAccepted;
+
+            int result = await Context.SaveChangesAsync();
+
+            var responseDto = Mapper.Map<ChangeStatusInvitationDtoResponse>(invitation);
+
+            return result > 0
+                ? new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.OK, responseDto)
+                : new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas tworzenia rasy");
         }
     }
 }
