@@ -9,6 +9,7 @@ using Application.Dtos.Species;
 using Application.Dtos.ExaminationTypes;
 using Application.Dtos.ExaminationParameters;
 using Application.Dtos.Examinations;
+using Application.Dtos.Invitations;
 
 namespace Application.Infrastructure
 {
@@ -24,6 +25,7 @@ namespace Application.Infrastructure
             MapsForExaminationTypes();
             MapsForExaminationParameters();
             MapsForExaminations();
+            MapsForInvitations();
         }
 
         private void MapsForUser()
@@ -102,6 +104,11 @@ namespace Application.Infrastructure
             CreateMap<Examination, GetExaminationDtoResponse>();
             CreateMap<Examination, UpdateExaminationDtoResponse>();
             CreateMap<Examination, ParameterValueForGetExaminationDtoResponse>();
+        }
+
+        private void MapsForInvitations()
+        {
+            CreateMap<Request, CreateInvitationDtoResponse>();
         }
     }
 }
