@@ -8,6 +8,7 @@ using Domain.Models;
 using Application.Dtos.Species;
 using Application.Dtos.ExaminationTypes;
 using Application.Dtos.ExaminationParameters;
+using Application.Dtos.ExaminationParameterValues;
 using Application.Dtos.Examinations;
 
 namespace Application.Infrastructure
@@ -24,6 +25,7 @@ namespace Application.Infrastructure
             MapsForExaminationTypes();
             MapsForExaminationParameters();
             MapsForExaminations();
+            MapsForExaminationParameterValues();
         }
 
         private void MapsForUser()
@@ -101,6 +103,16 @@ namespace Application.Infrastructure
             CreateMap<Examination, ExaminationsGetExaminationDtoResponse>();
             CreateMap<Examination, ExaminationsUpdateExaminationDtoResponse>(); 
             CreateMap<Examination, ExaminationParameteterValueDetailsGetDtoResponse>();
+        }
+        private void MapsForExaminationParameterValues()
+        {
+            CreateMap<ExaminationParameterValue, ExaminationParameterValuesCreateExaminationParameterValueDtoResponse>();
+            CreateMap<ExaminationParameterValue, ExaminationParameterValuesDetailsGetAllDtoResponse>();
+            CreateMap<ExaminationParameterValue, ExaminationParameterValuesGetExaminationParameterValueDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterDetailsGetDtoResponse>();
+            CreateMap<Examination, ExaminationDetailsGetDtoResponse>();
+            CreateMap<ExaminationParameterValue, ExaminationParametersUpdateExaminationParameterDtoResponse>();
+            CreateMap<ExaminationParameterValuesCreateExaminationParameterValueDtoRequest, ExaminationParameterValue>();
         }
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Dtos.ExaminationParameterValuess
+namespace Application.Dtos.ExaminationParameterValues
 {
-    public class ExaminationParameterValuessGetAllExaminationParametersValuesDtoResponse
+    public class ExaminationParameterValuesGetAllExaminationParametersValuesDtoResponse
     {
         public List<ExaminationParameterValuesDetailsGetAllDtoResponse> ExaminationParametersValues { get; set; }
     }
