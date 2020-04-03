@@ -8,12 +8,12 @@ namespace Application.Interfaces
 {
     public interface IPetService
     {
-        Task<ServiceResponse<PetsGetPetsDtoResponse>> GetPetsAsync();
-        Task<ServiceResponse<PetsGetPetDtoResponse>> GetPetAsync(Guid petId);
-        Task<ServiceResponse<PetsCreatePetDtoResponse>> CreatePetAsync(PetsCreatePetDtoRequest dto);
-        Task<ServiceResponse<PetsUpdatePetDtoResponse>> UpdatePetAsync(Guid petId, PetsUpdatePetDtoRequest dto);
+        Task<ServiceResponse<GetPetsDtoResponse>> GetPetsAsync();
+        Task<ServiceResponse<GetPetDtoResponse>> GetPetAsync(Guid petId);
+        Task<ServiceResponse<CreatePetDtoResponse>> CreatePetAsync(CreatePetDtoRequest dto);
+        Task<ServiceResponse<UpdatePetDtoResponse>> UpdatePetAsync(Guid petId, UpdatePetDtoRequest dto);
         Task<ServiceResponse> DeletePetAsync(Guid petId);
-        Task<ServiceResponse<PetsGetMyPetsDtoResponse>> GetMyPetsAsync();
-        Task<ServiceResponse<PetsGetSharedPetsDtoResponse>> GetSharedPetsAsync();
+        Task<ServiceResponse<GetMyPetsDtoResponse>> GetMyPetsAsync();
+        Task<ServiceResponse<GetSharedPetsDtoResponse>> GetSharedPetsAsync();
     }
 }

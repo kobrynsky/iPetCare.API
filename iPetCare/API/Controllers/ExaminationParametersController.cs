@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
 using Application.Dtos.ExaminationParameters;
@@ -18,16 +17,16 @@ namespace API.Controllers
             _examinationParameterService = examinationParameterService;
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParametersCreateExaminationParameterDtoResponse>))]
+        [Produces(typeof(ServiceResponse<CreateExaminationParameterDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<IActionResult> CreateExaminationParameter(ExaminationParametersCreateExaminationParameterDtoRequest dto)
+        public async Task<IActionResult> CreateExaminationParameter(CreateExaminationParameterDtoRequest dto)
         {
             var response = await _examinationParameterService.CreateExaminationParameterAsync(dto);
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParametersGetAllExaminationParametersDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetAllExaminationParametersDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet]
         public async Task<IActionResult> GetAllExaminationParameters()
@@ -36,7 +35,7 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParametersGetExaminationParameterDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetExaminationParameterDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{examinationParameterId}")]
         public async Task<IActionResult> GetExaminationParameter(int examinationParameterId)
@@ -45,10 +44,10 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParametersUpdateExaminationParameterDtoResponse>))]
+        [Produces(typeof(ServiceResponse<UpdateExaminationParameterDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{examinationParameterId}")]
-        public async Task<IActionResult> UpdateExaminationType(int examinationParameterId, ExaminationParametersUpdateExaminationParameterDtoRequest dto)
+        public async Task<IActionResult> UpdateExaminationType(int examinationParameterId, UpdateExaminationParameterDtoRequest dto)
         {
             var response = await _examinationParameterService.UpdateExaminationParameterAsync(examinationParameterId, dto);
             return SendResponse(response);

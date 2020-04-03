@@ -20,7 +20,7 @@ namespace API.Controllers
             _institutionService = institutionService;
         }
 
-        [Produces(typeof(ServiceResponse<InstitutionsGetInstitutionsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetInstitutionsDtoResponse>))]
         [HttpGet]
         public async Task<IActionResult> GetInstitutions()
         {
@@ -28,7 +28,7 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<InstitutionsGetInstitutionDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetInstitutionDtoResponse>))]
         [HttpGet("{institutionId}")]
         public async Task<IActionResult> GetInstitution(Guid institutionId)
         {
@@ -36,19 +36,19 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<InstitutionsCreateInstitutionDtoResponse>))]
+        [Produces(typeof(ServiceResponse<CreateInstitutionDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<IActionResult> CreateInstitution([FromBody] InstitutionsCreateInstitutionDtoRequest dto)
+        public async Task<IActionResult> CreateInstitution([FromBody] CreateInstitutionDtoRequest dto)
         {
             var response = await _institutionService.CreateInstitutionAsync(dto);
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<InstitutionsUpdateInstitutionDtoResponse>))]
+        [Produces(typeof(ServiceResponse<UpdateInstitutionDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{institutionId}")]
-        public async Task<IActionResult> UpdateInstitution(Guid institutionId, [FromBody] InstitutionsUpdateInstitutionDtoRequest dto)
+        public async Task<IActionResult> UpdateInstitution(Guid institutionId, [FromBody] UpdateInstitutionDtoRequest dto)
         {
             var response = await _institutionService.UpdateInstitutionAsync(institutionId, dto);
             return SendResponse(response);

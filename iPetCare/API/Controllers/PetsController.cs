@@ -20,7 +20,7 @@ namespace API.Controllers
             _petService = petService;
         }
 
-        [Produces(typeof(ServiceResponse<PetsGetPetsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetPetsDtoResponse>))]
         [AuthorizeRoles(Roles = Role.Administrator)]
         [HttpGet]
         public async Task<IActionResult> GetPets()
@@ -29,7 +29,7 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<PetsGetMyPetsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetMyPetsDtoResponse>))]
         [Authorize(Roles = Role.Owner)]
         [HttpGet("my")]
         public async Task<IActionResult> GetMyPets()
@@ -38,7 +38,7 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<PetsGetSharedPetsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetSharedPetsDtoResponse>))]
         [AuthorizeRoles(Role.Owner, Role.Vet)]
         [HttpGet("shared")]
         public async Task<IActionResult> GetSharedPets()
@@ -47,7 +47,7 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<PetsGetPetDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetPetDtoResponse>))]
         [HttpGet("{petId}")]
         public async Task<IActionResult> GetPet(Guid petId)
         {
@@ -55,17 +55,17 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<PetsCreatePetDtoResponse>))]
+        [Produces(typeof(ServiceResponse<CreatePetDtoResponse>))]
         [HttpPost]
-        public async Task<IActionResult> CreatePet([FromBody] PetsCreatePetDtoRequest dto)
+        public async Task<IActionResult> CreatePet([FromBody] CreatePetDtoRequest dto)
         {
             var response = await _petService.CreatePetAsync(dto);
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<PetsUpdatePetDtoResponse>))]
+        [Produces(typeof(ServiceResponse<UpdatePetDtoResponse>))]
         [HttpPut("{petId}")]
-        public async Task<IActionResult> UpdatePet(Guid petId, [FromBody] PetsUpdatePetDtoRequest dto)
+        public async Task<IActionResult> UpdatePet(Guid petId, [FromBody] UpdatePetDtoRequest dto)
         {
             var response = await _petService.UpdatePetAsync(petId, dto);
             return SendResponse(response);
