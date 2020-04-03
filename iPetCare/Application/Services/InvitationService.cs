@@ -65,5 +65,26 @@ namespace Application.Services
                 : new ServiceResponse<CreateInvitationDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas tworzenia rasy");
 
         }
+
+        public async Task<ServiceResponse> DeleteInvitationAsync(Guid InvitationId)
+        {
+            if (InvitationId == Guid.Empty)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Nie istnieje takie zaproszenie w bazie danych");
+
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse(HttpStatusCode.Unauthorized);
+
+            var invitation = await Context.Requests.FindAsync(InvitationId);
+
+            if (invitation == null)
+                return new ServiceResponse(HttpStatusCode.NotFound);
+
+            Context.Remove(invitation);
+
+            if (await Context.SaveChangesAsync() <= 0)
+                return new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania zaproszenia");
+
+            return new ServiceResponse(HttpStatusCode.OK);
+        }
     }
 }
