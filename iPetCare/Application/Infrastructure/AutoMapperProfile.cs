@@ -29,6 +29,17 @@ namespace Application.Infrastructure
         private void MapsForUser()
         {
             CreateMap<ApplicationUser, UserForGetAllUsersDtoResponse>();
+            CreateMap<ApplicationUser, EditProfileDtoResponse>()
+                .ForMember(d => d.Specialization, opt =>
+                {
+                    opt.PreCondition(s => s.Vet != null);
+                    opt.MapFrom(s => s.Vet.Specialization);
+                })
+                .ForMember(d => d.PlaceOfResidence, opt =>
+                {
+                    opt.PreCondition(s => s.Owner != null);
+                    opt.MapFrom(s => s.Owner.PlaceOfResidence);
+                });
         }
 
         private void MapsForPets()
