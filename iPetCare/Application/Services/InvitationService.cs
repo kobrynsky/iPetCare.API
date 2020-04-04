@@ -93,19 +93,56 @@ namespace Application.Services
                 return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.Unauthorized);
 
             var invitation = await Context.Requests.FindAsync(InvitationId);
-
+            
             if (invitation == null)
                 return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.NotFound);
 
             invitation.IsAccepted = dto.IsAccepted;
 
-            int result = await Context.SaveChangesAsync();
-
             var responseDto = Mapper.Map<ChangeStatusInvitationDtoResponse>(invitation);
 
-            return result > 0
+            if (dto.IsAccepted == true)
+            {
+                var pet = await Context.Pets.FindAsync(invitation.PetId);
+
+                var User = UserManager.FindByIdAsync(invitation.UserId).Result;
+
+                if (User.Role == Role.Owner)
+                {
+                    var owner = await Context.Owners.Where(x => x.UserId == invitation.UserId).SingleOrDefaultAsync();
+
+                    var existInvitation = await Context.OwnerPets.Where(x => x.PetId == invitation.PetId && x.OwnerId == owner.Id).ToListAsync();
+                    if (existInvitation.Any())
+                        return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Podany użytkownik został zatwierdzony do tego zwierzaka");
+
+                    Context.OwnerPets.Add(new OwnerPet
+                    {
+                        Pet = pet,
+                        Owner = owner
+                    });
+                }
+
+                if (User.Role == Role.Vet)
+                {
+                    var vet = await Context.Vets.Where(x => x.UserId == invitation.UserId).SingleOrDefaultAsync();
+
+                    var existInvitation = await Context.VetPets.Where(x => x.PetId == invitation.PetId && x.VetId == vet.Id).ToListAsync();
+                    if (existInvitation.Any())
+                        return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Podany użytkownik został zatwierdzony do tego zwierzaka");
+
+                    Context.VetPets.Add(new VetPet
+                    {
+                        Pet = pet,
+                        Vet = vet
+                    });
+                }
+            }
+
+            int result = await Context.SaveChangesAsync();
+
+            return result >= 0
                 ? new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.OK, responseDto)
-                : new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas tworzenia rasy");
+                : new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zmiany statusu zaproszenia");
         }
     }
 }
