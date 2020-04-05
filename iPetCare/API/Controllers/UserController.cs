@@ -66,10 +66,10 @@ namespace API.Controllers
         }
 
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
-        [HttpPut("{userId}")]
-        public async Task<ActionResult<EditProfileDtoResponse>> EditProfile(EditProfileDtoRequest dto, string userId)
+        [HttpPut]
+        public async Task<ActionResult<EditProfileDtoResponse>> EditProfile(EditProfileDtoRequest dto)
         {
-            var response = await _userService.EditProfileAsync(dto, userId);
+            var response = await _userService.EditProfileAsync(dto);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);

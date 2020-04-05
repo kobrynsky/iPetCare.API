@@ -83,7 +83,7 @@ namespace Application.Services
             return new ServiceResponse<GetAllUsersDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<EditProfileDtoResponse>> EditProfileAsync(EditProfileDtoRequest dto, string userId)
+        public async Task<ServiceResponse<EditProfileDtoResponse>> EditProfileAsync(EditProfileDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.Unauthorized);
@@ -109,13 +109,15 @@ namespace Application.Services
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
 
             UpdateProfile(dto);
+            int result = await Context.SaveChangesAsync();
             await UserManager.UpdateAsync(CurrentlyLoggedUser);
 
             var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
 
-            int result = await Context.SaveChangesAsync();
-            if (result >= 0)
+            if (result > 0)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
+            if (result == 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
             return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
@@ -133,13 +135,15 @@ namespace Application.Services
 
             UpdateProfile(dto);
             vet.Specialization = dto.Specialization;
+            int result = await Context.SaveChangesAsync();
             await UserManager.UpdateAsync(CurrentlyLoggedUser);
 
             var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
 
-            int result = await Context.SaveChangesAsync();
-            if (result >= 0)
+            if (result > 0)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
+            if (result == 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
             return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
@@ -157,13 +161,15 @@ namespace Application.Services
 
             UpdateProfile(dto);
             owner.PlaceOfResidence = dto.PlaceOfResidence;
+            int result = await Context.SaveChangesAsync();
             await UserManager.UpdateAsync(CurrentlyLoggedUser);
 
             var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
 
-            int result = await Context.SaveChangesAsync();
-            if (result >= 0)
+            if (result > 0)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
+            if (result == 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
             return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
