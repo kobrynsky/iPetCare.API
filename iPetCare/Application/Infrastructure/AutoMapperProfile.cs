@@ -30,79 +30,80 @@ namespace Application.Infrastructure
 
         private void MapsForUser()
         {
-            CreateMap<ApplicationUser, UserGetAllDtoResponse>();
+            CreateMap<ApplicationUser, UserForGetAllUsersDtoResponse>();
         }
 
         private void MapsForPets()
         {
-            CreateMap<Pet, PetForPetsGetPetsDtoResponse>()
+            CreateMap<Pet, PetForGetPetsDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
-            CreateMap<Pet, PetForPetsGetMyPetsDtoResponse>()
+            CreateMap<Pet, PetForGetMyPetsDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
-            CreateMap<Pet, PetForPetsGetSharedPetsDtoResponse>()
+            CreateMap<Pet, PetForGetSharedPetsDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
-            CreateMap<PetsCreatePetDtoRequest, Pet>();
-            CreateMap<Pet, PetsCreatePetDtoResponse>()
+            CreateMap<CreatePetDtoRequest, Pet>();
+            CreateMap<Pet, CreatePetDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
-            CreateMap<Pet, PetsGetPetDtoResponse>()
+            CreateMap<Pet, GetPetDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
-            CreateMap<PetsUpdatePetDtoRequest, PetsUpdatePetDtoResponse>();
-            CreateMap<PetsUpdatePetDtoRequest, Pet>();
+            CreateMap<UpdatePetDtoRequest, UpdatePetDtoResponse>();
+            CreateMap<UpdatePetDtoRequest, Pet>();
         }
 
         private void MapsForRaces()
         {
-            CreateMap<Race, RaceDetailGetAllDtoResponse>();
-            CreateMap<Race, RaceGetDtoResponse>();
-            CreateMap<Race, RaceDeleteDtoResponse>();
-            CreateMap<Race, RaceUpdateDtoResponse>();
+            CreateMap<Race, RaceForGetAllRacesDtoResponse>();
+            CreateMap<Race, GetRaceDtoResponse>();
+            CreateMap<Race, DeleteRaceDtoResponse>();
+            CreateMap<Race, UpdateRaceDtoResponse>();
             CreateMap<Species, SpeciesDetailsGetDtoResponse>();
         }
 
         private void MapsForSpecies()
         {
-            CreateMap<Species, SpeciesDetailGetAllDtoResponse>();
-            CreateMap<Species, SpeciesGetSpeciesDtoResponse>();
-            CreateMap<Species, SpeciesDeleteSpeciesDtoResponse>();
-            CreateMap<Species, SpeciesUpdateSpeciesDtoResponse>();
-            CreateMap<Race, RaceDetailsGetDtoResponse>();
+            CreateMap<Species, SpeciesForGetAllSpeciesDtoResponse>();
+            CreateMap<Species, GetSpeciesDtoResponse>();
+            CreateMap<Species, DeleteSpeciesDtoResponse>();
+            CreateMap<Species, UpdateSpeciesDtoResponse>();
+            CreateMap<Race, RaceForGetSpeciesDtoResponse>();
         }
 
 
         private void MapsForInstitutions()
         {
-            CreateMap<ApplicationUser, UserForInstitutionGetInstitutionDtoResponse>();
-            CreateMap<Institution, InstitutionsGetInstitutionDtoResponse>()
+            CreateMap<ApplicationUser, UserForGetInstitutionDtoResponse>();
+            CreateMap<Institution, GetInstitutionDtoResponse>()
                 .ForMember(d => d.Vets, opt => opt.MapFrom(i => i.InstitutionVets.Select(x => x.Vet.User)));
-            CreateMap<Institution, InstitutionForInstitutionGetInstitutionDtoResponse>();
-            CreateMap<InstitutionsCreateInstitutionDtoRequest, Institution>();
-            CreateMap<InstitutionsCreateInstitutionDtoResponse, Institution>();
-            CreateMap<Institution, InstitutionsCreateInstitutionDtoResponse>();
-            CreateMap<Institution, InstitutionsUpdateInstitutionDtoResponse>();
+            CreateMap<Institution, InstitutionForGetInstitutionDtoResponse>();
+            CreateMap<CreateInstitutionDtoRequest, Institution>();
+            CreateMap<CreateInstitutionDtoResponse, Institution>();
+            CreateMap<Institution, CreateInstitutionDtoResponse>();
+            CreateMap<Institution, UpdateInstitutionDtoResponse>();
         }
 
         private void MapsForExaminationTypes()
         {
-            CreateMap<ExaminationType, ExaminationTypesDetailGetAllDtoResponse>();
-            CreateMap<ExaminationType, ExaminationTypesUpdateExaminationTypeDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeForGetAllExaminationTypesDtoResponse>();
+            CreateMap<ExaminationType, UpdateExaminationTypeDtoResponse>();
             CreateMap<ExaminationParameter, ExaminationParameterDetailsForExaminationTypeGetDtoResponse>();
         }
 
         private void MapsForExaminationParameters()
         {
-            CreateMap<ExaminationParameter, ExaminationParametersCreateExaminationParameterDtoResponse>();
-            CreateMap<ExaminationParameter, ExaminationParametersDetailsGetAllDtoResponse>();
-            CreateMap<ExaminationParameter, ExaminationParametersGetExaminationParameterDtoResponse>();
-            CreateMap<ExaminationType, ExaminationTypeDetailsGetDtoResponse>();
-            CreateMap<ExaminationParameter, ExaminationParametersUpdateExaminationParameterDtoResponse>();
-            CreateMap<ExaminationParametersCreateExaminationParameterDtoRequest, ExaminationParameter>();
+            CreateMap<ExaminationParameter, CreateExaminationParameterDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterForGetAllExaminationParametersDtoResponse>();
+            CreateMap<ExaminationParameter, GetExaminationParameterDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeForGetExaminationParameterDtoResponse>();
+            CreateMap<ExaminationParameter, UpdateExaminationParameterDtoResponse>();
+            CreateMap<CreateExaminationParameterDtoRequest, ExaminationParameter>();
         }
+
         private void MapsForExaminations()
         {
-            CreateMap<Examination, ExaminationsDetailGetAllDtoResponse>();
-            CreateMap<Examination, ExaminationsGetExaminationDtoResponse>();
-            CreateMap<Examination, ExaminationsUpdateExaminationDtoResponse>(); 
-            CreateMap<Examination, ExaminationParameteterValueDetailsGetDtoResponse>();
+            CreateMap<Examination, ExaminationForGetAllExaminationsDtoResponse>();
+            CreateMap<Examination, GetExaminationDtoResponse>();
+            CreateMap<Examination, UpdateExaminationDtoResponse>();
+            CreateMap<Examination, ParameterValueForGetExaminationDtoResponse>();
         }
         private void MapsForExaminationParameterValues()
         {

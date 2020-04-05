@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
 using Application.Dtos.Examinations;
 using Application.Services.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Domain.Models;
 using API.Security;
 
@@ -19,16 +18,16 @@ namespace API.Controllers
             _examinationsService = examinationsService;
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationsCreateExaminationDtoResponse>))]
+        [Produces(typeof(ServiceResponse<CreateExaminationDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPost]
-        public async Task<IActionResult> CreateExamination(ExaminationsCreateExaminationDtoRequest dto)
+        public async Task<IActionResult> CreateExamination(CreateExaminationDtoRequest dto)
         {
             var response = await _examinationsService.CreateExaminationAsync(dto);
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator)]
         [HttpGet]
         public async Task<IActionResult> GetAllExaminations()
@@ -36,7 +35,7 @@ namespace API.Controllers
             var response = await _examinationsService.GetAllExaminationsAsync();
             return SendResponse(response);
         }
-        [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{petId}")]
         public async Task<IActionResult> GetPetExaminations(Guid petId)
@@ -44,7 +43,7 @@ namespace API.Controllers
             var response = await _examinationsService.GetPetExaminationsAsync(petId);
             return SendResponse(response);
         }
-        [Produces(typeof(ServiceResponse<ExaminationsGetAllExaminationsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{petId}/{examinationId}")]
         public async Task<IActionResult> GetExamination(Guid petId, Guid examinationId)
@@ -53,10 +52,10 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationsCreateExaminationDtoResponse>))]
+        [Produces(typeof(ServiceResponse<CreateExaminationDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPut("{petId}/{examinationId}")]
-        public async Task<IActionResult> UpdateExamination(Guid petId, Guid examinationId, ExaminationsUpdateExaminationDtoRequest dto)
+        public async Task<IActionResult> UpdateExamination(Guid petId, Guid examinationId, UpdateExaminationDtoRequest dto)
         {
             var response = await _examinationsService.UpdateExaminationAsync(petId, examinationId, dto);
             return SendResponse(response);

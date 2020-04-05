@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces;
 using Application.Dtos.ExaminationTypes;
@@ -19,16 +18,16 @@ namespace API.Controllers
             _examinationTypesService = examinationTypesService;
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesCreateExaminationTypeDtoResponse>))]
+        [Produces(typeof(ServiceResponse<CreateExaminationTypeDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<IActionResult> CreateExaminationType(ExaminationTypesCreateExaminationTypeDtoRequest dto)
+        public async Task<IActionResult> CreateExaminationType(CreateExaminationTypeDtoRequest dto)
         {
             var response = await _examinationTypesService.CreateExaminationTypeAsync(dto);
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesGetAllExaminationTypesDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetAllExaminationTypesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet]
         public async Task<IActionResult> GetAllExaminationTypes()
@@ -37,10 +36,10 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationTypesUpdateExaminationTypeDtoResponse>))]
+        [Produces(typeof(ServiceResponse<CreateExaminationTypeDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{examinationTypeId}")]
-        public async Task<IActionResult> UpdateExaminationType(int examinationTypeId, ExaminationTypesUpdateExaminationTypeDtoRequest dto)
+        public async Task<IActionResult> UpdateExaminationType(int examinationTypeId, UpdateExaminationTypeDtoRequest dto)
         {
             var response = await _examinationTypesService.UpdateExaminationTypeAsync(examinationTypeId, dto);
             return SendResponse(response);
