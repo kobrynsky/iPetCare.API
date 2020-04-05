@@ -93,9 +93,14 @@ namespace Application.Services
                 return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.Unauthorized);
 
             var invitation = await Context.Requests.FindAsync(InvitationId);
-            
+
             if (invitation == null)
                 return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.NotFound);
+
+            var pet = await Context.Pets.FindAsync(invitation.PetId);
+
+            if (CurrentlyLoggedUser.Id == invitation.UserId && pet.OwnerPets.Where(x => x.Owner.User.Id == CurrentlyLoggedUser.Id).Any())
+                return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.Forbidden);
 
             invitation.IsAccepted = dto.IsAccepted;
 
@@ -103,8 +108,6 @@ namespace Application.Services
 
             if (dto.IsAccepted == true)
             {
-                var pet = await Context.Pets.FindAsync(invitation.PetId);
-
                 var User = UserManager.FindByIdAsync(invitation.UserId).Result;
 
                 if (User.Role == Role.Owner)
