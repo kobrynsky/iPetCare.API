@@ -19,7 +19,7 @@ namespace Application.Services
         {
         }
 
-        public Task<ServiceResponse<ExaminationParameterValuesCreateExaminationParameterValueDtoResponse>> CreateExaminationParameterValueAsync(ExaminationParameterValuesCreateExaminationParameterValueDtoRequest dto)
+        public Task<ServiceResponse<ExaminationParameterValuesCreateExaminationParameterValueDtoResponse>> CreateExaminationParameterValueAsync(CreateExaminationParameterValueDtoRequest dto)
         {
             throw new NotImplementedException();
         }

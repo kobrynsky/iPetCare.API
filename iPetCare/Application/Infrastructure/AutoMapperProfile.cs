@@ -107,13 +107,13 @@ namespace Application.Infrastructure
         }
         private void MapsForExaminationParameterValues()
         {
-            CreateMap<ExaminationParameterValue, ExaminationParameterValuesCreateExaminationParameterValueDtoResponse>();
-            CreateMap<ExaminationParameterValue, ExaminationParameterValuesDetailsGetAllDtoResponse>();
-            CreateMap<ExaminationParameterValue, ExaminationParameterValuesGetExaminationParameterValueDtoResponse>();
-            CreateMap<ExaminationParameter, ExaminationParameterDetailsGetDtoResponse>();
-            CreateMap<Examination, ExaminationDetailsGetDtoResponse>();
-            CreateMap<ExaminationParameterValue, ExaminationParametersUpdateExaminationParameterDtoResponse>();
-            CreateMap<ExaminationParameterValuesCreateExaminationParameterValueDtoRequest, ExaminationParameterValue>();
+            CreateMap<ExaminationParameterValue, CreateExaminationParameterValueDtoResponse>();
+            CreateMap<ExaminationParameterValue, ExaminationParameterValueForGetAllExaminationParametersValuesDtoResponse>();
+            CreateMap<ExaminationParameterValue, GetExaminationParameterValueDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationForGetAllExaminationParametersValuesDtoResponse>();
+            CreateMap<Examination, ExaminationParameterForGetAllExaminationParametersValuesDtoResponse>();
+            CreateMap<ExaminationParameterValue, UpdateExaminationParameterValueDtoResponse>();
+            CreateMap<CreateExaminationParameterValueDtoRequest, ExaminationParameterValue>();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<ExaminationParameterValuesCreateExaminationParameterValueDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<IActionResult> CreateExaminationParameterValue(ExaminationParameterValuesCreateExaminationParameterValueDtoRequest dto)
+        public async Task<IActionResult> CreateExaminationParameterValue(CreateExaminationParameterValueDtoRequest dto)
         {
             var response = await _examinationParameterValueService.CreateExaminationParameterValueAsync(dto);
             return SendResponse(response);

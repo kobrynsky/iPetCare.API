@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Application.Dtos.ExaminationParameterValues
 {
-    public class ExaminationParameterValuesGetAllExaminationParametersValuesDtoResponse
+    public class GetAllExaminationParametersValuesDtoResponse
     {
-        public List<ExaminationParameterValuesDetailsGetAllDtoResponse> ExaminationParametersValues { get; set; }
+        public List<ExaminationParameterValueForGetAllExaminationParametersValuesDtoResponse> ExaminationParametersValues { get; set; }
     }
 
-    public class ExaminationParameterValuesDetailsGetAllDtoResponse
+    public class ExaminationParameterValueForGetAllExaminationParametersValuesDtoResponse
     {
         public Guid Id { get; set; }
         public float Value { get; set; }

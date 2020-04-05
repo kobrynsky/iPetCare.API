@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.ExaminationParameterValues
 {
-    public class ExaminationParameterValuesGetExaminationParameterValueDtoResponse
+    public class GetExaminationParameterValueDtoResponse
     {
         public Guid Id { get; set; }
         public float Value { get; set; }
@@ -13,7 +13,7 @@ namespace Application.Dtos.ExaminationParameterValues
         public ExaminationParameterDetailsGetDtoResponse ExaminationParameter { get; set; }
     }
 
-    public class ExaminationDetailsGetDtoResponse
+    public class ExaminationForGetAllExaminationParametersValuesDtoResponse
     {
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
@@ -22,7 +22,7 @@ namespace Application.Dtos.ExaminationParameterValues
         public Guid PetId { get; set; }
     }
 
-    public class ExaminationParameterDetailsGetDtoResponse
+    public class ExaminationParameterForGetAllExaminationParametersValuesDtoResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }
