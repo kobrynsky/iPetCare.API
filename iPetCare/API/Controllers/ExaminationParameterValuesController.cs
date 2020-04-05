@@ -18,8 +18,8 @@ namespace API.Controllers
             _examinationParameterValueService = examinationParameterValueService;
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParameterValuesCreateExaminationParameterValueDtoResponse>))]
-        [Authorize(Roles = Role.Administrator)]
+        [Produces(typeof(ServiceResponse<CreateExaminationParameterValueDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPost]
         public async Task<IActionResult> CreateExaminationParameterValue(CreateExaminationParameterValueDtoRequest dto)
         {
@@ -27,8 +27,8 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParameterValuesGetAllExaminationParametersValuesDtoResponse>))]
-        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [Produces(typeof(ServiceResponse<GetAllExaminationParametersValuesDtoResponse>))]
+        [Authorize(Roles = Role.Administrator)]
         [HttpGet]
         public async Task<IActionResult> GetAllExaminationParametersValues()
         {
@@ -36,28 +36,28 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParameterValuesGetExaminationParameterValueDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetExaminationParameterValueDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
-        [HttpGet("{examinationParameterId}")]
-        public async Task<IActionResult> GetExaminationParameterValue(int examinationParameterId)
+        [HttpGet("{examinationParameterValueId}")]
+        public async Task<IActionResult> GetExaminationParameterValue(Guid examinationParameterValueId)
         {
-            var response = await _examinationParameterValueService.GetExaminationParameterValueAsync(examinationParameterId);
+            var response = await _examinationParameterValueService.GetExaminationParameterValueAsync(examinationParameterValueId);
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<ExaminationParameterValuesUpdateExaminationParameterValueDtoResponse>))]
-        [Authorize(Roles = Role.Administrator)]
+        [Produces(typeof(ServiceResponse<UpdateExaminationParameterValueDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPut("{examinationParameterId}")]
-        public async Task<IActionResult> UpdateExaminationParameterValue(int examinationParameterId, ExaminationParameterValuesUpdateExaminationParameterValueDtoRequest dto)
+        public async Task<IActionResult> UpdateExaminationParameterValue(Guid examinationParameterId, UpdateExaminationParameterValueDtoRequest dto)
         {
             var response = await _examinationParameterValueService.UpdateExaminationParameterValueAsync(examinationParameterId, dto);
             return SendResponse(response);
         }
 
         [Produces(typeof(ServiceResponse))]
-        [Authorize(Roles = Role.Administrator)]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpDelete("{examinationParameterId}")]
-        public async Task<IActionResult> DeleteExaminationParameterValue(int examinationParameterId)
+        public async Task<IActionResult> DeleteExaminationParameterValue(Guid examinationParameterId)
         {
             var response = await _examinationParameterValueService.DeleteExaminationParameterValueAsync(examinationParameterId);
             return SendResponse(response);

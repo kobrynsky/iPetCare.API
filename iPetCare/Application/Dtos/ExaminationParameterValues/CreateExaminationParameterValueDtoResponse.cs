@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.ExaminationParameterValues
 {
-    public class ExaminationParameterValuesCreateExaminationParameterValueDtoResponse
+    public class CreateExaminationParameterValueDtoResponse
     {
         public Guid Id { get; set; }
         public float Value { get; set; }

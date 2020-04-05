@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Application.Dtos.ExaminationParameterValues
 {
-    public class ExaminationParameterValuesUpdateExaminationParameterValueDtoRequest
+    public class UpdateExaminationParameterValueDtoRequest
     {
         [Required]
         [Range(0, float.MaxValue, ErrorMessage = "Please enter valid float Number")]

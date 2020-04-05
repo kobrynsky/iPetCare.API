@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dtos.ExaminationParameterValues
 {
-    public class ExaminationParameterValuesCreateExaminationParameterValueDtoRequest
+    public class CreateExaminationParameterValueDtoRequest
     {
         [Required]
         [Range(0, float.MaxValue, ErrorMessage = "Please enter valid float Number")]

@@ -7,10 +7,10 @@ namespace Application.Interfaces
 {
     public interface IExaminationParameterValueService
     {
-        Task<ServiceResponse<ExaminationParameterValuesCreateExaminationParameterValueDtoResponse>> CreateExaminationParameterValueAsync(ExaminationParameterValuesCreateExaminationParameterValueDtoRequest dto);
-        Task<ServiceResponse<ExaminationParameterValuesGetAllExaminationParametersValuesDtoResponse>> GetAllExaminationParametersValuesAsync();
-        Task<ServiceResponse<ExaminationParameterValuesGetExaminationParameterValueDtoResponse>> GetExaminationParameterValueAsync(int examinationParameterId);
-        Task<ServiceResponse<ExaminationParameterValuesUpdateExaminationParameterValueDtoResponse>> UpdateExaminationParameterValueAsync(int examinationParameterId, ExaminationParameterValuesUpdateExaminationParameterValueDtoRequest dto);
-        Task<ServiceResponse> DeleteExaminationParameterValueAsync(int examinationParameterId);
+        Task<ServiceResponse<CreateExaminationParameterValueDtoResponse>> CreateExaminationParameterValueAsync(CreateExaminationParameterValueDtoRequest dto);
+        Task<ServiceResponse<GetAllExaminationParametersValuesDtoResponse>> GetAllExaminationParametersValuesAsync();
+        Task<ServiceResponse<GetExaminationParameterValueDtoResponse>> GetExaminationParameterValueAsync(Guid examinationParameterValueId);
+        Task<ServiceResponse<UpdateExaminationParameterValueDtoResponse>> UpdateExaminationParameterValueAsync(Guid examinationParameterValueId, UpdateExaminationParameterValueDtoRequest dto);
+        Task<ServiceResponse> DeleteExaminationParameterValueAsync(Guid examinationParameterValueId);
     }
 }

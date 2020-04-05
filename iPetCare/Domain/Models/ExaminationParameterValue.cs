@@ -9,5 +9,8 @@ namespace Domain.Models
 
         public int ExaminationParameterId { get; set; }
         public virtual ExaminationParameter ExaminationParameter { get; set; }
+
+        public Guid ExaminationId { get; set; }
+        public virtual Examination Examination{ get; set; }
     }
 }

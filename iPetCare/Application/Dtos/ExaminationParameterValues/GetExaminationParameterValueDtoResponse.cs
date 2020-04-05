@@ -9,11 +9,11 @@ namespace Application.Dtos.ExaminationParameterValues
         public Guid Id { get; set; }
         public float Value { get; set; }
 
-        public ExaminationDetailsGetDtoResponse Examination { get; set; }
-        public ExaminationParameterDetailsGetDtoResponse ExaminationParameter { get; set; }
+        public ExaminationForGetExaminationParametersValuesDtoResponse Examination { get; set; }
+        public ExaminationParameterForGetExaminationParametersValuesDtoResponse ExaminationParameter { get; set; }
     }
 
-    public class ExaminationForGetAllExaminationParametersValuesDtoResponse
+    public class ExaminationForGetExaminationParametersValuesDtoResponse
     {
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
@@ -22,7 +22,7 @@ namespace Application.Dtos.ExaminationParameterValues
         public Guid PetId { get; set; }
     }
 
-    public class ExaminationParameterForGetAllExaminationParametersValuesDtoResponse
+    public class ExaminationParameterForGetExaminationParametersValuesDtoResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }
