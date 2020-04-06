@@ -21,7 +21,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<CreateImportantDateDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPost]
-        public async Task<IActionResult> CreateExamination(CreateImportantDateDtoRequest dto)
+        public async Task<IActionResult> CreateImportantDate(CreateImportantDateDtoRequest dto)
         {
             var response = await _importantDatesService.CreateImportantDateAsync(dto);
             return SendResponse(response);
@@ -30,7 +30,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<GetAllImportantDatesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator)]
         [HttpGet]
-        public async Task<IActionResult> GetAllExaminations()
+        public async Task<IActionResult> GetAllImportantDates()
         {
             var response = await _importantDatesService.GetAllImportantDatesAsync();
             return SendResponse(response);
@@ -39,7 +39,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<GetImportantDateDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{importantDateId}")]
-        public async Task<IActionResult> GetExamination(Guid importantDateId)
+        public async Task<IActionResult> GetImportantDate(Guid importantDateId)
         {
             var response = await _importantDatesService.GetImportantDateAsync(importantDateId);
             return SendResponse(response);
@@ -48,7 +48,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<CreateImportantDateDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPut("{importantDateId}")]
-        public async Task<IActionResult> UpdateExamination(Guid importantDateId, UpdateImportantDateDtoRequest dto)
+        public async Task<IActionResult> UpdateImportantDate(Guid importantDateId, UpdateImportantDateDtoRequest dto)
         {
             var response = await _importantDatesService.UpdateImportantDateAsync(importantDateId, dto);
             return SendResponse(response);
@@ -57,7 +57,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpDelete("{importantDateId}")]
-        public async Task<IActionResult> DeleteExamination(Guid importantDateId)
+        public async Task<IActionResult> DeleteImportantDate(Guid importantDateId)
         {
             var response = await _importantDatesService.DeleteImportantDateAsync(importantDateId);
             return SendResponse(response);

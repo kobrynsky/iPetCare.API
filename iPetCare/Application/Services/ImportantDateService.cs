@@ -39,18 +39,20 @@ namespace Application.Services
 
             ImportantDate importantDate = Mapper.Map<ImportantDate>(dto);
 
-             var importantDatePet = new ImportantDatePet()
+            Context.ImportantDates.Add(importantDate);
+
+            var importantDatePet = new ImportantDatePet()
              {
                  ImportantDateId = importantDate.Id,
                  PetId = dto.PetId
              };
-
             Context.ImportantDatePets.Add(importantDatePet);
-            Context.ImportantDates.Add(importantDate);
+
+
             int result = await Context.SaveChangesAsync();
 
             var responseDto = Mapper.Map<CreateImportantDateDtoResponse>(importantDate);
-
+            responseDto.PetId = importantDatePet.PetId;
             return result > 0
                 ? new ServiceResponse<CreateImportantDateDtoResponse>(HttpStatusCode.OK, responseDto)
                 : new ServiceResponse<CreateImportantDateDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiło zapisanie do bazy danych");
@@ -61,7 +63,8 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-            var importantDatePet = Context.ImportantDatePets.Find(importantDateId);
+            var importantDatePet = Context.ImportantDatePets.Where(x => x.ImportantDateId == importantDateId).ToListAsync().Result.FirstOrDefault();
+
             if (importantDatePet == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
@@ -105,7 +108,8 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetImportantDateDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var importantDatePet = Context.ImportantDatePets.Find(importantDateId);
+            var importantDatePet = Context.ImportantDatePets.Where(x => x.ImportantDateId == importantDateId).ToListAsync().Result.FirstOrDefault();
+
             if (importantDatePet == null)
                 return new ServiceResponse<GetImportantDateDtoResponse>(HttpStatusCode.NotFound);
 
@@ -128,6 +132,8 @@ namespace Application.Services
             if (note != null)
                 dto.Note = Mapper.Map<NoteForGetImportantDateDtoResponse>(note);
 
+            dto.PetId = importantDatePet.PetId;
+
             return new ServiceResponse<GetImportantDateDtoResponse>(HttpStatusCode.OK, dto);
         }
 
@@ -136,7 +142,7 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<UpdateImportantDateDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var importantDatePet = Context.ImportantDatePets.Find(importantDateId);
+            var importantDatePet = Context.ImportantDatePets.Where(x => x.ImportantDateId == importantDateId).ToListAsync().Result.FirstOrDefault();
             if (importantDatePet == null)
                 return new ServiceResponse<UpdateImportantDateDtoResponse>(HttpStatusCode.NotFound);
 
@@ -173,6 +179,7 @@ namespace Application.Services
             if (result > 0)
             {
                 var responseDto = Mapper.Map<UpdateImportantDateDtoResponse>(importantDate);
+                responseDto.PetId = importantDatePet.PetId;
                 return new ServiceResponse<UpdateImportantDateDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
