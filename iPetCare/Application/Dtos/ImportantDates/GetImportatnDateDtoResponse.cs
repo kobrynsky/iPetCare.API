@@ -3,15 +3,16 @@ using System;
 
 namespace Application.Dtos.ImportantDates
 {
-    public class GetImportatnDateDtoResponse
+    public class GetImportantDateDtoResponse
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
         public DateTime Date { get; set; }
-        public Note Note { get; set; }
+        public Guid PetId { get; set; }
+        public NoteForGetImportantDateDtoResponse? Note { get; set; }
     }
 
-    public class NoteForGetExaminationParameterDtoResponse
+    public class NoteForGetImportantDateDtoResponse
     {
 
         public Guid Id { get; set; }

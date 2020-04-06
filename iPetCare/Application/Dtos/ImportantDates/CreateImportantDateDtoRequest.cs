@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dtos.ImportantDates
 {
-    public class CreateImportatnDateDtoRequest
+    public class CreateImportantDateDtoRequest
     {
         [Required]
         [MaxLength(255)]
@@ -13,6 +13,8 @@ namespace Application.Dtos.ImportantDates
         public DateTime Date { get; set; }
 
         [Required]
-        public Guid NoteId { get; set; }
+        public Guid PetId { get; set; }
+
+        public Guid? NoteId { get; set; }
     }
 }

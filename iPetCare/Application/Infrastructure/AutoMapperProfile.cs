@@ -9,6 +9,7 @@ using Application.Dtos.Species;
 using Application.Dtos.ExaminationTypes;
 using Application.Dtos.ExaminationParameters;
 using Application.Dtos.Examinations;
+using Application.Dtos.ImportantDates;
 
 namespace Application.Infrastructure
 {
@@ -24,6 +25,7 @@ namespace Application.Infrastructure
             MapsForExaminationTypes();
             MapsForExaminationParameters();
             MapsForExaminations();
+            MapsForImportantDates();
         }
 
         private void MapsForUser()
@@ -102,6 +104,16 @@ namespace Application.Infrastructure
             CreateMap<Examination, GetExaminationDtoResponse>();
             CreateMap<Examination, UpdateExaminationDtoResponse>();
             CreateMap<Examination, ParameterValueForGetExaminationDtoResponse>();
+        }
+
+        private void MapsForImportantDates()
+        {
+            CreateMap<ImportantDate, CreateImportantDateDtoResponse>();
+            CreateMap<ImportantDate, ImportantDateForGetAllImportantDatesDtoResponse>();
+            CreateMap<ImportantDate, GetImportantDateDtoResponse>();
+            CreateMap<Note, NoteForGetImportantDateDtoResponse>();
+            CreateMap<ImportantDate, UpdateImportantDateDtoResponse>();
+            CreateMap<CreateImportantDateDtoRequest, ImportantDate>();
         }
     }
 }

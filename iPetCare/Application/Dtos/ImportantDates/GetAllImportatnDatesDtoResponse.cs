@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Application.Dtos.ImportantDates
 {
-    public class GetAllImportatnDatesDtoResponse
+    public class GetAllImportantDatesDtoResponse
     {
         public List<ImportantDateForGetAllImportantDatesDtoResponse> ImportantDates { get; set; }
     }
@@ -13,6 +13,7 @@ namespace Application.Dtos.ImportantDates
         public Guid Id { get; set; }
         public string Title { get; set; }
         public DateTime Date { get; set; }
-        public Guid NoteId { get; set; }
+        public Guid PetId { get; set; }
+        public Guid? NoteId { get; set; }
     }
 }
