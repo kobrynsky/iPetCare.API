@@ -141,7 +141,7 @@ namespace Application.Services
                 }
             }
 
-            if (dto.IsAccepted == false)
+            if (!dto.IsAccepted)
             {
                 Context.Requests.Remove(invitation);
             }
