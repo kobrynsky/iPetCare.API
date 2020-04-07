@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using API.Security;
 using Application.Dtos.Users;
 using Application.Interfaces;
 using Domain.Models;
@@ -54,6 +55,21 @@ namespace API.Controllers
         public async Task<ActionResult<GetAllUsersDtoResponse>> GetUsers()
         {
             var response = await _userService.GetAllAsync();
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return Ok(response.ResponseContent);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return Unauthorized(response.Message);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                return Forbid(response.Message);
+            return BadRequest(response.Message);
+        }
+
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpPut]
+        public async Task<ActionResult<EditProfileDtoResponse>> EditProfile(EditProfileDtoRequest dto)
+        {
+            var response = await _userService.EditProfileAsync(dto);
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(response.ResponseContent);
