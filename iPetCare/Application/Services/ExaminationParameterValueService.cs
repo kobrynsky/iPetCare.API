@@ -28,7 +28,7 @@ namespace Application.Services
             if (examination == null)
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
 
-            var pet = Context.Pets.Find(examination.PetId);
+            var pet = await Context.Pets.FindAsync(examination.PetId);
 
             if (pet == null)
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -66,7 +66,7 @@ namespace Application.Services
             if (examination == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
 
-            var pet = Context.Pets.Find(examination.PetId);
+            var pet = await Context.Pets.FindAsync(examination.PetId);
 
             if (pet == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -114,7 +114,7 @@ namespace Application.Services
             if (examination == null)
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
 
-            var pet = Context.Pets.Find(examination.PetId);
+            var pet = await Context.Pets.FindAsync(examination.PetId);
 
             if (pet == null)
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -147,7 +147,7 @@ namespace Application.Services
             if (examination == null)
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje takie badanie w bazie danych");
 
-            var pet = Context.Pets.Find(examination.PetId);
+            var pet = await Context.Pets.FindAsync(examination.PetId);
 
             if (pet == null)
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
