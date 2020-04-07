@@ -141,6 +141,11 @@ namespace Application.Services
                 }
             }
 
+            if (dto.IsAccepted == false)
+            {
+                Context.Requests.Remove(invitation);
+            }
+
             int result = await Context.SaveChangesAsync();
 
             return result >= 0
