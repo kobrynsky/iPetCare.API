@@ -22,7 +22,7 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<CreateImportantDateDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var pet = Context.Pets.Find(dto.PetId);
+            var pet = await Context.Pets.FindAsync(dto.PetId);
 
             if (pet == null)
                 return new ServiceResponse<CreateImportantDateDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -32,7 +32,7 @@ namespace Application.Services
 
             if (dto.NoteId != null)
             {
-                var note = Context.Notes.Find(dto.NoteId);
+                var note = Context.Notes.FindAsync(dto.NoteId);
                 if (note == null)
                     return new ServiceResponse<CreateImportantDateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka notatka w bazie danych");
             }
@@ -68,7 +68,7 @@ namespace Application.Services
             if (importantDatePet == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
-            var pet = Context.Pets.Find(importantDatePet.PetId);
+            var pet = await Context.Pets.FindAsync(importantDatePet.PetId);
 
             if (pet == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -76,7 +76,7 @@ namespace Application.Services
             if (!CanEditImportantDate(pet))
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
-            var importantDate = Context.ImportantDates.Find(importantDateId);
+            var importantDate = await Context.ImportantDates.FindAsync(importantDateId);
             if (importantDate == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
@@ -113,7 +113,7 @@ namespace Application.Services
             if (importantDatePet == null)
                 return new ServiceResponse<GetImportantDateDtoResponse>(HttpStatusCode.NotFound);
 
-            var pet = Context.Pets.Find(importantDatePet.PetId);
+            var pet = await Context.Pets.FindAsync(importantDatePet.PetId);
 
             if (pet == null)
                 return new ServiceResponse<GetImportantDateDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -127,7 +127,7 @@ namespace Application.Services
 
             var dto = Mapper.Map<GetImportantDateDtoResponse>(importantDate);
 
-            var note = Context.Notes.Find(importantDate.NoteId);
+            var note = Context.Notes.FindAsync(importantDate.NoteId);
 
             if (note != null)
                 dto.Note = Mapper.Map<NoteForGetImportantDateDtoResponse>(note);
@@ -146,19 +146,19 @@ namespace Application.Services
             if (importantDatePet == null)
                 return new ServiceResponse<UpdateImportantDateDtoResponse>(HttpStatusCode.NotFound);
 
-            var pet = Context.Pets.Find(importantDatePet.PetId);
+            var pet = await Context.Pets.FindAsync(importantDatePet.PetId);
             if (pet == null)
                 return new ServiceResponse<UpdateImportantDateDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
             if (!CanEditImportantDate(pet))
                 return new ServiceResponse<UpdateImportantDateDtoResponse>(HttpStatusCode.Forbidden);
 
-            var importantDate = Context.ImportantDates.Find(importantDateId);
+            var importantDate = await Context.ImportantDates.FindAsync(importantDateId);
             Note note = null;
 
             if (dto.NoteId != null)
             {
-                note = Context.Notes.Find(dto.NoteId);
+                note = await Context.Notes.FindAsync(dto.NoteId);
                 if (note == null)
                     return new ServiceResponse<UpdateImportantDateDtoResponse>(HttpStatusCode.BadRequest, "Nie istnieje taka notatka w bazie danych");
             }
