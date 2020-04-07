@@ -25,7 +25,7 @@ namespace Application.Services
             if (CurrentlyLoggedUser.Role != Role.Owner && CurrentlyLoggedUser.Role != Role.Vet)
                 return new ServiceResponse<CreateInvitationDtoResponse>(HttpStatusCode.Forbidden);
 
-            var pet = Context.Pets.Find(dto.PetId);
+            var pet = await Context.Pets.FindAsync(dto.PetId);
             if (pet == null)
                 return new ServiceResponse<CreateInvitationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
@@ -39,9 +39,9 @@ namespace Application.Services
                 else didUserRequest = true;
             }
 
-            var existInvitation = await Context.Requests.Where(x => x.PetId == dto.PetId && x.UserId == dto.UserId).ToListAsync();
+            var existInvitation = await Context.Requests.Where(x => x.PetId == dto.PetId && x.UserId == dto.UserId).AnyAsync();
 
-            if (existInvitation.Any())
+            if (existInvitation)
                 return new ServiceResponse<CreateInvitationDtoResponse>(HttpStatusCode.BadRequest, $"Podany użytkownik został już zaproszony do zwierzaka {pet.Name}");
 
             if (dto.Id == Guid.Empty)
@@ -66,15 +66,15 @@ namespace Application.Services
 
         }
 
-        public async Task<ServiceResponse> DeleteInvitationAsync(Guid InvitationId)
+        public async Task<ServiceResponse> DeleteInvitationAsync(Guid invitationId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-            if (InvitationId == Guid.Empty)
+            if (invitationId == Guid.Empty)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie istnieje takie zaproszenie w bazie danych");
 
-            var invitation = await Context.Requests.FindAsync(InvitationId);
+            var invitation = await Context.Requests.FindAsync(invitationId);
 
             if (invitation == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
@@ -87,12 +87,12 @@ namespace Application.Services
             return new ServiceResponse(HttpStatusCode.OK);
         }
 
-        public async Task<ServiceResponse<ChangeStatusInvitationDtoResponse>> ChangeStatusInvitationAsync(ChangeStatusInvitationDtoRequest dto, Guid InvitationId)
+        public async Task<ServiceResponse<ChangeStatusInvitationDtoResponse>> ChangeInvitationStatusAsync(ChangeStatusInvitationDtoRequest dto, Guid invitationId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var invitation = await Context.Requests.FindAsync(InvitationId);
+            var invitation = await Context.Requests.FindAsync(invitationId);
 
             if (invitation == null)
                 return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.NotFound);
@@ -106,7 +106,7 @@ namespace Application.Services
 
             var responseDto = Mapper.Map<ChangeStatusInvitationDtoResponse>(invitation);
 
-            if (dto.IsAccepted == true)
+            if (dto.IsAccepted)
             {
                 var User = UserManager.FindByIdAsync(invitation.UserId).Result;
 
@@ -129,8 +129,8 @@ namespace Application.Services
                 {
                     var vet = await Context.Vets.Where(x => x.UserId == invitation.UserId).SingleOrDefaultAsync();
 
-                    var existInvitation = await Context.VetPets.Where(x => x.PetId == invitation.PetId && x.VetId == vet.Id).ToListAsync();
-                    if (existInvitation.Any())
+                    var existInvitation = await Context.VetPets.Where(x => x.PetId == invitation.PetId && x.VetId == vet.Id).AnyAsync();
+                    if (existInvitation)
                         return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Podany użytkownik został zatwierdzony do tego zwierzaka");
 
                     Context.VetPets.Add(new VetPet

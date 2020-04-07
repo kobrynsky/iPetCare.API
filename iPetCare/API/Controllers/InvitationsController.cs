@@ -29,19 +29,19 @@ namespace API.Controllers
 
         [Produces(typeof(ServiceResponse))]
         [AuthorizeRoles(Role.Vet, Role.Owner)]
-        [HttpDelete("{InvitationId}")]
-        public async Task<IActionResult> DeleteInvitation(Guid InvitationId)
+        [HttpDelete("{invitationId}")]
+        public async Task<IActionResult> DeleteInvitation(Guid invitationId)
         {
-            var response = await _invitationService.DeleteInvitationAsync(InvitationId);
+            var response = await _invitationService.DeleteInvitationAsync(invitationId);
             return SendResponse(response);
         }
 
         [Produces(typeof(ServiceResponse<CreateInvitationDtoResponse>))]
         [AuthorizeRoles(Role.Vet, Role.Owner)]
-        [HttpPut("{InvitationId}")]
-        public async Task<IActionResult> ChangeStatusInvitation(ChangeStatusInvitationDtoRequest dto, Guid InvitationId)
+        [HttpPut("{invitationId}")]
+        public async Task<IActionResult> ChangeStatusInvitation(ChangeStatusInvitationDtoRequest dto, Guid invitationId)
         {
-            var response = await _invitationService.ChangeStatusInvitationAsync(dto, InvitationId);
+            var response = await _invitationService.ChangeInvitationStatusAsync(dto, invitationId);
             return SendResponse(response);
         }
     }
