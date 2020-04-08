@@ -10,8 +10,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200408151454_AddedPetIdToNote")]
-    partial class AddedPetIdToNote
+    [Migration("20200408155521_AddedPetToNote")]
+    partial class AddedPetToNote
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -290,10 +290,7 @@ namespace Persistence.Migrations
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
-                    b.Property<string>("PetId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("PetId1")
+                    b.Property<Guid>("PetId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
@@ -301,7 +298,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PetId1");
+                    b.HasIndex("PetId");
 
                     b.HasIndex("UserId");
 
@@ -708,7 +705,9 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.Models.Pet", "Pet")
                         .WithMany("Notes")
-                        .HasForeignKey("PetId1");
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Models.ApplicationUser", "User")
                         .WithMany("Notes")

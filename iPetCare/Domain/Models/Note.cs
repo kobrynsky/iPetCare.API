@@ -13,7 +13,7 @@ namespace Domain.Models
 
         public DateTime CreatedAt { get; set; }
 
-        public string PetId { get; set; }
+        public Guid PetId { get; set; }
         public virtual Pet Pet { get; set; }
 
         public string UserId { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dtos.Notes
 {
-    public class CreateExaminationParameterValueDtoResponse
+    public class CreateNoteDtoResponse
     {
         public Guid Id { get; set; }
         public string Payload { get; set; }

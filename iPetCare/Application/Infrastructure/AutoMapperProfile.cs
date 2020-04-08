@@ -12,6 +12,7 @@ using Application.Dtos.ExaminationParameterValues;
 using Application.Dtos.Examinations;
 using Application.Dtos.ImportantDates;
 using Application.Dtos.Invitations;
+using Application.Dtos.Notes;
 
 namespace Application.Infrastructure
 {
@@ -30,6 +31,7 @@ namespace Application.Infrastructure
             MapsForExaminationParameterValues();
             MapsForImportantDates();
             MapsForInvitations();
+            MapsForNotes();
         }
 
         private void MapsForUser()
@@ -144,6 +146,15 @@ namespace Application.Infrastructure
         {
             CreateMap<Request, CreateInvitationDtoResponse>();
             CreateMap<Request, ChangeStatusInvitationDtoResponse>();
+        }
+
+        private void MapsForNotes()
+        {
+            CreateMap<Note, CreateNoteDtoResponse>();
+            CreateMap<Note, NoteForGetAllNotesDtoResponse>();
+            CreateMap<Note, GetNoteDtoResponse>();
+            CreateMap<Note, UpdateNoteDtoResponse>();
+            CreateMap<CreateNoteDtoRequest, Note>();
         }
     }
 }

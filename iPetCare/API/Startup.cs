@@ -73,6 +73,7 @@ namespace API
             services.AddTransient<IExaminationService, ExaminationService>();
             services.AddTransient<IImportantDatesService, ImportantDatesService>();
             services.AddTransient<IInvitationService, InvitationService>();
+            services.AddTransient<INoteService, NoteService>();
 
             services.AddCors(options =>
             {

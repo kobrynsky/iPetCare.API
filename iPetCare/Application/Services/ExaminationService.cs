@@ -147,12 +147,11 @@ namespace Application.Services
             if (!CanEditExamination(pet))
                 return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.Forbidden);
 
-            var examinations = await Context.Examinations.ToListAsync();
-            var filteredExaminations = examinations.Where(ex => ex.PetId == petId).ToList();
+            var examinations = await Context.Examinations.Where(ex => ex.PetId == petId).ToListAsync();
 
             var dto = new GetAllExaminationsDtoResponse()
             {
-                Examinations = Mapper.Map<List<ExaminationForGetAllExaminationsDtoResponse>>(filteredExaminations)
+                Examinations = Mapper.Map<List<ExaminationForGetAllExaminationsDtoResponse>>(examinations)
             };
 
             return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.OK, dto);
