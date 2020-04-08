@@ -10,6 +10,7 @@ using Application.Dtos.ExaminationTypes;
 using Application.Dtos.ExaminationParameters;
 using Application.Dtos.Examinations;
 using Application.Dtos.ImportantDates;
+using Application.Dtos.Invitations;
 
 namespace Application.Infrastructure
 {
@@ -26,11 +27,23 @@ namespace Application.Infrastructure
             MapsForExaminationParameters();
             MapsForExaminations();
             MapsForImportantDates();
+            MapsForInvitations();
         }
 
         private void MapsForUser()
         {
             CreateMap<ApplicationUser, UserForGetAllUsersDtoResponse>();
+            CreateMap<ApplicationUser, EditProfileDtoResponse>()
+                .ForMember(d => d.Specialization, opt =>
+                {
+                    opt.PreCondition(s => s.Vet != null);
+                    opt.MapFrom(s => s.Vet.Specialization);
+                })
+                .ForMember(d => d.PlaceOfResidence, opt =>
+                {
+                    opt.PreCondition(s => s.Owner != null);
+                    opt.MapFrom(s => s.Owner.PlaceOfResidence);
+                });
         }
 
         private void MapsForPets()
@@ -114,6 +127,11 @@ namespace Application.Infrastructure
             CreateMap<Note, NoteForGetImportantDateDtoResponse>();
             CreateMap<ImportantDate, UpdateImportantDateDtoResponse>();
             CreateMap<CreateImportantDateDtoRequest, ImportantDate>();
+        }
+        private void MapsForInvitations()
+        {
+            CreateMap<Request, CreateInvitationDtoResponse>();
+            CreateMap<Request, ChangeStatusInvitationDtoResponse>();
         }
     }
 }
