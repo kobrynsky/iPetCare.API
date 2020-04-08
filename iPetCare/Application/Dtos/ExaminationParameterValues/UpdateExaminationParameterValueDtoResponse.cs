@@ -1,16 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Domain.Models
+namespace Application.Dtos.ExaminationParameterValues
 {
-    public class ExaminationParameterValue
+    public class UpdateExaminationParameterValueDtoResponse
     {
         public Guid Id { get; set; }
         public float Value { get; set; }
-
         public int ExaminationParameterId { get; set; }
-        public virtual ExaminationParameter ExaminationParameter { get; set; }
-
         public Guid ExaminationId { get; set; }
-        public virtual Examination Examination{ get; set; }
     }
 }

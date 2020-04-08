@@ -69,6 +69,7 @@ namespace API
             services.AddTransient<IInstitutionService, InstitutionService>();
             services.AddTransient<IExaminationTypeService, ExaminationTypeService>();
             services.AddTransient<IExaminationParameterService, ExaminationParameterService>();
+            services.AddTransient<IExaminationParameterValueService, ExaminationParameterValueService>();
             services.AddTransient<IExaminationService, ExaminationService>();
             services.AddTransient<IImportantDatesService, ImportantDatesService>();
             services.AddTransient<IInvitationService, InvitationService>();

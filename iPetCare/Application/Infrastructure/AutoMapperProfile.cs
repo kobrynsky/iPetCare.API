@@ -8,6 +8,7 @@ using Domain.Models;
 using Application.Dtos.Species;
 using Application.Dtos.ExaminationTypes;
 using Application.Dtos.ExaminationParameters;
+using Application.Dtos.ExaminationParameterValues;
 using Application.Dtos.Examinations;
 using Application.Dtos.ImportantDates;
 using Application.Dtos.Invitations;
@@ -26,6 +27,7 @@ namespace Application.Infrastructure
             MapsForExaminationTypes();
             MapsForExaminationParameters();
             MapsForExaminations();
+            MapsForExaminationParameterValues();
             MapsForImportantDates();
             MapsForInvitations();
         }
@@ -116,7 +118,17 @@ namespace Application.Infrastructure
             CreateMap<Examination, ExaminationForGetAllExaminationsDtoResponse>();
             CreateMap<Examination, GetExaminationDtoResponse>();
             CreateMap<Examination, UpdateExaminationDtoResponse>();
-            CreateMap<Examination, ParameterValueForGetExaminationDtoResponse>();
+            CreateMap<ExaminationParameterValue, ParameterValueForGetExaminationDtoResponse>();
+        }
+        private void MapsForExaminationParameterValues()
+        {
+            CreateMap<ExaminationParameterValue, CreateExaminationParameterValueDtoResponse>();
+            CreateMap<ExaminationParameterValue, ExaminationParameterValueForGetAllExaminationParametersValuesDtoResponse>();
+            CreateMap<ExaminationParameterValue, GetExaminationParameterValueDtoResponse>();
+            CreateMap<Examination, ExaminationForGetExaminationParametersValuesDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterForGetExaminationParametersValuesDtoResponse>();
+            CreateMap<ExaminationParameterValue, UpdateExaminationParameterValueDtoResponse>();
+            CreateMap<CreateExaminationParameterValueDtoRequest, ExaminationParameterValue>();
         }
 
         private void MapsForImportantDates()
