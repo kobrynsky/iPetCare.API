@@ -33,7 +33,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationParameter = await Context.ExaminationParameters.FindAsync(dto.ExaminationParameterId);
@@ -71,7 +71,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
             Context.ExaminationParameterValues.Remove(examinationParameterValue);
@@ -119,7 +119,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationParameter = await Context.ExaminationParameters.FindAsync(examinationParameterValue.ExaminationParameterId);
@@ -139,6 +139,9 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.Unauthorized);
 
+            if(examinationParameterValueId == Guid.Empty)
+                return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy indeks");
+
             var examinationParameterValue = await Context.ExaminationParameterValues.FindAsync(examinationParameterValueId);
             if (examinationParameterValue == null)
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.NotFound);
@@ -152,7 +155,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             examinationParameterValue.ExaminationId = dto.ExaminationId;
@@ -169,7 +172,7 @@ namespace Application.Services
             return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiło zapisanie do bazy danych");
         }
 
-        private bool CanEditExaminationParameterValue(Pet pet)
+        private async Task<bool> CanEditExaminationParameterValueAsync(Pet pet)
         {
             if (CurrentlyLoggedUser.Role != Role.Administrator)
             {

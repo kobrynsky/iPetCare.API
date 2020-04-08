@@ -14,7 +14,7 @@ namespace Domain.Models
 
         public DateTime Date { get; set; }
 
-        public Guid NoteId { get; set; }
+        public Guid? NoteId { get; set; }
         public virtual Note Note { get; set; }
 
         public virtual ICollection<ImportantDatePet> ImportantDatePets { get; set; }

@@ -83,6 +83,105 @@ namespace Application.Services
             return new ServiceResponse<GetAllUsersDtoResponse>(HttpStatusCode.OK, dto);
         }
 
+        public async Task<ServiceResponse<EditProfileDtoResponse>> EditProfileAsync(EditProfileDtoRequest dto)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if (CurrentlyLoggedUser.Role == Role.Owner)            
+                return await EditOwnerProfileAsync(dto);            
+
+            if (CurrentlyLoggedUser.Role == Role.Vet)
+                return await EditVetProfileAsync(dto);
+
+            if (CurrentlyLoggedUser.Role == Role.Administrator)
+                return await EditAdminProfileAsync(dto);
+
+            return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest);
+        }
+
+        private async Task<ServiceResponse<EditProfileDtoResponse>> EditAdminProfileAsync(EditProfileDtoRequest dto)
+        {
+            if (await Context.Users.Where(x => x.Email == dto.Email && CurrentlyLoggedUser.Email != dto.Email).AnyAsync())
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Email jest zajęty");
+
+            if (await Context.Users.Where(x => x.UserName == dto.UserName && CurrentlyLoggedUser.UserName != dto.UserName).AnyAsync())
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
+
+            UpdateProfile(dto);
+            int result = await Context.SaveChangesAsync();
+            await UserManager.UpdateAsync(CurrentlyLoggedUser);
+
+            var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
+
+            if (result > 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
+            if (result == 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+            return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+        }
+
+        private async Task<ServiceResponse<EditProfileDtoResponse>> EditVetProfileAsync(EditProfileDtoRequest dto)
+        {
+            var vet = await Context.Vets.SingleOrDefaultAsync(v => v.UserId == CurrentlyLoggedUser.Id);
+            if (vet == null)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if (await Context.Users.Where(x => x.Email == dto.Email && CurrentlyLoggedUser.Email != dto.Email).AnyAsync())
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Email jest zajęty");
+
+            if (await Context.Users.Where(x => x.UserName == dto.UserName && CurrentlyLoggedUser.UserName != dto.UserName).AnyAsync())
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
+
+            UpdateProfile(dto);
+            vet.Specialization = dto.Specialization;
+            int result = await Context.SaveChangesAsync();
+            await UserManager.UpdateAsync(CurrentlyLoggedUser);
+
+            var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
+
+            if (result > 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
+            if (result == 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+            return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+        }
+
+        private async Task<ServiceResponse<EditProfileDtoResponse>> EditOwnerProfileAsync(EditProfileDtoRequest dto)
+        {
+            var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == CurrentlyLoggedUser.Id);
+            if (owner == null)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if (await Context.Users.Where(x => x.Email == dto.Email && CurrentlyLoggedUser.Email != dto.Email).AnyAsync())
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Email jest zajęty");
+
+            if (await Context.Users.Where(x => x.UserName == dto.UserName && CurrentlyLoggedUser.UserName != dto.UserName).AnyAsync())
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
+
+            UpdateProfile(dto);
+            owner.PlaceOfResidence = dto.PlaceOfResidence;
+            int result = await Context.SaveChangesAsync();
+            await UserManager.UpdateAsync(CurrentlyLoggedUser);
+
+            var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
+
+            if (result > 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
+            if (result == 0)
+                return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+            return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
+        }
+
+        private void UpdateProfile(EditProfileDtoRequest dto)
+        {
+            CurrentlyLoggedUser.FirstName = dto.FirstName;
+            CurrentlyLoggedUser.LastName = dto.LastName;
+            CurrentlyLoggedUser.UserName = dto.UserName;
+            CurrentlyLoggedUser.Email = dto.Email;
+            CurrentlyLoggedUser.ImageUrl = dto.ImageUrl;
+        }
+
         private async Task<ServiceResponse<RegisterDtoResponse>> ValidateRegisterRequestAsync(RegisterDtoRequest dto)
         {
             if (await Context.Users.Where(x => x.Email == dto.Email).AnyAsync())

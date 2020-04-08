@@ -102,6 +102,9 @@ namespace Application.Services
                 return new ServiceResponse<UpdateExaminationParameterDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
+            if (result == 0)
+                return new ServiceResponse<UpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
+
             return new ServiceResponse<UpdateExaminationParameterDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiło zapisanie do bazy danych");
         }
 

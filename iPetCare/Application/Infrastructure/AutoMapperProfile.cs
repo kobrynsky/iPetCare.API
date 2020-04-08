@@ -10,6 +10,8 @@ using Application.Dtos.ExaminationTypes;
 using Application.Dtos.ExaminationParameters;
 using Application.Dtos.ExaminationParameterValues;
 using Application.Dtos.Examinations;
+using Application.Dtos.ImportantDates;
+using Application.Dtos.Invitations;
 
 namespace Application.Infrastructure
 {
@@ -26,11 +28,24 @@ namespace Application.Infrastructure
             MapsForExaminationParameters();
             MapsForExaminations();
             MapsForExaminationParameterValues();
+            MapsForImportantDates();
+            MapsForInvitations();
         }
 
         private void MapsForUser()
         {
             CreateMap<ApplicationUser, UserForGetAllUsersDtoResponse>();
+            CreateMap<ApplicationUser, EditProfileDtoResponse>()
+                .ForMember(d => d.Specialization, opt =>
+                {
+                    opt.PreCondition(s => s.Vet != null);
+                    opt.MapFrom(s => s.Vet.Specialization);
+                })
+                .ForMember(d => d.PlaceOfResidence, opt =>
+                {
+                    opt.PreCondition(s => s.Owner != null);
+                    opt.MapFrom(s => s.Owner.PlaceOfResidence);
+                });
         }
 
         private void MapsForPets()
@@ -114,6 +129,21 @@ namespace Application.Infrastructure
             CreateMap<ExaminationParameter, ExaminationParameterForGetExaminationParametersValuesDtoResponse>();
             CreateMap<ExaminationParameterValue, UpdateExaminationParameterValueDtoResponse>();
             CreateMap<CreateExaminationParameterValueDtoRequest, ExaminationParameterValue>();
+        }
+
+        private void MapsForImportantDates()
+        {
+            CreateMap<ImportantDate, CreateImportantDateDtoResponse>();
+            CreateMap<ImportantDate, ImportantDateForGetAllImportantDatesDtoResponse>();
+            CreateMap<ImportantDate, GetImportantDateDtoResponse>();
+            CreateMap<Note, NoteForGetImportantDateDtoResponse>();
+            CreateMap<ImportantDate, UpdateImportantDateDtoResponse>();
+            CreateMap<CreateImportantDateDtoRequest, ImportantDate>();
+        }
+        private void MapsForInvitations()
+        {
+            CreateMap<Request, CreateInvitationDtoResponse>();
+            CreateMap<Request, ChangeStatusInvitationDtoResponse>();
         }
     }
 }
