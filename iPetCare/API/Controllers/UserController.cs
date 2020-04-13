@@ -1,17 +1,22 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using API.Security;
 using Application.Dtos.Users;
+using Application.Dtos.Vets;
 using Application.Interfaces;
+using Application.Services.Utilities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Persistence.Enums;
 
 namespace API.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private readonly IUserService _userService;
 
@@ -78,6 +83,16 @@ namespace API.Controllers
             if (response.StatusCode == HttpStatusCode.Forbidden)
                 return Forbid(response.Message);
             return BadRequest(response.Message);
+        }
+
+
+        // [Authorize]
+        [AllowAnonymous]
+        [HttpPost("vets")]
+        public async Task<IActionResult> GetVets([FromBody] GetVetsDtoRequest dto)
+        {
+            var response = await _userService.GetVetsAsync(dto);
+            return SendResponse(response);
         }
     }
 }

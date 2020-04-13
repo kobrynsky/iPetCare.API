@@ -12,6 +12,7 @@ using Application.Dtos.ExaminationParameterValues;
 using Application.Dtos.Examinations;
 using Application.Dtos.ImportantDates;
 using Application.Dtos.Invitations;
+using Application.Dtos.Vets;
 
 namespace Application.Infrastructure
 {
@@ -19,6 +20,7 @@ namespace Application.Infrastructure
     {
         public AutoMapperProfile()
         {
+            MapsForInvitations();
             MapsForUser();
             MapsForPets();
             MapsForRaces();
@@ -29,7 +31,6 @@ namespace Application.Infrastructure
             MapsForExaminations();
             MapsForExaminationParameterValues();
             MapsForImportantDates();
-            MapsForInvitations();
         }
 
         private void MapsForUser()
@@ -46,6 +47,15 @@ namespace Application.Infrastructure
                     opt.PreCondition(s => s.Owner != null);
                     opt.MapFrom(s => s.Owner.PlaceOfResidence);
                 });
+
+            CreateMap<Vet, VetForGetVetsDto>()
+                .ForMember(d => d.Role, opt => opt.MapFrom(s => s.User.Role))
+                .ForMember(d => d.Email, opt => opt.MapFrom(s => s.User.Email))
+                .ForMember(d => d.FirstName, opt => opt.MapFrom(s => s.User.FirstName))
+                .ForMember(d => d.LastName, opt => opt.MapFrom(s => s.User.LastName))
+                .ForMember(d => d.Institutions,
+                    opt => opt.MapFrom(s => s.InstitutionVets.Select(iv => iv.Institution).ToList()));
+
         }
 
         private void MapsForPets()
@@ -94,6 +104,7 @@ namespace Application.Infrastructure
             CreateMap<CreateInstitutionDtoResponse, Institution>();
             CreateMap<Institution, CreateInstitutionDtoResponse>();
             CreateMap<Institution, UpdateInstitutionDtoResponse>();
+            CreateMap<Institution, InstitutionForGetVetsDto>();
         }
 
         private void MapsForExaminationTypes()
