@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.Models;
@@ -10,10 +11,10 @@ namespace Persistence
     {
         public static async Task SeedData(DataContext context, UserManager<ApplicationUser> userManager)
         {
-            await SeedUsers(userManager);
+            await SeedUsers(userManager, context);
         }
 
-        private static async Task SeedUsers(UserManager<ApplicationUser> userManager)
+        private static async Task SeedUsers(UserManager<ApplicationUser> userManager, DataContext context)
         {
             if (!userManager.Users.Any())
             {
@@ -28,12 +29,207 @@ namespace Persistence
                         Email = "admin@admin.com",
                         Role = "Administrator"
                     },
+                    new ApplicationUser
+                    {
+                        Id = "acad4a1d-3287-4c5a-bb05-6a62a9ae6eb8",
+                        FirstName = "Jan",
+                        LastName = "Niezbedny",
+                        UserName = "jnie",
+                        Email = "vet1@admin.com",
+                        Role = "Vet"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "eebb22c2-1184-4511-8b5e-6737c5a8ecaa",
+                        FirstName = "Andrzej",
+                        LastName = "Zolnierowski",
+                        UserName = "azol",
+                        Email = "vet2@admin.com",
+                        Role = "Vet"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "f53d66f5-289e-425b-9c21-92da74122d38",
+                        FirstName = "Roman",
+                        LastName = "Birdman",
+                        UserName = "rbir",
+                        Email = "vet3@admin.com",
+                        Role = "Vet"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "5a9487ed-c7d9-4275-b0e3-d6708f1d4654",
+                        FirstName = "Zbigniew",
+                        LastName = "Prezes",
+                        UserName = "zpre",
+                        Email = "vet4@admin.com",
+                        Role = "Vet"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "bc93228a-9535-4417-ae3d-0ccb550380c2",
+                        FirstName = "Janusz",
+                        LastName = "Bierny",
+                        UserName = "jbie",
+                        Email = "vet5@admin.com",
+                        Role = "Vet"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "0b1d6b8b-8e78-4e7a-996f-bd4688e424d0",
+                        FirstName = "Piotr",
+                        LastName = "Patronus",
+                        UserName = "ppat",
+                        Email = "vet6@admin.com",
+                        Role = "Vet"
+                    },
                 };
 
                 foreach (var user in users)
                 {
                     await userManager.CreateAsync(user, "Haslo123!");
                 }
+            }
+
+
+            if (!context.Institutions.Any())
+            {
+                var institutions = new List<Institution>
+                {
+                    new Institution
+                    {
+                        Id = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46"),
+                        Address = "Kalisz ul Nowowiejska 4C",
+                        Name = "Przychodnia Kaliska"
+                    },
+                    new Institution
+                    {
+                        Id = Guid.Parse("58951f15-854b-4bc4-a396-82c396765c42"),
+                        Address = "Warszawa ul Starowislna 55",
+                        Name = "Przychodnia Stoleczna"
+                    },
+                    new Institution
+                    {
+                        Id = Guid.Parse("fb988055-797d-46e9-b1c9-531dcce8c8dd"),
+                        Address = "Krakow ul Mickiewicza 12/3",
+                        Name = "Krakuskie bidy"
+                    },
+                };
+                context.Institutions.AddRange(institutions);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Vets.Any())
+            {
+                var vets = new List<Vet>
+                {
+                    new Vet
+                    {
+                        Id = Guid.Parse("acad4a1d-3287-4c5a-bb05-6a62a9ae6eb8"),
+                        Specialization = "Gady",
+                        UserId = "acad4a1d-3287-4c5a-bb05-6a62a9ae6eb8",
+                        InstitutionVets = new List<InstitutionVet>
+                        {
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("acad4a1d-3287-4c5a-bb05-6a62a9ae6eb8"),
+                                InstitutionId = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46")
+                            },
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("acad4a1d-3287-4c5a-bb05-6a62a9ae6eb8"),
+                                InstitutionId = Guid.Parse("58951f15-854b-4bc4-a396-82c396765c42")
+                            },
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("acad4a1d-3287-4c5a-bb05-6a62a9ae6eb8"),
+                                InstitutionId = Guid.Parse("fb988055-797d-46e9-b1c9-531dcce8c8dd")
+                            }
+                        }
+                    },
+                    new Vet
+                    {
+                        Id = Guid.Parse("eebb22c2-1184-4511-8b5e-6737c5a8ecaa"),
+                        Specialization = "Chomiki, gady",
+                        UserId = "eebb22c2-1184-4511-8b5e-6737c5a8ecaa",
+                        InstitutionVets = new List<InstitutionVet>
+                        {
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("eebb22c2-1184-4511-8b5e-6737c5a8ecaa"),
+                                InstitutionId = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46")
+                            },
+                        }
+                    },
+                    new Vet
+                    {
+                        Id = Guid.Parse("f53d66f5-289e-425b-9c21-92da74122d38"),
+                        Specialization = "Psy i koty",
+                        UserId = "f53d66f5-289e-425b-9c21-92da74122d38",
+                        InstitutionVets = new List<InstitutionVet>
+                        {
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("f53d66f5-289e-425b-9c21-92da74122d38"),
+                                InstitutionId = Guid.Parse("fb988055-797d-46e9-b1c9-531dcce8c8dd")
+                            }
+                        }
+                    },
+                    new Vet
+                    {
+                        Id = Guid.Parse("5a9487ed-c7d9-4275-b0e3-d6708f1d4654"),
+                        Specialization = "Psy i koty",
+                        UserId = "5a9487ed-c7d9-4275-b0e3-d6708f1d4654",
+                        InstitutionVets = new List<InstitutionVet>
+                        {
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("5a9487ed-c7d9-4275-b0e3-d6708f1d4654"),
+                                InstitutionId = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46")
+                            },
+                        }
+                    },
+                    new Vet
+                    {
+                        Id = Guid.Parse("bc93228a-9535-4417-ae3d-0ccb550380c2"),
+                        Specialization = "Króliki",
+                        UserId = "bc93228a-9535-4417-ae3d-0ccb550380c2",
+                        InstitutionVets = new List<InstitutionVet>
+                        {
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("bc93228a-9535-4417-ae3d-0ccb550380c2"),
+                                InstitutionId = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46")
+                            },
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("bc93228a-9535-4417-ae3d-0ccb550380c2"),
+                                InstitutionId = Guid.Parse("fb988055-797d-46e9-b1c9-531dcce8c8dd")
+                            }
+                        }
+                    },
+                    new Vet
+                    {
+                        Id = Guid.Parse("0b1d6b8b-8e78-4e7a-996f-bd4688e424d0"),
+                        Specialization = "Króliki, chomiki",
+                        UserId = "0b1d6b8b-8e78-4e7a-996f-bd4688e424d0",
+                        InstitutionVets = new List<InstitutionVet>
+                        {
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("0b1d6b8b-8e78-4e7a-996f-bd4688e424d0"),
+                                InstitutionId = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46")
+                            },
+                            new InstitutionVet
+                            {
+                                VetId = Guid.Parse("0b1d6b8b-8e78-4e7a-996f-bd4688e424d0"),
+                                InstitutionId = Guid.Parse("58951f15-854b-4bc4-a396-82c396765c42")
+                            },
+                        }
+                    },
+                };
+                context.Vets.AddRange(vets);
+                await context.SaveChangesAsync();
             }
         }
     }
