@@ -1,17 +1,15 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using API.Security;
 using Application.Dtos.Users;
 using Application.Interfaces;
+using Application.Services.Utilities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/users")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private readonly IUserService _userService;
 
@@ -20,64 +18,40 @@ namespace API.Controllers
             _userService = userService;
         }
 
+        [Produces(typeof(ServiceResponse<LoginDtoResponse>))]
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<LoginDtoResponse>> Login(LoginDtoRequest dto)
+        public async Task<IActionResult> Login(LoginDtoRequest dto)
         {
             var response = await _userService.LoginAsync(dto);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<RegisterDtoResponse>))]
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<RegisterDtoResponse>> Register(RegisterDtoRequest dto)
+        public async Task<IActionResult> Register(RegisterDtoRequest dto)
         {
             var response =  await _userService.RegisterAsync(dto);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<GetAllUsersDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpGet("")]
-        public async Task<ActionResult<GetAllUsersDtoResponse>> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
             var response = await _userService.GetAllAsync();
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<EditProfileDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPut]
-        public async Task<ActionResult<EditProfileDtoResponse>> EditProfile(EditProfileDtoRequest dto)
+        public async Task<IActionResult> EditProfile(EditProfileDtoRequest dto)
         {
             var response = await _userService.EditProfileAsync(dto);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
     }
 }
