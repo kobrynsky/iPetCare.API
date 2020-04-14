@@ -12,6 +12,9 @@ namespace Persistence
         public static async Task SeedData(DataContext context, UserManager<ApplicationUser> userManager)
         {
             await SeedUsers(userManager, context);
+            await SeedUsers(context);
+            await SeedVets(context);
+            await SeedOwners(context);
         }
 
         private static async Task SeedUsers(UserManager<ApplicationUser> userManager, DataContext context)
@@ -132,35 +135,46 @@ namespace Persistence
                     await userManager.CreateAsync(user, "Haslo123!");
                 }
             }
+        }
 
-
-            if (!context.Institutions.Any())
+        private static async Task SeedOwners(DataContext context)
+        {
+            if (!context.Owners.Any())
             {
-                var institutions = new List<Institution>
+                var owners = new List<Owner>
                 {
-                    new Institution
+                    new Owner
                     {
-                        Id = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46"),
-                        Address = "Kalisz ul Nowowiejska 4C",
-                        Name = "Przychodnia Kaliska"
+                        Id = Guid.Parse("16f567aa-77ff-40c3-b317-716eba0c58b4"),
+                        PlaceOfResidence = "Kalisz",
+                        UserId = "16f567aa-77ff-40c3-b317-716eba0c58b4",
                     },
-                    new Institution
+                    new Owner
                     {
-                        Id = Guid.Parse("58951f15-854b-4bc4-a396-82c396765c42"),
-                        Address = "Warszawa ul Starowislna 55",
-                        Name = "Przychodnia Stoleczna"
+                        Id = Guid.Parse("df70d5a3-7a67-407b-995c-52c0a4f711c1"),
+                        PlaceOfResidence = "Wrocław",
+                        UserId = "df70d5a3-7a67-407b-995c-52c0a4f711c1",
                     },
-                    new Institution
+                    new Owner
                     {
-                        Id = Guid.Parse("fb988055-797d-46e9-b1c9-531dcce8c8dd"),
-                        Address = "Krakow ul Mickiewicza 12/3",
-                        Name = "Krakuskie bidy"
+                        Id = Guid.Parse("6ee7969c-195c-493c-b0a0-430af66e69cf"),
+                        PlaceOfResidence = "Kraków",
+                        UserId = "6ee7969c-195c-493c-b0a0-430af66e69cf",
+                    },
+                    new Owner
+                    {
+                        Id = Guid.Parse("27877f13-f540-4398-8db0-c67a0c5a646f"),
+                        PlaceOfResidence = "Warszawa",
+                        UserId = "27877f13-f540-4398-8db0-c67a0c5a646f",
                     },
                 };
-                context.Institutions.AddRange(institutions);
+                context.Owners.AddRange(owners);
                 await context.SaveChangesAsync();
             }
+        }
 
+        private static async Task SeedVets(DataContext context)
+        {
             if (!context.Vets.Any())
             {
                 var vets = new List<Vet>
@@ -273,37 +287,34 @@ namespace Persistence
                 context.Vets.AddRange(vets);
                 await context.SaveChangesAsync();
             }
+        }
 
-            if (!context.Owners.Any())
+        private static async Task SeedUsers(DataContext context)
+        {
+            if (!context.Institutions.Any())
             {
-                var owners = new List<Owner>
+                var institutions = new List<Institution>
                 {
-                    new Owner
+                    new Institution
                     {
-                        Id = Guid.Parse("16f567aa-77ff-40c3-b317-716eba0c58b4"),
-                        PlaceOfResidence = "Kalisz",
-                        UserId = "16f567aa-77ff-40c3-b317-716eba0c58b4",
+                        Id = Guid.Parse("635c9ded-4261-4e42-86e2-09a7f72cae46"),
+                        Address = "Kalisz ul Nowowiejska 4C",
+                        Name = "Przychodnia Kaliska"
                     },
-                    new Owner
+                    new Institution
                     {
-                        Id = Guid.Parse("df70d5a3-7a67-407b-995c-52c0a4f711c1"),
-                        PlaceOfResidence = "Wrocław",
-                        UserId = "df70d5a3-7a67-407b-995c-52c0a4f711c1",
+                        Id = Guid.Parse("58951f15-854b-4bc4-a396-82c396765c42"),
+                        Address = "Warszawa ul Starowislna 55",
+                        Name = "Przychodnia Stoleczna"
                     },
-                    new Owner
+                    new Institution
                     {
-                        Id = Guid.Parse("6ee7969c-195c-493c-b0a0-430af66e69cf"),
-                        PlaceOfResidence = "Kraków",
-                        UserId = "6ee7969c-195c-493c-b0a0-430af66e69cf",
-                    },
-                    new Owner
-                    {
-                        Id = Guid.Parse("27877f13-f540-4398-8db0-c67a0c5a646f"),
-                        PlaceOfResidence = "Warszawa",
-                        UserId = "27877f13-f540-4398-8db0-c67a0c5a646f",
+                        Id = Guid.Parse("fb988055-797d-46e9-b1c9-531dcce8c8dd"),
+                        Address = "Krakow ul Mickiewicza 12/3",
+                        Name = "Krakuskie bidy"
                     },
                 };
-                context.Owners.AddRange(owners);
+                context.Institutions.AddRange(institutions);
                 await context.SaveChangesAsync();
             }
         }
