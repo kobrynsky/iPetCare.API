@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using API.Security;
+using Application.Dtos.Owners;
 using Application.Dtos.Users;
 using Application.Dtos.Vets;
 using Application.Interfaces;
@@ -10,7 +9,6 @@ using Application.Services.Utilities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Persistence.Enums;
 
 namespace API.Controllers
 {
@@ -85,13 +83,21 @@ namespace API.Controllers
             return BadRequest(response.Message);
         }
 
-
-        // [Authorize]
-        [AllowAnonymous]
+        [Produces(typeof(ServiceResponse<GetVetsDtoResponse>))]
+        [Authorize]
         [HttpPost("vets")]
         public async Task<IActionResult> GetVets([FromBody] GetVetsDtoRequest dto)
         {
             var response = await _userService.GetVetsAsync(dto);
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse<GetOwnersDtoResponse>))]
+        [Authorize]
+        [HttpPost("owners")]
+        public async Task<IActionResult> GetOwners([FromBody] GetOwnersDtoRequest dto)
+        {
+            var response = await _userService.GetOwnersAsync(dto);
             return SendResponse(response);
         }
     }

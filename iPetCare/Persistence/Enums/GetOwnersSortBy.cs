@@ -4,7 +4,7 @@
     {
         SortByLastNameAsc,
         SortByLastNameDesc,
-        SortByBirthDateAsc,
-        SortByBirthDateDesc,
+        SortByPlaceOfResidenceAsc,
+        SortByPlaceOfResidenceDesc,
     }
 }

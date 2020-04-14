@@ -12,6 +12,7 @@ using Application.Dtos.ExaminationParameterValues;
 using Application.Dtos.Examinations;
 using Application.Dtos.ImportantDates;
 using Application.Dtos.Invitations;
+using Application.Dtos.Owners;
 using Application.Dtos.Vets;
 
 namespace Application.Infrastructure
@@ -56,6 +57,11 @@ namespace Application.Infrastructure
                 .ForMember(d => d.Institutions,
                     opt => opt.MapFrom(s => s.InstitutionVets.Select(iv => iv.Institution).ToList()));
 
+            CreateMap<Owner, OwnerForGetOwnersDto>()
+                .ForMember(d => d.Role, opt => opt.MapFrom(s => s.User.Role))
+                .ForMember(d => d.Email, opt => opt.MapFrom(s => s.User.Email))
+                .ForMember(d => d.FirstName, opt => opt.MapFrom(s => s.User.FirstName))
+                .ForMember(d => d.LastName, opt => opt.MapFrom(s => s.User.LastName));
         }
 
         private void MapsForPets()

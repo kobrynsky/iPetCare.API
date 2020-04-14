@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Application.Dtos.Owners;
 using Application.Dtos.Users;
 using Application.Dtos.Vets;
 using Application.Interfaces;
 using Application.Services.Utilities;
-using AutoMapper;
-using Castle.Core.Internal;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -165,6 +162,65 @@ namespace Application.Services
             };
 
             return new ServiceResponse<GetVetsDtoResponse>(HttpStatusCode.OK, dtoToReturn);
+        }
+
+        public async Task<ServiceResponse<GetOwnersDtoResponse>> GetOwnersAsync(GetOwnersDtoRequest dto)
+        {
+            int page;
+            int pageSize;
+            GetOwnersSortBy sortBy;
+
+            if (dto.Page == null || dto.Page == 0)
+                page = 1;
+            else
+                page = (int)dto.Page;
+
+            if (dto.PageSize == null || dto.PageSize < 10)
+                pageSize = 10;
+            else
+                pageSize = (int)dto.PageSize;
+
+            if (dto.SortBy == null)
+                sortBy = GetOwnersSortBy.SortByLastNameAsc;
+            else
+                sortBy = (GetOwnersSortBy)dto.SortBy;
+
+            IQueryable<Owner> dbQuery;
+
+            if (string.IsNullOrWhiteSpace(dto.Query))
+                dbQuery = Context.Owners;
+            else
+            {
+                string queryLower = dto.Query.ToLower();
+                dbQuery = Context.Owners
+                    .Where(o => o.User.LastName.ToLower().Contains(queryLower)
+                                || o.User.FirstName.ToLower().Contains(queryLower)
+                                || o.PlaceOfResidence.ToLower().Contains(queryLower));
+            }
+
+            int totalItems = await dbQuery.CountAsync();
+
+            dbQuery = sortBy switch
+            {
+                GetOwnersSortBy.SortByLastNameAsc => dbQuery.OrderBy(o => o.User.LastName),
+                GetOwnersSortBy.SortByLastNameDesc => dbQuery.OrderByDescending(o => o.User.LastName),
+                GetOwnersSortBy.SortByPlaceOfResidenceAsc => dbQuery.OrderBy(o => o.PlaceOfResidence),
+                GetOwnersSortBy.SortByPlaceOfResidenceDesc => dbQuery.OrderByDescending(o => o.PlaceOfResidence),
+                _ => dbQuery.OrderBy(o => o.User.LastName)
+            };
+            var owners = await dbQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            var dtoToReturn = new GetOwnersDtoResponse
+            {
+                Query = dto.Query,
+                PageSize = pageSize,
+                Page = page,
+                SortBy = sortBy,
+                TotalItems = totalItems,
+                Owners = Mapper.Map<List<OwnerForGetOwnersDto>>(owners)
+            };
+
+            return new ServiceResponse<GetOwnersDtoResponse>(HttpStatusCode.OK, dtoToReturn);
         }
 
         private async Task<ServiceResponse<EditProfileDtoResponse>> EditAdminProfileAsync(EditProfileDtoRequest dto)

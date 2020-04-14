@@ -29,6 +29,9 @@ namespace Persistence
                         Email = "admin@admin.com",
                         Role = "Administrator"
                     },
+
+                    // vets
+
                     new ApplicationUser
                     {
                         Id = "acad4a1d-3287-4c5a-bb05-6a62a9ae6eb8",
@@ -83,6 +86,45 @@ namespace Persistence
                         Email = "vet6@admin.com",
                         Role = "Vet"
                     },
+
+                    // owners
+                    new ApplicationUser
+                    {
+                        Id = "16f567aa-77ff-40c3-b317-716eba0c58b4",
+                        FirstName = "Jolanta",
+                        LastName = "Pepiczek",
+                        UserName = "jpep",
+                        Email = "owner1@admin.com",
+                        Role = "Owner"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "df70d5a3-7a67-407b-995c-52c0a4f711c1",
+                        FirstName = "Anna",
+                        LastName = "Niezawodna",
+                        UserName = "anie",
+                        Email = "owner2@admin.com",
+                        Role = "Owner"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "6ee7969c-195c-493c-b0a0-430af66e69cf",
+                        FirstName = "Maria",
+                        LastName = "Wesołowska",
+                        UserName = "mwes",
+                        Email = "owner3@admin.com",
+                        Role = "Owner"
+                    },
+                    new ApplicationUser
+                    {
+                        Id = "27877f13-f540-4398-8db0-c67a0c5a646f",
+                        FirstName = "Joanna",
+                        LastName = "Grzebowska",
+                        UserName = "jgrz",
+                        Email = "owner4@admin.com",
+                        Role = "Owner"
+                    },
+
                 };
 
                 foreach (var user in users)
@@ -229,6 +271,39 @@ namespace Persistence
                     },
                 };
                 context.Vets.AddRange(vets);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Owners.Any())
+            {
+                var owners = new List<Owner>
+                {
+                    new Owner
+                    {
+                        Id = Guid.Parse("16f567aa-77ff-40c3-b317-716eba0c58b4"),
+                        PlaceOfResidence = "Kalisz",
+                        UserId = "16f567aa-77ff-40c3-b317-716eba0c58b4",
+                    },
+                    new Owner
+                    {
+                        Id = Guid.Parse("df70d5a3-7a67-407b-995c-52c0a4f711c1"),
+                        PlaceOfResidence = "Wrocław",
+                        UserId = "df70d5a3-7a67-407b-995c-52c0a4f711c1",
+                    },
+                    new Owner
+                    {
+                        Id = Guid.Parse("6ee7969c-195c-493c-b0a0-430af66e69cf"),
+                        PlaceOfResidence = "Kraków",
+                        UserId = "6ee7969c-195c-493c-b0a0-430af66e69cf",
+                    },
+                    new Owner
+                    {
+                        Id = Guid.Parse("27877f13-f540-4398-8db0-c67a0c5a646f"),
+                        PlaceOfResidence = "Warszawa",
+                        UserId = "27877f13-f540-4398-8db0-c67a0c5a646f",
+                    },
+                };
+                context.Owners.AddRange(owners);
                 await context.SaveChangesAsync();
             }
         }
