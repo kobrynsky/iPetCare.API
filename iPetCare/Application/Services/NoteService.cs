@@ -147,10 +147,16 @@ namespace Application.Services
             if (note == null)
                 return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.NotFound);
 
+            if (note.Payload == dto.Payload && note.CreatedAt == dto.CreatedAt && note.PetId == dto.PetId && note.UserId == dto.UserId)
+            {
+                var responseDto = Mapper.Map<UpdateNoteDtoResponse>(note);
+                return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.OK, responseDto);
+            }
+
             var user = await Context.Users.FindAsync(dto.UserId);
 
             if (user == null)
-                return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono typu użytkownika");
+                return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
            
             note.Payload = dto.Payload;
             note.CreatedAt = dto.CreatedAt;
