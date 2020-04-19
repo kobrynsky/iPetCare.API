@@ -1,18 +1,15 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using API.Security;
 using Application.Dtos.Species;
-using Application.Dtos.Users;
 using Application.Interfaces;
+using Application.Services.Utilities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/species")]
-    [ApiController]
-    public class SpeciesController : Controller
+    public class SpeciesController : BaseController
     {
         private readonly ISpeciesService _speciesService;
 
@@ -21,79 +18,49 @@ namespace API.Controllers
             _speciesService = speciesService;
         }
 
+        [Produces(typeof(ServiceResponse<CreateSpeciesDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<ActionResult<CreateSpeciesDtoResponse>> CreateSpecies(CreateSpeciesDtoRequest dto)
+        public async Task<IActionResult> CreateSpecies(CreateSpeciesDtoRequest dto)
         {
             var response = await _speciesService.CreateSpeciesAsync(dto);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<GetAllSpeciesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet]
-        public async Task<ActionResult<GetAllSpeciesDtoResponse>> GetAllSpecies()
+        public async Task<IActionResult> GetAllSpecies()
         {
             var response = await _speciesService.GetAllSpeciesAsync();
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<GetSpeciesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{speciesId}")]
-        public async Task<ActionResult<GetSpeciesDtoResponse>> GetSpecies(int speciesId)
+        public async Task<IActionResult> GetSpecies(int speciesId)
         {
             var response = await _speciesService.GetSpeciesAsync(speciesId);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<UpdateSpeciesDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{speciesId}")]
-        public async Task<ActionResult<UpdateSpeciesDtoResponse>> UpdateSpecies(int speciesId, UpdateSpeciesDtoRequest dto)
+        public async Task<IActionResult> UpdateSpecies(int speciesId, UpdateSpeciesDtoRequest dto)
         {
             var response = await _speciesService.UpdateSpeciesAsync(speciesId, dto);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<DeleteSpeciesDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpDelete("{speciesId}")]
-        public async Task<ActionResult<DeleteSpeciesDtoResponse>> DeleteSpecies(int speciesId)
+        public async Task<IActionResult> DeleteSpecies(int speciesId)
         {
             var response = await _speciesService.DeleteSpeciesAsync(speciesId);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
     }
 }
