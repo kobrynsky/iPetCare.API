@@ -12,7 +12,7 @@ namespace Persistence.Seeds
     {
         public static async Task Seed(DataContext context)
         {
-            if (context.Pets.Any() && context.Vets.Any())
+            if (!context.VetPets.Any())
             {
                 var vets = await context.Vets.ToListAsync();
                 var pets = await context.Pets.ToListAsync();

@@ -24,7 +24,7 @@ namespace Persistence.Seeds
                 requests.Add(new Request()
                 {
                     DidUserRequest = true,
-                    User = owners.Where(x => x.OwnerPets.All(y => y.PetId == pets[0].Id)).FirstOrDefault().User,
+                    User = owners.Where(x => x.OwnerPets.All(y => y.PetId != pets[0].Id)).FirstOrDefault().User,
                     Pet = pets[0],
                     IsAccepted = false,
                 });
@@ -33,7 +33,7 @@ namespace Persistence.Seeds
                 requests.Add(new Request()
                 {
                     DidUserRequest = true,
-                    User = vets.Where(x => x.VetPets.All(y => y.PetId == pets[1].Id)).FirstOrDefault().User,
+                    User = vets.Where(x => x.VetPets.All(y => y.PetId != pets[1].Id)).FirstOrDefault().User,
                     Pet = pets[1],
                     IsAccepted = false,
                 });
@@ -42,7 +42,7 @@ namespace Persistence.Seeds
                 requests.Add(new Request()
                 {
                     DidUserRequest = false,
-                    User = vets.Where(x => x.VetPets.All(y => y.PetId == pets[2].Id)).FirstOrDefault().User,
+                    User = vets.Where(x => x.VetPets.All(y => y.PetId != pets[2].Id)).FirstOrDefault().User,
                     Pet = pets[2],
                     IsAccepted = false,
                 });
@@ -51,12 +51,12 @@ namespace Persistence.Seeds
                 requests.Add(new Request()
                 {
                     DidUserRequest = false,
-                    User = owners.Where(x => x.OwnerPets.All(y => y.PetId == pets[2].Id)).FirstOrDefault().User,
+                    User = owners.Where(x => x.OwnerPets.All(y => y.PetId != pets[2].Id)).FirstOrDefault().User,
                     Pet = pets[2],
                     IsAccepted = false,
                 });
 
-                context.Add(requests);
+                context.AddRange(requests);
                 await context.SaveChangesAsync();
             }
         }
