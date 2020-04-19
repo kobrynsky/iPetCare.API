@@ -20,6 +20,8 @@ namespace Persistence.Seeds
             await SeedRaces.Seed(context);
             await SeedPets.Seed(context);
             await SeedPetOwners.Seed(context);
+            await SeedVetPets.Seed(context);
+            await SeedRequests.Seed(context);
         }
     }
 }
