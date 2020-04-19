@@ -18,7 +18,8 @@ namespace Persistence.Seeds
                 var examinationParameters = new List<ExaminationParameter>();
                 var random = new Random();
 
-                foreach (var type in examinationTypes.Where(x => x.Name == "Badanie krwi"))
+                var bloodTypes = examinationTypes.Where(x => x.Name == "Badanie krwi");
+                foreach (var type in bloodTypes)
                 {
                     var randomLimitChanger = random.Next(0, 10);
                     var parameter1 = new ExaminationParameter()
@@ -47,7 +48,8 @@ namespace Persistence.Seeds
                     type.ExaminationParameters.Add(parameter3);
                 }
 
-                foreach (var type in examinationTypes.Where(x => x.Name == "Badanie słuchu"))
+                var hearTypes = examinationTypes.Where(x => x.Name == "Badanie słuchu");
+                foreach (var type in hearTypes)
                 {
                     var parameter1 = new ExaminationParameter()
                     {
@@ -67,7 +69,8 @@ namespace Persistence.Seeds
                     type.ExaminationParameters.Add(parameter2);
                 }
 
-                foreach (var type in examinationTypes.Where(x => x.Name == "Badanie układu pokarmowego"))
+                var stomacheTypes = examinationTypes.Where(x => x.Name == "Badanie układu pokarmowego");
+                foreach (var type in stomacheTypes)
                 {
                     var randomLimitChanger = random.Next(0, 10);
                     var parameter1 = new ExaminationParameter()

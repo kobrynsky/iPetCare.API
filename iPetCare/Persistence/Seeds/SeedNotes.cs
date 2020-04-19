@@ -49,7 +49,7 @@ namespace Persistence.Seeds
                 });
 
                 context.AddRange(notes);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }

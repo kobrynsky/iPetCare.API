@@ -51,7 +51,7 @@ namespace Persistence.Seeds
                 }
 
                 context.AddRange(examinations);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }

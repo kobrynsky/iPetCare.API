@@ -21,10 +21,15 @@ namespace Persistence.Seeds
             await SeedPets.Seed(context);
             await SeedPetOwners.Seed(context);
             await SeedVetPets.Seed(context);
+            System.Threading.Thread.Sleep(1000);
             await SeedRequests.Seed(context);
+            System.Threading.Thread.Sleep(1000);
             await SeedExaminationTypes.Seed(context);
+            System.Threading.Thread.Sleep(1000);
             await SeedExaminationParameters.Seed(context);
+            System.Threading.Thread.Sleep(1000);
             await SeedExaminations.Seed(context);
+            System.Threading.Thread.Sleep(1000);
             await SeedNotes.Seed(context);
         }
     }

@@ -42,7 +42,7 @@ namespace Persistence.Seeds
                 }
 
                 context.AddRange(examinationTypes);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }
