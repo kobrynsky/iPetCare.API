@@ -24,6 +24,7 @@ namespace Persistence.Seeds
             await SeedRequests.Seed(context);
             await SeedExaminationTypes.Seed(context);
             await SeedExaminationParameters.Seed(context);
+            await SeedExaminations.Seed(context);
         }
     }
 }
