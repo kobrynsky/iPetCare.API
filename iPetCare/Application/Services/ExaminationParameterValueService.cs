@@ -33,7 +33,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (! await CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationParameter = await Context.ExaminationParameters.FindAsync(dto.ExaminationParameterId);
@@ -71,7 +71,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (! await CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
             Context.ExaminationParameterValues.Remove(examinationParameterValue);
@@ -119,7 +119,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (! await CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationParameter = await Context.ExaminationParameters.FindAsync(examinationParameterValue.ExaminationParameterId);
@@ -155,7 +155,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (!CanEditExaminationParameterValue(pet))
+            if (!await CanEditExaminationParameterValueAsync(pet))
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             examinationParameterValue.ExaminationId = dto.ExaminationId;
