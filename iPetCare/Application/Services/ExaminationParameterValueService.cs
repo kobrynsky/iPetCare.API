@@ -172,7 +172,7 @@ namespace Application.Services
             return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiło zapisanie do bazy danych");
         }
 
-        private async Task<bool> CanEditExaminationParameterValueAsync(Pet pet)
+        private bool CanEditExaminationParameterValue(Pet pet)
         {
             if (CurrentlyLoggedUser.Role != Role.Administrator)
             {

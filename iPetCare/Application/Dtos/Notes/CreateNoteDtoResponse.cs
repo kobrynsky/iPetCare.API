@@ -1,22 +1,15 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Domain.Models
+namespace Application.Dtos.Notes
 {
-    public class Note
+    public class CreateNoteDtoResponse
     {
         public Guid Id { get; set; }
-
-        [Required]
-        [MaxLength(512)]
         public string Payload { get; set; }
-
         public DateTime CreatedAt { get; set; }
-
         public Guid PetId { get; set; }
-        public virtual Pet Pet { get; set; }
-
         public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
     }
 }
