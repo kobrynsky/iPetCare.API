@@ -9,11 +9,11 @@ using Application.Services.Utilities;
 
 namespace API.Controllers
 {
-    public class RaceController : BaseController
+    public class RacesController : BaseController
     {
         private readonly IRaceService _raceService;
 
-        public RaceController(IRaceService raceService)
+        public RacesController(IRaceService raceService)
         {
             _raceService = raceService;
         }
