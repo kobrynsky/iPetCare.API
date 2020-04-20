@@ -6,6 +6,7 @@ using Application.Services.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Domain.Models;
 using API.Security;
+using System;
 
 namespace API.Controllers
 {
@@ -33,6 +34,15 @@ namespace API.Controllers
         public async Task<IActionResult> GetAllExaminationTypes()
         {
             var response = await _examinationTypesService.GetAllExaminationTypesAsync();
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse<GetAllExaminationTypesDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet("pet/{petId}")]
+        public async Task<IActionResult> GetExaminationTypesByPetId(Guid petId)
+        {
+            var response = await _examinationTypesService.GetExaminationTypesByPetIdAsync(petId);
             return SendResponse(response);
         }
 
