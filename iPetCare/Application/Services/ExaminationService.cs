@@ -35,8 +35,12 @@ namespace Application.Services
             if(examinationType == null)
                 return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy typ badania");
 
+            if (dto.Id == Guid.Empty)
+                dto.Id = Guid.NewGuid();
+
             var examination = new Examination()
             {
+                Id = dto.Id,
                 Date = dto.Date,
                 ExaminationTypeId = dto.ExaminationTypeId,
                 PetId = dto.PetId
