@@ -12,7 +12,5 @@ namespace Application.Dtos.Notes
         public string Payload { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid PetId { get; set; }
-        [Required]
-        public string UserId { get; set; }
     }
 }
