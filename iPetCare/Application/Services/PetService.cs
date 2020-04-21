@@ -66,6 +66,12 @@ namespace Application.Services
                 return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.OK, petToReturn);
             }
 
+            if (CurrentlyLoggedUser.Role == Role.Administrator)
+            {
+                var petToReturn = Mapper.Map<GetPetDtoResponse>(pet);
+                return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.OK, petToReturn);
+            }
+
             return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Forbidden);
         }
 

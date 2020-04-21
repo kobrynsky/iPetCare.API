@@ -120,61 +120,6 @@ namespace Persistence
                         OwnerId = owners[randomizedId].Id
                     });
                 }
-
-                //
-                // var list = new List<OwnerPet>
-                // {
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     },
-                //     new OwnerPet
-                //     {
-                //         OwnerId = context.Owners.OrderBy(r => Guid.NewGuid()).First().Id,
-                //         PetId = context.Pets.OrderBy(r => Guid.NewGuid()).First().Id,
-                //     }
-                // };
                 context.OwnerPets.AddRange(ownerPets);
                 await context.SaveChangesAsync();
             }
