@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -7,14 +8,20 @@ using Application.Dtos.Pet;
 using Application.Interfaces;
 using Application.Services.Utilities;
 using Domain.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
     public class PetService : Service, IPetService
     {
-        public PetService(IServiceProvider serviceProvider) : base(serviceProvider)
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+        public PetService(IServiceProvider serviceProvider, IHostingEnvironment hostingEnvironment) : base(
+            serviceProvider)
         {
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<ServiceResponse<GetPetsDtoResponse>> GetPetsAsync()
@@ -30,10 +37,10 @@ namespace Application.Services
 
         public async Task<ServiceResponse<GetPetDtoResponse>> GetPetAsync(Guid petId)
         {
-            if(petId == Guid.Empty)
+            if (petId == Guid.Empty)
                 return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy Pet Id");
 
-            if(CurrentlyLoggedUser == null)
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetPetDtoResponse>(HttpStatusCode.Unauthorized);
 
             var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id == petId);
@@ -77,7 +84,7 @@ namespace Application.Services
 
         public async Task<ServiceResponse<CreatePetDtoResponse>> CreatePetAsync(CreatePetDtoRequest dto)
         {
-            if(dto.Gender == null)
+            if (dto.Gender == null)
                 return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest, "Należy podać płeć");
 
             if (CurrentlyLoggedUser == null)
@@ -91,16 +98,18 @@ namespace Application.Services
             if (dto.Id == Guid.Empty)
                 dto.Id = Guid.NewGuid();
 
-            if(await Context.Pets.AnyAsync(p => p.Id == dto.Id))
-                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest, "Istnieje już zwierzak o podanym id.");
+            if (await Context.Pets.AnyAsync(p => p.Id == dto.Id))
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest,
+                    "Istnieje już zwierzak o podanym id.");
 
-            Pet pet = Mapper.Map<Pet>(dto);
+            var pet = Mapper.Map<Pet>(dto);
 
             var race = await Context.Races.SingleOrDefaultAsync(r => r.Id == dto.RaceId);
             if (race == null)
                 return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowa rasa");
 
             pet.Race = race;
+            var imageAssigned = await ChangePetImageAsync(dto.Image, pet);
 
             Context.Pets.Add(pet);
             Context.OwnerPets.Add(new OwnerPet
@@ -109,12 +118,15 @@ namespace Application.Services
                 Owner = owner
             });
 
-            if (await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest,
-                    "Wystąpił błąd podczas tworzenia zwierzaka");
 
-            var petToReturn = Mapper.Map<CreatePetDtoResponse>(pet);
-            return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.OK, petToReturn);
+            var result = await Context.SaveChangesAsync();
+
+            if (result > 0 || imageAssigned)
+                return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.OK,
+                    Mapper.Map<CreatePetDtoResponse>(pet));
+
+            return new ServiceResponse<CreatePetDtoResponse>(HttpStatusCode.BadRequest,
+                "Wystąpił błąd podczas tworzenia zwierzaka");
         }
 
         public async Task<ServiceResponse<UpdatePetDtoResponse>> UpdatePetAsync(Guid petId,
@@ -144,12 +156,7 @@ namespace Application.Services
                 if (!await Context.OwnerPets.AnyAsync(op => op.PetId == petId && op.OwnerId == owner.Id))
                     return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Forbidden);
 
-                Mapper.Map(dto, pet);
-                return await Context.SaveChangesAsync() > 0
-                    ? new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
-                        Mapper.Map<UpdatePetDtoResponse>(dto))
-                    : new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                        "Wystąpił błąd podczas aktualizacji zwierzaka");
+                return await ChangePetInfoWithImageAsync(dto, pet);
             }
 
             if (CurrentlyLoggedUser.Role == Role.Vet)
@@ -161,24 +168,10 @@ namespace Application.Services
                 if (!await Context.VetPets.AnyAsync(vp => vp.PetId == petId && vp.VetId == vet.Id))
                     return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Forbidden);
 
-                Mapper.Map(dto, pet);
-                return await Context.SaveChangesAsync() > 0
-                    ? new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
-                        Mapper.Map<UpdatePetDtoResponse>(dto))
-                    : new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                        "Wystąpił błąd podczas aktualizacji zwierzaka");
-
+                return await ChangePetInfoAsync(dto, pet);
             }
 
-            if (CurrentlyLoggedUser.Role == Role.Administrator)
-            {
-                Mapper.Map(dto, pet);
-                return await Context.SaveChangesAsync() > 0
-                    ? new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
-                        Mapper.Map<UpdatePetDtoResponse>(dto))
-                    : new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
-                        "Wystąpił błąd podczas aktualizacji zwierzaka");
-            }
+            if (CurrentlyLoggedUser.Role == Role.Administrator) return await ChangePetInfoWithImageAsync(dto, pet);
             return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.Forbidden);
         }
 
@@ -190,24 +183,34 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-            var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == CurrentlyLoggedUser.Id);
-            if (owner == null)
-                return new ServiceResponse(HttpStatusCode.Unauthorized);
-
-            var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id== petId);
+            var pet = await Context.Pets.SingleOrDefaultAsync(p => p.Id == petId);
             if (pet == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
-            if (!await Context.OwnerPets.AnyAsync(op => op.OwnerId == owner.Id && op.PetId == petId))
-                return new ServiceResponse(HttpStatusCode.Forbidden);
+            if (CurrentlyLoggedUser.Role == Role.Administrator)
+            {
+                Context.Pets.Remove(pet);
+            }
+            else
+            {
+                var owner = await Context.Owners.SingleOrDefaultAsync(o => o.UserId == CurrentlyLoggedUser.Id);
+                if (owner == null)
+                    return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-            Context.Pets.Remove(pet);
-            return await Context.SaveChangesAsync() > 0 ? new ServiceResponse(HttpStatusCode.OK) : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania zwierzaka");
+                if (!await Context.OwnerPets.AnyAsync(op => op.OwnerId == owner.Id && op.PetId == petId))
+                    return new ServiceResponse(HttpStatusCode.Forbidden);
+
+                Context.Pets.Remove(pet);
+            }
+
+            return await Context.SaveChangesAsync() > 0
+                ? new ServiceResponse(HttpStatusCode.OK)
+                : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania zwierzaka");
         }
 
         public async Task<ServiceResponse<GetMyPetsDtoResponse>> GetMyPetsAsync()
         {
-            if(CurrentlyLoggedUser == null)
+            if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetMyPetsDtoResponse>(HttpStatusCode.Unauthorized);
 
             var pets = await Context.Pets
@@ -238,6 +241,65 @@ namespace Application.Services
             dto.Pets = Mapper.Map<List<PetForGetSharedPetsDtoResponse>>(pets);
 
             return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
+        private async Task<ServiceResponse<UpdatePetDtoResponse>> ChangePetInfoAsync(UpdatePetDtoRequest dto, Pet pet)
+        {
+            Mapper.Map(dto, pet);
+            return await Context.SaveChangesAsync() > 0
+                ? new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
+                    Mapper.Map<UpdatePetDtoResponse>(dto))
+                : new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
+                    "Wystąpił błąd podczas aktualizacji zwierzaka");
+        }
+
+        private async Task<ServiceResponse<UpdatePetDtoResponse>> ChangePetInfoWithImageAsync(UpdatePetDtoRequest dto,
+            Pet pet)
+        {
+            Mapper.Map(dto, pet);
+
+            var imageChanged = await ChangePetImageAsync(dto.Image, pet);
+
+            var result = await Context.SaveChangesAsync();
+            if (result > 0 || imageChanged)
+                return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.OK,
+                    Mapper.Map<UpdatePetDtoResponse>(dto));
+
+            return new ServiceResponse<UpdatePetDtoResponse>(HttpStatusCode.BadRequest,
+                "Wystąpił błąd podczas aktualizacji zwierzaka");
+        }
+
+        private async Task<bool> ChangePetImageAsync(IFormFile image, Pet pet)
+        {
+            if (image.Length <= 0) return false;
+
+            var fileExtension = Path.GetExtension(image.FileName);
+
+            var imageFolderPath = "Uploads/Pets/Photos";
+
+            // create folder it should upload files to
+            Directory.CreateDirectory($"{_hostingEnvironment.WebRootPath}/{imageFolderPath}");
+
+            // find images named as pet id, regardless of the extension
+            var files = Directory.GetFiles($"{_hostingEnvironment.WebRootPath}/{imageFolderPath}", $"{pet.Id}.*");
+
+            // if found any files
+            if (files.Length > 0)
+                // delete them
+                foreach (var file in files)
+                    File.Delete(file);
+
+            var newFileName = $"{pet.Id}{fileExtension}";
+
+            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, imageFolderPath, newFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(fileStream);
+            }
+
+            pet.ImageUrl = $"/{imageFolderPath}/{newFileName}";
+
+            return true;
         }
     }
 }

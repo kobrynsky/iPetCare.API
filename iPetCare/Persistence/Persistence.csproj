@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200418115438_ABC.cs" />
+    <Compile Remove="Migrations\20200418115438_ABC.Designer.cs" />
+    <Compile Remove="Migrations\20200418115912_abc.cs" />
+    <Compile Remove="Migrations\20200418115912_abc.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">

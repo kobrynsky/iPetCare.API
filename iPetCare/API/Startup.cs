@@ -127,6 +127,8 @@ namespace API
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/V1/swagger.json", "API V1"); });
 
+            app.UseStaticFiles();
+
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

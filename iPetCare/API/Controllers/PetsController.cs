@@ -57,7 +57,7 @@ namespace API.Controllers
 
         [Produces(typeof(ServiceResponse<CreatePetDtoResponse>))]
         [HttpPost]
-        public async Task<IActionResult> CreatePet([FromBody] CreatePetDtoRequest dto)
+        public async Task<IActionResult> CreatePet([FromForm] CreatePetDtoRequest dto)
         {
             var response = await _petService.CreatePetAsync(dto);
             return SendResponse(response);
