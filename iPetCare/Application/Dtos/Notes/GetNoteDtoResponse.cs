@@ -10,6 +10,7 @@ namespace Application.Dtos.Notes
         public Guid Id { get; set; }
         public string Payload { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? ImportantDate { get; set; }
         public PetForGetNoteDtoResponse Pet { get; set; }
         public UserForGetNoteDtoResponse User { get; set; }
     }

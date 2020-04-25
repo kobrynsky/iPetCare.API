@@ -43,7 +43,8 @@ namespace Application.Services
                 Id = dto.Id,
                 Date = dto.Date,
                 ExaminationTypeId = dto.ExaminationTypeId,
-                PetId = dto.PetId
+                PetId = dto.PetId,
+                Content = dto.Content,
             };
 
             Context.Examinations.Add(examination);
@@ -56,7 +57,8 @@ namespace Application.Services
                     Id = examination.Id,
                     Date = examination.Date,
                     ExaminationTypeId = examination.ExaminationTypeId,
-                    PetId = examination.PetId
+                    PetId = examination.PetId,
+                    Content = dto.Content,
                 };
 
                 return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.OK, responseDto);
@@ -178,6 +180,7 @@ namespace Application.Services
             examination.Date = dto.Date;
             examination.ExaminationTypeId = dto.ExaminationTypeId;
             examination.PetId = dto.PetId;
+            examination.Content = dto.Content;
 
             int result = await Context.SaveChangesAsync();
             if (result > 0)

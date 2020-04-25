@@ -155,6 +155,7 @@ namespace Application.Services
 
             note.Payload = dto.Payload;
             note.CreatedAt = dto.CreatedAt;
+            note.ImportantDate = dto.ImportantDate;
             note.PetId = dto.PetId;
             note.UserId = CurrentlyLoggedUser.Id;
 
