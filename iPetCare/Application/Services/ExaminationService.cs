@@ -46,11 +46,6 @@ namespace Application.Services
                 PetId = dto.PetId
             };
 
-            if (dto.NoteId != null)
-                examination.NoteId = dto.NoteId;
-            else
-                examination.NoteId = null;
-
             Context.Examinations.Add(examination);
             int result = await Context.SaveChangesAsync();
 
@@ -61,7 +56,6 @@ namespace Application.Services
                     Id = examination.Id,
                     Date = examination.Date,
                     ExaminationTypeId = examination.ExaminationTypeId,
-                    NoteId = examination.NoteId,
                     PetId = examination.PetId
                 };
 
@@ -175,18 +169,11 @@ namespace Application.Services
 
             var examination = Context.Examinations.Find(examinationId);
             var examinationType = Context.ExaminationTypes.Find(dto.ExaminationTypeId);
-            Note note = null;
-            if (dto.NoteId != null)
-                note = Context.Notes.Find(dto.NoteId);
 
             if (examination == null)
                 return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.NotFound);
             if (examinationType == null)
                 return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono typu badania");
-            if (note == null)
-                examination.NoteId = null;
-            else
-                examination.NoteId = dto.NoteId;
 
             examination.Date = dto.Date;
             examination.ExaminationTypeId = dto.ExaminationTypeId;

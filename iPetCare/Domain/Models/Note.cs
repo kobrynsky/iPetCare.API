@@ -12,6 +12,7 @@ namespace Domain.Models
         public string Payload { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public DateTime? ImportantDate { get; set; }
 
         public Guid PetId { get; set; }
         public virtual Pet Pet { get; set; }

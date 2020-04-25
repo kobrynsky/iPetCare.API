@@ -25,8 +25,6 @@ namespace Domain.Models
         public int RaceId { get; set; }
         public virtual Race Race { get; set; }
 
-        public virtual ICollection<ImportantDatePet> ImportantDatePets { get; set; }
-
         public virtual ICollection<Note> Notes { get; set; }
 
         public virtual ICollection<OwnerPet> OwnerPets { get; set; }

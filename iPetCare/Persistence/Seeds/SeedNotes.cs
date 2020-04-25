@@ -27,6 +27,7 @@ namespace Persistence.Seeds
                         CreatedAt = DateTime.Now,
                         Payload = $"Mój ukochany zwierzaczek {examination.Pet.Name} był na badaniu!",
                         User = examination.Pet.OwnerPets.ElementAt(0).Owner.User,
+                        ImportantDate = DateTime.Now.AddMonths(1),
                     });
                 }
 
@@ -38,6 +39,7 @@ namespace Persistence.Seeds
                         CreatedAt = DateTime.Now,
                         Payload = $"Notateczka bez badania u {pets[0].Name}",
                         User = pets[0].OwnerPets.ElementAt(0).Owner.User,
+                        ImportantDate = DateTime.Now.AddMonths(1),
                     },
                     new Note()
                     {
@@ -45,6 +47,7 @@ namespace Persistence.Seeds
                         CreatedAt = DateTime.Now,
                         Payload = $"Notateczka bez badania u {pets[1].Name}",
                         User = pets[1].OwnerPets.ElementAt(0).Owner.User,
+                        ImportantDate = DateTime.Now.AddMonths(1),
                     }
                 });
 

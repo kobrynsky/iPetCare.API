@@ -45,6 +45,7 @@ namespace Persistence.Seeds
                             Date = DateTime.Now,
                             ExaminationParameterValues = examinationValues,
                             ExaminationType = examinationType,
+                            Content = "Badanie było w porząsiu",
                         });
 
                     }
