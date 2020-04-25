@@ -9,6 +9,7 @@ namespace Application.Dtos.Notes
         public Guid Id { get; set; }
         public string Payload { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? ImportantDate { get; set; }
         public Guid PetId { get; set; }
         public string UserId { get; set; }
     }
