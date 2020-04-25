@@ -84,6 +84,11 @@ namespace Application.Services
             if (examination == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
+            var examinationValues = Context.ExaminationParameterValues.Where(x => x.ExaminationId == examinationId);
+
+            if (examinationValues.Any())
+                Context.ExaminationParameterValues.RemoveRange(examinationValues);
+
             Context.Examinations.Remove(examination);
             int result = await Context.SaveChangesAsync();
 

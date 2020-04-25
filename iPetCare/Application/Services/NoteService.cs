@@ -147,7 +147,7 @@ namespace Application.Services
             if (note == null)
                 return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.NotFound);
 
-            if (note.Payload == dto.Payload && note.CreatedAt == dto.CreatedAt && note.PetId == dto.PetId && note.UserId == CurrentlyLoggedUser.Id)
+            if (note.Payload == dto.Payload && note.CreatedAt == dto.CreatedAt && note.PetId == dto.PetId && note.UserId == CurrentlyLoggedUser.Id && dto.ImportantDate == dto.ImportantDate)
             {
                 var responseDto = Mapper.Map<UpdateNoteDtoResponse>(note);
                 return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.OK, responseDto);
