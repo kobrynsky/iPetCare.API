@@ -134,6 +134,34 @@ namespace Application.Services
             return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.OK, dto);
         }
 
+        public async Task<ServiceResponse<GetAllExaminationParametersValuesDtoResponse>> GetExaminationParameterValueByExaminatinIdAsync(Guid examinationId)
+        {
+            var examination = Context.Examinations.Find(examinationId);
+
+            if (examination == null)
+                return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.NotFound);
+
+            var pet = Context.Pets.Find(examination.PetId);
+
+            if (pet == null)
+                return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.NotFound);
+
+
+            if (!CanEditExaminationParameterValue(pet))
+                return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.Forbidden);
+
+
+            var examValues = await Context.ExaminationParameterValues.Where(x => x.ExaminationId == examinationId).ToListAsync();
+
+            var dto = new GetAllExaminationParametersValuesDtoResponse()
+            {
+                ExaminationParametersValues = Mapper.Map<List<ExaminationParameterValueForGetAllExaminationParametersValuesDtoResponse>>(examValues)
+            };
+
+
+            return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
         public async Task<ServiceResponse<UpdateExaminationParameterValueDtoResponse>> UpdateExaminationParameterValueAsync(Guid examinationParameterValueId, UpdateExaminationParameterValueDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)

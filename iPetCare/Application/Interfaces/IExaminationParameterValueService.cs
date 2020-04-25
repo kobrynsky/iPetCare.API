@@ -12,5 +12,6 @@ namespace Application.Interfaces
         Task<ServiceResponse<GetExaminationParameterValueDtoResponse>> GetExaminationParameterValueAsync(Guid examinationParameterValueId);
         Task<ServiceResponse<UpdateExaminationParameterValueDtoResponse>> UpdateExaminationParameterValueAsync(Guid examinationParameterValueId, UpdateExaminationParameterValueDtoRequest dto);
         Task<ServiceResponse> DeleteExaminationParameterValueAsync(Guid examinationParameterValueId);
+        Task<ServiceResponse<GetAllExaminationParametersValuesDtoResponse>> GetExaminationParameterValueByExaminatinIdAsync(Guid examinationId);
     }
 }
