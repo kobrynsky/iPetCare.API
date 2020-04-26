@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Application.Dtos.Owners;
 using Application.Dtos.Users;
+using Application.Dtos.Vets;
 using Application.Interfaces;
 using Application.Services.Utilities;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Enums;
 
 namespace Application.Services
 {
@@ -88,8 +91,8 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.Unauthorized);
 
-            if (CurrentlyLoggedUser.Role == Role.Owner)            
-                return await EditOwnerProfileAsync(dto);            
+            if (CurrentlyLoggedUser.Role == Role.Owner)
+                return await EditOwnerProfileAsync(dto);
 
             if (CurrentlyLoggedUser.Role == Role.Vet)
                 return await EditVetProfileAsync(dto);
@@ -98,6 +101,126 @@ namespace Application.Services
                 return await EditAdminProfileAsync(dto);
 
             return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest);
+        }
+
+        public async Task<ServiceResponse<GetVetsDtoResponse>> GetVetsAsync(GetVetsDtoRequest dto)
+        {
+            int page;
+            int pageSize;
+            GetVetsSortBy sortBy;
+
+            if (dto.Page == null || dto.Page == 0)
+                page = 1;
+            else
+                page = (int) dto.Page;
+
+            if (dto.PageSize == null || dto.PageSize < 10)
+                pageSize = 10;
+            else
+                pageSize = (int) dto.PageSize;
+
+            if (dto.SortBy == null)
+                sortBy = GetVetsSortBy.SortByLastNameAsc;
+            else
+                sortBy = (GetVetsSortBy) dto.SortBy;
+
+            IQueryable<Vet> dbQuery;
+
+            if (string.IsNullOrWhiteSpace(dto.Query))
+                dbQuery = Context.Vets;
+            else
+            {
+                string queryLower = dto.Query.ToLower();
+                dbQuery = Context.Vets
+                    .Where(v => v.User.LastName.ToLower().Contains(queryLower)
+                                || v.User.FirstName.ToLower().Contains(queryLower)
+                                || v.InstitutionVets.Any(iv => iv.Institution.Name.ToLower().Contains(queryLower))
+                                || v.Specialization.ToLower().Contains(queryLower)
+                                || v.InstitutionVets.Any(iv => iv.Institution.Address.ToLower().Contains(queryLower)));
+            }
+
+            int totalItems = await dbQuery.CountAsync();
+
+            dbQuery = sortBy switch
+            {
+                GetVetsSortBy.SortByLastNameAsc => dbQuery.OrderBy(v => v.User.LastName),
+                GetVetsSortBy.SortByLastNameDesc => dbQuery.OrderByDescending(v => v.User.LastName),
+                GetVetsSortBy.SortBySpecializationAsc => dbQuery.OrderBy(v => v.Specialization),
+                GetVetsSortBy.SortBySpecializationDesc => dbQuery.OrderByDescending(v => v.Specialization),
+                _ => dbQuery.OrderBy(v => v.User.LastName)
+            };
+            var vets = await dbQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            var dtoToReturn = new GetVetsDtoResponse
+            {
+                Query = dto.Query,
+                PageSize = pageSize,
+                Page = page,
+                SortBy = sortBy,
+                TotalItems = totalItems,
+                Vets = Mapper.Map<List<VetForGetVetsDto>>(vets)
+            };
+
+            return new ServiceResponse<GetVetsDtoResponse>(HttpStatusCode.OK, dtoToReturn);
+        }
+
+        public async Task<ServiceResponse<GetOwnersDtoResponse>> GetOwnersAsync(GetOwnersDtoRequest dto)
+        {
+            int page;
+            int pageSize;
+            GetOwnersSortBy sortBy;
+
+            if (dto.Page == null || dto.Page == 0)
+                page = 1;
+            else
+                page = (int)dto.Page;
+
+            if (dto.PageSize == null || dto.PageSize < 10)
+                pageSize = 10;
+            else
+                pageSize = (int)dto.PageSize;
+
+            if (dto.SortBy == null)
+                sortBy = GetOwnersSortBy.SortByLastNameAsc;
+            else
+                sortBy = (GetOwnersSortBy)dto.SortBy;
+
+            IQueryable<Owner> dbQuery;
+
+            if (string.IsNullOrWhiteSpace(dto.Query))
+                dbQuery = Context.Owners;
+            else
+            {
+                string queryLower = dto.Query.ToLower();
+                dbQuery = Context.Owners
+                    .Where(o => o.User.LastName.ToLower().Contains(queryLower)
+                                || o.User.FirstName.ToLower().Contains(queryLower)
+                                || o.PlaceOfResidence.ToLower().Contains(queryLower));
+            }
+
+            int totalItems = await dbQuery.CountAsync();
+
+            dbQuery = sortBy switch
+            {
+                GetOwnersSortBy.SortByLastNameAsc => dbQuery.OrderBy(o => o.User.LastName),
+                GetOwnersSortBy.SortByLastNameDesc => dbQuery.OrderByDescending(o => o.User.LastName),
+                GetOwnersSortBy.SortByPlaceOfResidenceAsc => dbQuery.OrderBy(o => o.PlaceOfResidence),
+                GetOwnersSortBy.SortByPlaceOfResidenceDesc => dbQuery.OrderByDescending(o => o.PlaceOfResidence),
+                _ => dbQuery.OrderBy(o => o.User.LastName)
+            };
+            var owners = await dbQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            var dtoToReturn = new GetOwnersDtoResponse
+            {
+                Query = dto.Query,
+                PageSize = pageSize,
+                Page = page,
+                SortBy = sortBy,
+                TotalItems = totalItems,
+                Owners = Mapper.Map<List<OwnerForGetOwnersDto>>(owners)
+            };
+
+            return new ServiceResponse<GetOwnersDtoResponse>(HttpStatusCode.OK, dtoToReturn);
         }
 
         private async Task<ServiceResponse<EditProfileDtoResponse>> EditAdminProfileAsync(EditProfileDtoRequest dto)

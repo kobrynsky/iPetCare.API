@@ -4,14 +4,12 @@ using Application.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using API.Security;
+using Application.Services.Utilities;
 
 namespace API.Controllers
 {
-    [Route("api/races")]
-    [ApiController]
-    public class RaceController : Controller
+    public class RaceController : BaseController
     {
         private readonly IRaceService _raceService;
 
@@ -20,79 +18,49 @@ namespace API.Controllers
             _raceService = raceService;
         }
 
+        [Produces(typeof(ServiceResponse<CreateRaceDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPost]
-        public async Task<ActionResult<CreateRaceDtoResponse>> Create(CreateRaceDtoRequest dto)
+        public async Task<IActionResult> Create(CreateRaceDtoRequest dto)
         {
             var response = await _raceService.CreateRaceAsync(dto);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<GetAllRacesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet]
-        public async Task<ActionResult<GetAllRacesDtoResponse>> GetRaces()
+        public async Task<IActionResult> GetRaces()
         {
             var response = await _raceService.GetAllRacesAsync();
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<GetRaceDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{raceId}")]
-        public async Task<ActionResult<GetRaceDtoResponse>> GetRace(int raceId)
+        public async Task<IActionResult> GetRace(int raceId)
         {
             var response = await _raceService.GetRaceAsync(raceId);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<UpdateRaceDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpPut("{raceId}")]
-        public async Task<ActionResult<UpdateRaceDtoResponse>> UpdateRace(int raceId, UpdateRaceDtoRequest dto)
+        public async Task<IActionResult> UpdateRace(int raceId, UpdateRaceDtoRequest dto)
         {
             var response = await _raceService.UpdateRaceAsync(raceId, dto);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<DeleteRaceDtoResponse>))]
         [Authorize(Roles = Role.Administrator)]
         [HttpDelete("{raceId}")]
-        public async Task<ActionResult<DeleteRaceDtoResponse>> DeleteRace(int raceId)
+        public async Task<IActionResult> DeleteRace(int raceId)
         {
             var response = await _raceService.DeleteRaceAsync(raceId);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                return Ok(response.ResponseContent);
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return Unauthorized(response.Message);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                return Forbid(response.Message);
-            return BadRequest(response.Message);
+            return SendResponse(response);
         }
     }
 }

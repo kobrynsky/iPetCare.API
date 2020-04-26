@@ -344,6 +344,10 @@ namespace Persistence
                         Email = "owner4@admin.com",
                         Role = "Owner"
                     },
+<<<<<<< .merge_file_a40372
+=======
+
+>>>>>>> .merge_file_a39956
                 };
 
                 foreach (var user in users)
@@ -505,7 +509,11 @@ namespace Persistence
             }
         }
 
+<<<<<<< .merge_file_a40372
         private static async Task SeedInstitutions(DataContext context)
+=======
+        private static async Task SeedUsers(DataContext context)
+>>>>>>> .merge_file_a39956
         {
             if (!context.Institutions.Any())
             {
