@@ -68,17 +68,14 @@ namespace Application.Infrastructure
 
         private void MapsForPets()
         {
-            CreateMap<Pet, PetForGetPetsDtoResponse>()
-                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
-            CreateMap<Pet, PetForGetMyPetsDtoResponse>()
-                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
+            CreateMap<Pet, PetForGetPetsDtoResponse>();
+            CreateMap<Pet, PetForGetMyPetsDtoResponse>();
             CreateMap<Pet, PetForGetSharedPetsDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
             CreateMap<CreatePetDtoRequest, Pet>();
             CreateMap<Pet, CreatePetDtoResponse>()
                 .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
-            CreateMap<Pet, GetPetDtoResponse>()
-                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name));
+            CreateMap<Pet, GetPetDtoResponse>();
             CreateMap<UpdatePetDtoRequest, UpdatePetDtoResponse>();
             CreateMap<UpdatePetDtoRequest, Pet>();
         }
