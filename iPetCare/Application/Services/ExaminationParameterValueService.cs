@@ -33,7 +33,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValue(pet))
                 return new ServiceResponse<CreateExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationParameter = await Context.ExaminationParameters.FindAsync(dto.ExaminationParameterId);
@@ -71,7 +71,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValue(pet))
                 return new ServiceResponse(HttpStatusCode.Forbidden);
 
             Context.ExaminationParameterValues.Remove(examinationParameterValue);
@@ -119,7 +119,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValue(pet))
                 return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             var examinationParameter = await Context.ExaminationParameters.FindAsync(examinationParameterValue.ExaminationParameterId);
@@ -132,6 +132,34 @@ namespace Application.Services
             var dto = Mapper.Map<GetExaminationParameterValueDtoResponse>(examinationParameterValue);
 
             return new ServiceResponse<GetExaminationParameterValueDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
+        public async Task<ServiceResponse<GetAllExaminationParametersValuesDtoResponse>> GetExaminationParameterValueByExaminatinIdAsync(Guid examinationId)
+        {
+            var examination = Context.Examinations.Find(examinationId);
+
+            if (examination == null)
+                return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.NotFound);
+
+            var pet = Context.Pets.Find(examination.PetId);
+
+            if (pet == null)
+                return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.NotFound);
+
+
+            if (!CanEditExaminationParameterValue(pet))
+                return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.Forbidden);
+
+
+            var examValues = await Context.ExaminationParameterValues.Where(x => x.ExaminationId == examinationId).ToListAsync();
+
+            var dto = new GetAllExaminationParametersValuesDtoResponse()
+            {
+                ExaminationParametersValues = Mapper.Map<List<ExaminationParameterValueForGetAllExaminationParametersValuesDtoResponse>>(examValues)
+            };
+
+
+            return new ServiceResponse<GetAllExaminationParametersValuesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
         public async Task<ServiceResponse<UpdateExaminationParameterValueDtoResponse>> UpdateExaminationParameterValueAsync(Guid examinationParameterValueId, UpdateExaminationParameterValueDtoRequest dto)
@@ -155,7 +183,7 @@ namespace Application.Services
             if (pet == null)
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
 
-            if (CanEditExaminationParameterValue(pet))
+            if (!CanEditExaminationParameterValue(pet))
                 return new ServiceResponse<UpdateExaminationParameterValueDtoResponse>(HttpStatusCode.Forbidden);
 
             examinationParameterValue.ExaminationId = dto.ExaminationId;

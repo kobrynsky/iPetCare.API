@@ -62,5 +62,14 @@ namespace API.Controllers
             var response = await _examinationParameterValueService.DeleteExaminationParameterValueAsync(examinationParameterId);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse<GetExaminationParameterValueDtoResponse>))]
+        [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
+        [HttpGet("getByExaminationId/{examinationId}")]
+        public async Task<IActionResult> GetExaminationParameterValueByExaminationId(Guid examinationId)
+        {
+            var response = await _examinationParameterValueService.GetExaminationParameterValueByExaminatinIdAsync(examinationId);
+            return SendResponse(response);
+        }
     }
 }

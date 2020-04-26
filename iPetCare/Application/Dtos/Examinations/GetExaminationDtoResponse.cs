@@ -7,16 +7,38 @@ namespace Application.Dtos.Examinations
     {
         public Guid Id { get; set; }
         public DateTime Date { get; set; }
-        public int ExaminationTypeId { get; set; }
-        public Guid? NoteId { get; set; }
-        public Guid PetId { get; set; }
-        public List<ParameterValueForGetExaminationDtoResponse> ParameterValues { get; set; }
+        public ExaminationTypeForGetExaminationDtoResponse ExaminationType { get; set; }
+        public string Content { get; set; }
+        public PetForGetExaminationDtoResponse Pet { get; set; }
+        public List<ExaminationParameterValueForGetExaminationDtoResponse> ExaminationParameterValues { get; set; }
     }
 
-    public class ParameterValueForGetExaminationDtoResponse
+    public class ExaminationParameterValueForGetExaminationDtoResponse
     {
         public Guid Id { get; set; }
         public float Value { get; set; }
-        public int ExaminationParameterId { get; set; }
+        public ExaminationParameterForGetExaminationDtoResponse ExaminationParameter { get; set; }
+    }
+
+    public class ExaminationTypeForGetExaminationDtoResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class ExaminationParameterForGetExaminationDtoResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        public float UpperLimit { get; set; }
+
+        public float LowerLimit { get; set; }
+    }
+
+    public class PetForGetExaminationDtoResponse
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 }

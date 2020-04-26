@@ -10,7 +10,6 @@ using Application.Dtos.ExaminationTypes;
 using Application.Dtos.ExaminationParameters;
 using Application.Dtos.ExaminationParameterValues;
 using Application.Dtos.Examinations;
-using Application.Dtos.ImportantDates;
 using Application.Dtos.Invitations;
 using Application.Dtos.Owners;
 using Application.Dtos.Vets;
@@ -31,7 +30,6 @@ namespace Application.Infrastructure
             MapsForExaminationParameters();
             MapsForExaminations();
             MapsForExaminationParameterValues();
-            MapsForImportantDates();
             MapsForInvitations();
             MapsForNotes();
         }
@@ -115,6 +113,7 @@ namespace Application.Infrastructure
         private void MapsForExaminationTypes()
         {
             CreateMap<ExaminationType, ExaminationTypeForGetAllExaminationTypesDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeForGetExaminationTypesByPetIdResponse>();
             CreateMap<ExaminationType, UpdateExaminationTypeDtoResponse>();
             CreateMap<ExaminationParameter, ExaminationParameterDetailsForExaminationTypeGetDtoResponse>();
         }
@@ -133,8 +132,11 @@ namespace Application.Infrastructure
         {
             CreateMap<Examination, ExaminationForGetAllExaminationsDtoResponse>();
             CreateMap<Examination, GetExaminationDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeForGetExaminationDtoResponse>();
+            CreateMap<Pet, PetForGetExaminationDtoResponse>();
+            CreateMap<ExaminationParameterValue, ExaminationParameterValueForGetExaminationDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterForGetExaminationDtoResponse>();
             CreateMap<Examination, UpdateExaminationDtoResponse>();
-            CreateMap<ExaminationParameterValue, ParameterValueForGetExaminationDtoResponse>();
         }
         private void MapsForExaminationParameterValues()
         {
@@ -147,15 +149,6 @@ namespace Application.Infrastructure
             CreateMap<CreateExaminationParameterValueDtoRequest, ExaminationParameterValue>();
         }
 
-        private void MapsForImportantDates()
-        {
-            CreateMap<ImportantDate, CreateImportantDateDtoResponse>();
-            CreateMap<ImportantDate, ImportantDateForGetAllImportantDatesDtoResponse>();
-            CreateMap<ImportantDate, GetImportantDateDtoResponse>();
-            CreateMap<Note, NoteForGetImportantDateDtoResponse>();
-            CreateMap<ImportantDate, UpdateImportantDateDtoResponse>();
-            CreateMap<CreateImportantDateDtoRequest, ImportantDate>();
-        }
         private void MapsForInvitations()
         {
             CreateMap<Request, CreateInvitationDtoResponse>();

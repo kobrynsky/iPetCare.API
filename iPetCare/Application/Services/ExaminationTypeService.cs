@@ -71,6 +71,29 @@ namespace Application.Services
             return new ServiceResponse<GetAllExaminationTypesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
+        public async Task<ServiceResponse<GetExaminationTypesByPetIdResponse>> GetExaminationTypesByPetIdAsync(Guid petId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<GetExaminationTypesByPetIdResponse>(HttpStatusCode.Unauthorized);
+
+            if (petId == Guid.Empty)
+                return new ServiceResponse<GetExaminationTypesByPetIdResponse>(HttpStatusCode.BadRequest);
+
+            var pet = await Context.Pets.FirstOrDefaultAsync(x => x.Id == petId);
+
+            if (pet == null)
+                return new ServiceResponse<GetExaminationTypesByPetIdResponse>(HttpStatusCode.NotFound);
+
+            var examinationType = await Context.ExaminationTypes.Where(x => x.SpeciesId == pet.Race.SpeciesId).ToListAsync();
+
+            var dto = new GetExaminationTypesByPetIdResponse()
+            {
+                ExaminationTypes = Mapper.Map<List<ExaminationTypeForGetExaminationTypesByPetIdResponse>>(examinationType)
+            };
+
+            return new ServiceResponse<GetExaminationTypesByPetIdResponse>(HttpStatusCode.OK, dto);
+        }
+
         public async Task<ServiceResponse<UpdateExaminationTypeDtoResponse>> UpdateExaminationTypeAsync(int examinationTypeId, UpdateExaminationTypeDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)

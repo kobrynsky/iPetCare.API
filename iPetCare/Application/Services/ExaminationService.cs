@@ -35,17 +35,17 @@ namespace Application.Services
             if(examinationType == null)
                 return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy typ badania");
 
+            if (dto.Id == Guid.Empty)
+                dto.Id = Guid.NewGuid();
+
             var examination = new Examination()
             {
+                Id = dto.Id,
                 Date = dto.Date,
                 ExaminationTypeId = dto.ExaminationTypeId,
-                PetId = dto.PetId
+                PetId = dto.PetId,
+                Content = dto.Content,
             };
-
-            if (dto.NoteId != null)
-                examination.NoteId = dto.NoteId;
-            else
-                examination.NoteId = null;
 
             Context.Examinations.Add(examination);
             int result = await Context.SaveChangesAsync();
@@ -57,8 +57,8 @@ namespace Application.Services
                     Id = examination.Id,
                     Date = examination.Date,
                     ExaminationTypeId = examination.ExaminationTypeId,
-                    NoteId = examination.NoteId,
-                    PetId = examination.PetId
+                    PetId = examination.PetId,
+                    Content = dto.Content,
                 };
 
                 return new ServiceResponse<CreateExaminationDtoResponse>(HttpStatusCode.OK, responseDto);
@@ -84,6 +84,11 @@ namespace Application.Services
             if (examination == null)
                 return new ServiceResponse(HttpStatusCode.NotFound);
 
+            var examinationValues = Context.ExaminationParameterValues.Where(x => x.ExaminationId == examinationId);
+
+            if (examinationValues.Any())
+                Context.ExaminationParameterValues.RemoveRange(examinationValues);
+
             Context.Examinations.Remove(examination);
             int result = await Context.SaveChangesAsync();
 
@@ -107,12 +112,16 @@ namespace Application.Services
             return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<GetExaminationDtoResponse>> GetExaminationAsync(Guid petId, Guid examinationId)
+        public async Task<ServiceResponse<GetExaminationDtoResponse>> GetExaminationAsync(Guid examinationId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var pet = Context.Pets.Find(petId);
+            var examination = await Context.Examinations.FindAsync(examinationId);
+            if (examination == null)
+                return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.NotFound);
+
+            var pet = Context.Pets.Find(examination.PetId);
 
             if (pet == null)
                 return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -120,17 +129,7 @@ namespace Application.Services
             if (!CanEditExamination(pet))
                 return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.Forbidden);
 
-            var examination = await Context.Examinations.FindAsync(examinationId);
-            if (examination == null)
-                return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.NotFound);
-
             var dto = Mapper.Map<GetExaminationDtoResponse>(examination);
-
-            var parameterValues = await Context.ExaminationParameterValues.Where(param => param.ExaminationParameter.ExaminationTypeId == examination.ExaminationTypeId).ToListAsync();
-
-            if (parameterValues != null)
-                dto.ParameterValues = Mapper.Map<List<ParameterValueForGetExaminationDtoResponse>>(parameterValues);
-
             return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.OK, dto);
         }
 
@@ -171,22 +170,16 @@ namespace Application.Services
 
             var examination = Context.Examinations.Find(examinationId);
             var examinationType = Context.ExaminationTypes.Find(dto.ExaminationTypeId);
-            Note note = null;
-            if (dto.NoteId != null)
-                note = Context.Notes.Find(dto.NoteId);
 
             if (examination == null)
                 return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.NotFound);
             if (examinationType == null)
                 return new ServiceResponse<UpdateExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono typu badania");
-            if (note == null)
-                examination.NoteId = null;
-            else
-                examination.NoteId = dto.NoteId;
 
             examination.Date = dto.Date;
             examination.ExaminationTypeId = dto.ExaminationTypeId;
             examination.PetId = dto.PetId;
+            examination.Content = dto.Content;
 
             int result = await Context.SaveChangesAsync();
             if (result > 0)

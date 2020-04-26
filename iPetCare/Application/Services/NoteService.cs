@@ -147,21 +147,17 @@ namespace Application.Services
             if (note == null)
                 return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.NotFound);
 
-            if (note.Payload == dto.Payload && note.CreatedAt == dto.CreatedAt && note.PetId == dto.PetId && note.UserId == dto.UserId)
+            if (note.Payload == dto.Payload && note.CreatedAt == dto.CreatedAt && note.PetId == dto.PetId && note.UserId == CurrentlyLoggedUser.Id && dto.ImportantDate == dto.ImportantDate)
             {
                 var responseDto = Mapper.Map<UpdateNoteDtoResponse>(note);
                 return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.OK, responseDto);
             }
 
-            var user = await Context.Users.FindAsync(dto.UserId);
-
-            if (user == null)
-                return new ServiceResponse<UpdateNoteDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono użytkownika");
-           
             note.Payload = dto.Payload;
             note.CreatedAt = dto.CreatedAt;
+            note.ImportantDate = dto.ImportantDate;
             note.PetId = dto.PetId;
-            note.UserId = dto.UserId;
+            note.UserId = CurrentlyLoggedUser.Id;
 
             int result = await Context.SaveChangesAsync();
             if (result > 0)
