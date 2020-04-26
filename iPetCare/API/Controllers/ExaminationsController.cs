@@ -37,18 +37,18 @@ namespace API.Controllers
         }
         [Produces(typeof(ServiceResponse<GetAllExaminationsDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
-        [HttpGet("{petId}")]
+        [HttpGet("pet/{petId}")]
         public async Task<IActionResult> GetPetExaminations(Guid petId)
         {
             var response = await _examinationsService.GetPetExaminationsAsync(petId);
             return SendResponse(response);
         }
-        [Produces(typeof(ServiceResponse<GetAllExaminationsDtoResponse>))]
+        [Produces(typeof(ServiceResponse<GetExaminationDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
-        [HttpGet("{petId}/{examinationId}")]
-        public async Task<IActionResult> GetExamination(Guid petId, Guid examinationId)
+        [HttpGet("{examinationId}")]
+        public async Task<IActionResult> GetExamination(Guid examinationId)
         {
-            var response = await _examinationsService.GetExaminationAsync(petId, examinationId);
+            var response = await _examinationsService.GetExaminationAsync(examinationId);
             return SendResponse(response);
         }
 

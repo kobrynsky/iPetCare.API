@@ -135,8 +135,11 @@ namespace Application.Infrastructure
         {
             CreateMap<Examination, ExaminationForGetAllExaminationsDtoResponse>();
             CreateMap<Examination, GetExaminationDtoResponse>();
+            CreateMap<ExaminationType, ExaminationTypeForGetExaminationDtoResponse>();
+            CreateMap<Pet, PetForGetExaminationDtoResponse>();
+            CreateMap<ExaminationParameterValue, ExaminationParameterValueForGetExaminationDtoResponse>();
+            CreateMap<ExaminationParameter, ExaminationParameterForGetExaminationDtoResponse>();
             CreateMap<Examination, UpdateExaminationDtoResponse>();
-            CreateMap<ExaminationParameterValue, ParameterValueForGetExaminationDtoResponse>();
         }
         private void MapsForExaminationParameterValues()
         {

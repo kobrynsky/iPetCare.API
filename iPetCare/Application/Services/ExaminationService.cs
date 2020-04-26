@@ -112,12 +112,16 @@ namespace Application.Services
             return new ServiceResponse<GetAllExaminationsDtoResponse>(HttpStatusCode.OK, dto);
         }
 
-        public async Task<ServiceResponse<GetExaminationDtoResponse>> GetExaminationAsync(Guid petId, Guid examinationId)
+        public async Task<ServiceResponse<GetExaminationDtoResponse>> GetExaminationAsync(Guid examinationId)
         {
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var pet = Context.Pets.Find(petId);
+            var examination = await Context.Examinations.FindAsync(examinationId);
+            if (examination == null)
+                return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.NotFound);
+
+            var pet = Context.Pets.Find(examination.PetId);
 
             if (pet == null)
                 return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.BadRequest, "Nie znaleziono zwierzaka");
@@ -125,17 +129,7 @@ namespace Application.Services
             if (!CanEditExamination(pet))
                 return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.Forbidden);
 
-            var examination = await Context.Examinations.FindAsync(examinationId);
-            if (examination == null)
-                return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.NotFound);
-
             var dto = Mapper.Map<GetExaminationDtoResponse>(examination);
-
-            var parameterValues = await Context.ExaminationParameterValues.Where(param => param.ExaminationParameter.ExaminationTypeId == examination.ExaminationTypeId).ToListAsync();
-
-            if (parameterValues != null)
-                dto.ParameterValues = Mapper.Map<List<ParameterValueForGetExaminationDtoResponse>>(parameterValues);
-
             return new ServiceResponse<GetExaminationDtoResponse>(HttpStatusCode.OK, dto);
         }
 
