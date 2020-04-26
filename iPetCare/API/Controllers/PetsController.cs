@@ -57,7 +57,7 @@ namespace API.Controllers
 
         [Produces(typeof(ServiceResponse<CreatePetDtoResponse>))]
         [HttpPost]
-        public async Task<IActionResult> CreatePet([FromBody] CreatePetDtoRequest dto)
+        public async Task<IActionResult> CreatePet([FromForm] CreatePetDtoRequest dto)
         {
             var response = await _petService.CreatePetAsync(dto);
             return SendResponse(response);
@@ -65,7 +65,7 @@ namespace API.Controllers
 
         [Produces(typeof(ServiceResponse<UpdatePetDtoResponse>))]
         [HttpPut("{petId}")]
-        public async Task<IActionResult> UpdatePet(Guid petId, [FromBody] UpdatePetDtoRequest dto)
+        public async Task<IActionResult> UpdatePet(Guid petId, [FromForm] UpdatePetDtoRequest dto)
         {
             var response = await _petService.UpdatePetAsync(petId, dto);
             return SendResponse(response);

@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 using System;
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 using Application.Infrastructure;
@@ -118,6 +119,11 @@ namespace API
 
             app.UseHttpsRedirection();
 
+            var cultureInfo = new CultureInfo("en-US");
+
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
@@ -125,6 +131,8 @@ namespace API
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/V1/swagger.json", "API V1"); });
+
+            app.UseStaticFiles();
 
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
