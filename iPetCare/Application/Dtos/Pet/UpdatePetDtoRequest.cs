@@ -12,6 +12,6 @@ namespace Application.Dtos.Pet
         public float Height { get; set; }
         public Gender? Gender { get; set; }
         public DateTime BirthDate { get; set; }
-        public string Race { get; set; }
+        public int RaceId { get; set; }
     }
 }

@@ -271,7 +271,7 @@ namespace Application.Services
 
         private async Task<bool> ChangePetImageAsync(IFormFile image, Pet pet)
         {
-            if (image.Length <= 0) return false;
+            if (image == null || image.Length <= 0) return false;
 
             var fileExtension = Path.GetExtension(image.FileName);
 
