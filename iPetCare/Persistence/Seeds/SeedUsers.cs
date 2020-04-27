@@ -41,8 +41,8 @@ namespace Persistence.Seeds
                     {
                         Id = "eebb22c2-1184-4511-8b5e-6737c5a8ecaa",
                         FirstName = "Andrzej",
-                        LastName = "Zolnierowski",
-                        UserName = "azol",
+                        LastName = "Kowalski",
+                        UserName = "akow",
                         Email = "vet2@admin.com",
                         Role = "Vet"
                     },
@@ -50,8 +50,8 @@ namespace Persistence.Seeds
                     {
                         Id = "f53d66f5-289e-425b-9c21-92da74122d38",
                         FirstName = "Roman",
-                        LastName = "Birdman",
-                        UserName = "rbir",
+                        LastName = "Nowak",
+                        UserName = "rnow",
                         Email = "vet3@admin.com",
                         Role = "Vet"
                     },
@@ -59,8 +59,8 @@ namespace Persistence.Seeds
                     {
                         Id = "5a9487ed-c7d9-4275-b0e3-d6708f1d4654",
                         FirstName = "Zbigniew",
-                        LastName = "Prezes",
-                        UserName = "zpre",
+                        LastName = "Kobryński",
+                        UserName = "zkob",
                         Email = "vet4@admin.com",
                         Role = "Vet"
                     },
@@ -68,8 +68,8 @@ namespace Persistence.Seeds
                     {
                         Id = "bc93228a-9535-4417-ae3d-0ccb550380c2",
                         FirstName = "Janusz",
-                        LastName = "Bierny",
-                        UserName = "jbie",
+                        LastName = "Pisarek",
+                        UserName = "jpis",
                         Email = "vet5@admin.com",
                         Role = "Vet"
                     },
@@ -77,8 +77,8 @@ namespace Persistence.Seeds
                     {
                         Id = "0b1d6b8b-8e78-4e7a-996f-bd4688e424d0",
                         FirstName = "Piotr",
-                        LastName = "Patronus",
-                        UserName = "ppat",
+                        LastName = "Kot",
+                        UserName = "pkot",
                         Email = "vet6@admin.com",
                         Role = "Vet"
                     },
@@ -88,8 +88,8 @@ namespace Persistence.Seeds
                     {
                         Id = "16f567aa-77ff-40c3-b317-716eba0c58b4",
                         FirstName = "Jolanta",
-                        LastName = "Pepiczek",
-                        UserName = "jpep",
+                        LastName = "Borowska",
+                        UserName = "jbor",
                         Email = "owner1@admin.com",
                         Role = "Owner"
                     },
