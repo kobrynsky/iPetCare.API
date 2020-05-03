@@ -57,6 +57,7 @@ namespace API.Controllers
 
         [Produces(typeof(ServiceResponse<CreatePetDtoResponse>))]
         [HttpPost]
+        [Authorize(Roles = Role.Owner)]
         public async Task<IActionResult> CreatePet([FromForm] CreatePetDtoRequest dto)
         {
             var response = await _petService.CreatePetAsync(dto);
