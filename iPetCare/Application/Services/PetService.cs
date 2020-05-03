@@ -230,10 +230,21 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var pets = await Context.OwnerPets
-                .Where(x => !x.MainOwner && x.Owner.User.Id == CurrentlyLoggedUser.Id)
-                .Select(x => x.Pet)
-                .ToListAsync();
+            var pets = new List<Pet>();
+            if (CurrentlyLoggedUser.Role == Role.Owner)
+            {
+                pets = await Context.OwnerPets
+                    .Where(x => !x.MainOwner && x.Owner.User.Id == CurrentlyLoggedUser.Id)
+                    .Select(x => x.Pet)
+                    .ToListAsync();
+            }
+            else if (CurrentlyLoggedUser.Role == Role.Vet)
+            {
+                pets = await Context.VetPets
+                    .Where(x => x.Vet.User.Id == CurrentlyLoggedUser.Id)
+                    .Select(x => x.Pet)
+                    .ToListAsync();
+            }
 
             var dto = new GetSharedPetsDtoResponse();
             dto.Pets = Mapper.Map<List<PetForGetSharedPetsDtoResponse>>(pets);
