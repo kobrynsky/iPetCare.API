@@ -26,7 +26,8 @@ namespace Persistence.Seeds
                     ownerPets.Add(new OwnerPet
                     {
                         PetId = pet.Id,
-                        OwnerId = owners[randomizedId].Id
+                        OwnerId = owners[randomizedId].Id,
+                        MainOwner = randomizedId % 2 == 0
                     });
                 }
 
