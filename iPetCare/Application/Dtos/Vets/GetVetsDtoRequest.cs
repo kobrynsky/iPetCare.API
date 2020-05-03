@@ -1,4 +1,5 @@
-﻿using Persistence.Enums;
+﻿using Application.Dtos.Invitations;
+using Persistence.Enums;
 
 namespace Application.Dtos.Vets
 {

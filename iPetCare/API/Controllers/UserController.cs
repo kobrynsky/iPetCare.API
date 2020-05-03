@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using API.Security;
 using Application.Dtos.Owners;
 using Application.Dtos.Users;
@@ -73,6 +74,15 @@ namespace API.Controllers
         public async Task<IActionResult> GetOwners([FromBody] GetOwnersDtoRequest dto)
         {
             var response = await _userService.GetOwnersAsync(dto);
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse))]
+        [HttpDelete("{userId}")]
+        [Authorize(Roles = Role.Administrator)]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var response = await _userService.DeleteUserAsync(userId);
             return SendResponse(response);
         }
     }

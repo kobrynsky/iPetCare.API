@@ -13,6 +13,7 @@ namespace Application.Dtos.Vets
         public GetVetsSortBy SortBy { get; set; }
 
         public List<VetForGetVetsDto> Vets { get; set; }
+        public string CurrentSearchingUserRole { get; set; }
     }
 
     public class VetForGetVetsDto

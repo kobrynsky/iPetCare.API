@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Application.Dtos.Owners;
 using Application.Dtos.Users;
 using Application.Dtos.Vets;
@@ -14,5 +15,6 @@ namespace Application.Interfaces
         Task<ServiceResponse<EditProfileDtoResponse>> EditProfileAsync(EditProfileDtoRequest dto);
         Task<ServiceResponse<GetVetsDtoResponse>> GetVetsAsync(GetVetsDtoRequest dto);
         Task<ServiceResponse<GetOwnersDtoResponse>> GetOwnersAsync(GetOwnersDtoRequest dto);
+        Task<ServiceResponse> DeleteUserAsync(string userId);
     }
 }
