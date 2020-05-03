@@ -182,5 +182,37 @@ namespace Application.Services
 
             return new ServiceResponse(HttpStatusCode.OK);
         }
+
+        public async Task<ServiceResponse<GetInstitutionsDtoResponse>> GetInstitutionsPerVetAsync(string userId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if (CurrentlyLoggedUser.Role != Role.Vet)
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.Forbidden);
+
+            var vet = await Context.Vets.Where(x => x.UserId == userId).FirstOrDefaultAsync();
+
+            if (vet == null)
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.NotFound);
+
+            var institutionsVets = await Context.InstitutionVets.Where(x => x.VetId == vet.Id).ToListAsync();
+
+            var dto = new GetInstitutionsDtoResponse();
+            if (institutionsVets == null || !institutionsVets.Any())
+            {
+                List<Institution> institutions_empty = new List<Institution>();
+                
+                dto.Institutions = Mapper.Map<ICollection<InstitutionForGetInstitutionDtoResponse>>(institutions_empty);
+
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.OK, dto);
+            }
+
+            var institutions = await Context.Institutions.ToListAsync();
+            var filteredInstitutions = institutions.Where(x => institutionsVets.Where(y => y.InstitutionId == x.Id).Any()).ToList();
+            dto.Institutions = Mapper.Map<ICollection<InstitutionForGetInstitutionDtoResponse>>(filteredInstitutions);
+
+            return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.OK, dto);
+        }
     }
 }
