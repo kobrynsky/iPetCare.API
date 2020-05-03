@@ -198,7 +198,7 @@ namespace Application.Services
                 if (owner == null)
                     return new ServiceResponse(HttpStatusCode.Unauthorized);
 
-                if (!await Context.OwnerPets.AnyAsync(op => op.OwnerId == owner.Id && op.PetId == petId))
+                if (!await Context.OwnerPets.AnyAsync(op => op.OwnerId == owner.Id && op.PetId == petId && op.MainOwner))
                     return new ServiceResponse(HttpStatusCode.Forbidden);
 
                 Context.Pets.Remove(pet);
