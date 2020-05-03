@@ -127,6 +127,30 @@ namespace Application.Services
             return new ServiceResponse<GetAllNotesDtoResponse>(HttpStatusCode.OK, dto);
         }
 
+        public async Task<ServiceResponse<GetImportantDatesDtoResponse>> GetImportantDates()
+        {
+            if(CurrentlyLoggedUser == null)
+                return new ServiceResponse<GetImportantDatesDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if(CurrentlyLoggedUser.Role != Role.Owner)
+                return new ServiceResponse<GetImportantDatesDtoResponse>(HttpStatusCode.Forbidden);
+
+            var userNotesQuery =
+                Context.Notes.Where(n => n.UserId == CurrentlyLoggedUser.Id && n.ImportantDate != null);
+
+            var upcomingImportantDates = await userNotesQuery.Where(n => n.ImportantDate >= DateTime.Now).ToListAsync();
+            var pastImportantDates = await userNotesQuery.Where(n => n.ImportantDate < DateTime.Now).ToListAsync();
+
+
+            var dtoToResponse = new GetImportantDatesDtoResponse
+            {
+                UpcomingDates = Mapper.Map<List<NoteForGetImportantDatesDtoResponse>>(upcomingImportantDates),
+                PastDates = Mapper.Map<List<NoteForGetImportantDatesDtoResponse>>(pastImportantDates),
+            };
+
+            return new ServiceResponse<GetImportantDatesDtoResponse>(HttpStatusCode.OK, dtoToResponse);
+        }
+
         public async Task<ServiceResponse<UpdateNoteDtoResponse>> UpdateNoteAsync(Guid petId, Guid noteId, UpdateNoteDtoRequest dto)
         {
             if (CurrentlyLoggedUser == null)

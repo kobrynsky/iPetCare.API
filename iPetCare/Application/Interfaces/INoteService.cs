@@ -13,5 +13,6 @@ namespace Application.Interfaces
         Task<ServiceResponse<UpdateNoteDtoResponse>> UpdateNoteAsync(Guid petId, Guid noteId, UpdateNoteDtoRequest dto);
         Task<ServiceResponse> DeleteNoteAsync(Guid petId, Guid noteId);
         Task<ServiceResponse<GetAllNotesDtoResponse>> GetPetNotesAsync(Guid petId);
+        Task<ServiceResponse<GetImportantDatesDtoResponse>> GetImportantDates();
     }
 }

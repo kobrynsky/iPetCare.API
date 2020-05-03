@@ -164,6 +164,7 @@ namespace Application.Infrastructure
             CreateMap<CreateNoteDtoRequest, Note>();
             CreateMap<ApplicationUser, UserForGetNoteDtoResponse>();
             CreateMap<Pet, PetForGetNoteDtoResponse>();
+            CreateMap<Note, NoteForGetImportantDatesDtoResponse>();
         }
     }
 }

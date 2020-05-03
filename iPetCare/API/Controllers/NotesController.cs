@@ -35,6 +35,16 @@ namespace API.Controllers
             var response = await _notesService.GetAllNotesAsync();
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse<GetImportantDatesDtoResponse>))]
+        [AuthorizeRoles(Role.Owner)]
+        [HttpGet("important-dates")]
+        public async Task<IActionResult> GetImportantDates()
+        {
+            var response = await _notesService.GetImportantDates();
+            return SendResponse(response);
+        }
+
         [Produces(typeof(ServiceResponse<GetAllNotesDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpGet("{petId}")]
