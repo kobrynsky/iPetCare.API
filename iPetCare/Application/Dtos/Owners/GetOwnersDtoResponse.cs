@@ -12,6 +12,7 @@ namespace Application.Dtos.Owners
         public int TotalItems { get; set; }
         public GetOwnersSortBy SortBy { get; set; }
         public List<OwnerForGetOwnersDto> Owners { get; set; }
+        public string CurrentSearchingUserRole { get; set; }
     }
 
     public class OwnerForGetOwnersDto

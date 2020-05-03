@@ -119,7 +119,6 @@ namespace Application.Services
                 MainOwner = true,
             });
 
-
             var result = await Context.SaveChangesAsync();
 
             if (result > 0 || imageAssigned)

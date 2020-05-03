@@ -197,7 +197,8 @@ namespace Application.Services
                 Page = page,
                 SortBy = sortBy,
                 TotalItems = totalItems,
-                Vets = Mapper.Map<List<VetForGetVetsDto>>(vets)
+                Vets = Mapper.Map<List<VetForGetVetsDto>>(vets),
+                CurrentSearchingUserRole = CurrentlyLoggedUser.Role
             };
 
             return new ServiceResponse<GetVetsDtoResponse>(HttpStatusCode.OK, dtoToReturn);
@@ -256,7 +257,8 @@ namespace Application.Services
                 Page = page,
                 SortBy = sortBy,
                 TotalItems = totalItems,
-                Owners = Mapper.Map<List<OwnerForGetOwnersDto>>(owners)
+                Owners = Mapper.Map<List<OwnerForGetOwnersDto>>(owners),
+                CurrentSearchingUserRole = CurrentlyLoggedUser.Role
             };
 
             return new ServiceResponse<GetOwnersDtoResponse>(HttpStatusCode.OK, dtoToReturn);
@@ -453,6 +455,43 @@ namespace Application.Services
                 ? new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.BadRequest,
                     "Wystąpił błąd podczas dodawania opiekuna")
                 : new ServiceResponse<RegisterDtoResponse>(HttpStatusCode.OK, responseDto);
+        }
+
+        public async Task<ServiceResponse> DeleteUserAsync(string userId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse(HttpStatusCode.Unauthorized);
+
+            var user = await Context.Users.SingleOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+                return new ServiceResponse(HttpStatusCode.NotFound);
+
+            if (CurrentlyLoggedUser.Role == Role.Administrator)
+            {
+                Context.Users.Remove(user);
+
+                if (user.Role == Role.Vet)
+                {
+                    var vet = await Context.Vets.SingleOrDefaultAsync(x => x.UserId == userId);
+                    Context.Vets.Remove(vet);
+                }                 
+
+                if (user.Role == Role.Owner)
+                {
+                    var pets = await Context.OwnerPets.Where(x => x.Owner.User.Id == userId && x.MainOwner)
+                                                       .Select(x => x.Pet)
+                                                       .ToListAsync();
+                    Context.Pets.RemoveRange(pets);
+
+                    var owner = await Context.Owners.SingleOrDefaultAsync(x => x.UserId == userId);
+                    Context.Owners.Remove(owner);
+
+                }                    
+            }
+
+            return await Context.SaveChangesAsync() > 0
+                ? new ServiceResponse(HttpStatusCode.OK)
+                : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania użytkownika");
         }
     }
 }
