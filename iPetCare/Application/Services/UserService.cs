@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ using Application.Dtos.Vets;
 using Application.Interfaces;
 using Application.Services.Utilities;
 using Domain.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Enums;
@@ -19,10 +22,12 @@ namespace Application.Services
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IJwtGenerator _jwtGenerator;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public UserService(IServiceProvider serviceProvider, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator) : base(serviceProvider)
+        public UserService(IServiceProvider serviceProvider, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator, IHostingEnvironment hostingEnvironment) : base(serviceProvider)
         {
             _jwtGenerator = jwtGenerator;
+            _hostingEnvironment = hostingEnvironment;
             _signInManager = signInManager;
         }
 
@@ -47,6 +52,7 @@ namespace Application.Services
                 Email = user.Email,
                 Token = _jwtGenerator.CreateToken(user),
                 Role = user.Role,
+                ImageUrl = user.ImageUrl
             };
 
             return new ServiceResponse<LoginDtoResponse>(HttpStatusCode.OK, responseDto);
@@ -101,6 +107,39 @@ namespace Application.Services
                 return await EditAdminProfileAsync(dto);
 
             return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest);
+        }
+
+        private async Task<bool> ChangeUserImageAsync(ApplicationUser currentlyLoggedUser, IFormFile image)
+        {
+            if (image == null || image.Length <= 0) return false;
+
+            var fileExtension = Path.GetExtension(image.FileName);
+
+            var imageFolderPath = "Uploads/Users/Photos";
+
+            // create folder it should upload files to
+            Directory.CreateDirectory($"{_hostingEnvironment.WebRootPath}/{imageFolderPath}");
+
+            // find images named as pet id, regardless of the extension
+            var files = Directory.GetFiles($"{_hostingEnvironment.WebRootPath}/{imageFolderPath}", $"{currentlyLoggedUser.Id}.*");
+
+            // if found any files
+            if (files.Length > 0)
+                // delete them
+                foreach (var file in files)
+                    File.Delete(file);
+
+            var newFileName = $"{currentlyLoggedUser.Id}{fileExtension}";
+
+            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, imageFolderPath, newFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(fileStream);
+            }
+
+            currentlyLoggedUser.ImageUrl = $"/{imageFolderPath}/{newFileName}";
+
+            return true;
         }
 
         public async Task<ServiceResponse<GetVetsDtoResponse>> GetVetsAsync(GetVetsDtoRequest dto)
@@ -231,13 +270,13 @@ namespace Application.Services
             if (await Context.Users.Where(x => x.UserName == dto.UserName && CurrentlyLoggedUser.UserName != dto.UserName).AnyAsync())
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
 
-            UpdateProfile(dto);
+            var anythingChanged = await UpdateProfileAsync(dto);
             int result = await Context.SaveChangesAsync();
             await UserManager.UpdateAsync(CurrentlyLoggedUser);
 
             var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
 
-            if (result > 0)
+            if (result > 0 || anythingChanged)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
             if (result == 0)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
@@ -256,14 +295,14 @@ namespace Application.Services
             if (await Context.Users.Where(x => x.UserName == dto.UserName && CurrentlyLoggedUser.UserName != dto.UserName).AnyAsync())
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
 
-            UpdateProfile(dto);
+            var anythingChanged = await UpdateProfileAsync(dto);
             vet.Specialization = dto.Specialization;
             int result = await Context.SaveChangesAsync();
             await UserManager.UpdateAsync(CurrentlyLoggedUser);
 
             var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
 
-            if (result > 0)
+            if (result > 0 || anythingChanged)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
             if (result == 0)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
@@ -282,27 +321,39 @@ namespace Application.Services
             if (await Context.Users.Where(x => x.UserName == dto.UserName && CurrentlyLoggedUser.UserName != dto.UserName).AnyAsync())
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nick jest zajęty");
 
-            UpdateProfile(dto);
+            var anythingChanged = await UpdateProfileAsync(dto);
             owner.PlaceOfResidence = dto.PlaceOfResidence;
             int result = await Context.SaveChangesAsync();
             await UserManager.UpdateAsync(CurrentlyLoggedUser);
 
             var responseDto = Mapper.Map<EditProfileDtoResponse>(CurrentlyLoggedUser);
 
-            if (result > 0)
+            if (result > 0 || anythingChanged)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.OK, responseDto);
             if (result == 0)
                 return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Nie nastąpiła żadna zmiana");
             return new ServiceResponse<EditProfileDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zapisu");
         }
 
-        private void UpdateProfile(EditProfileDtoRequest dto)
+        private async Task<bool> UpdateProfileAsync(EditProfileDtoRequest dto)
         {
-            CurrentlyLoggedUser.FirstName = dto.FirstName;
-            CurrentlyLoggedUser.LastName = dto.LastName;
-            CurrentlyLoggedUser.UserName = dto.UserName;
-            CurrentlyLoggedUser.Email = dto.Email;
-            CurrentlyLoggedUser.ImageUrl = dto.ImageUrl;
+            bool anythingChanged = false;
+
+            if (!CurrentlyLoggedUser.FirstName.Equals(dto.FirstName))
+                anythingChanged = true;
+
+            if (!CurrentlyLoggedUser.LastName.Equals(dto.LastName))
+                anythingChanged = true;
+
+            if (!CurrentlyLoggedUser.UserName.Equals(dto.UserName))
+                anythingChanged = true;
+
+            if (!CurrentlyLoggedUser.Email.Equals(dto.Email))
+                anythingChanged = true;
+
+            bool imageAssigned = await ChangeUserImageAsync(CurrentlyLoggedUser, dto.Image);
+
+            return anythingChanged || imageAssigned;
         }
 
         private async Task<ServiceResponse<RegisterDtoResponse>> ValidateRegisterRequestAsync(RegisterDtoRequest dto)

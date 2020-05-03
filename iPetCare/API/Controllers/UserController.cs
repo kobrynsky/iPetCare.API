@@ -52,7 +52,7 @@ namespace API.Controllers
         [Produces(typeof(ServiceResponse<EditProfileDtoResponse>))]
         [AuthorizeRoles(Role.Administrator, Role.Vet, Role.Owner)]
         [HttpPut]
-        public async Task<IActionResult> EditProfile(EditProfileDtoRequest dto)
+        public async Task<IActionResult> EditProfile([FromForm] EditProfileDtoRequest dto)
         {
             var response = await _userService.EditProfileAsync(dto);
             return SendResponse(response);

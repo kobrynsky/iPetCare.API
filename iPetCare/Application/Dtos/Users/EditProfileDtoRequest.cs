@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Dtos.Users
 {
@@ -19,8 +17,7 @@ namespace Application.Dtos.Users
         [Required]
         public string Email { get; set; }
 
-        [Required]
-        public string ImageUrl { get; set; }
+        public IFormFile Image { get; set; }
 
         public string Specialization { get; set; }
 
