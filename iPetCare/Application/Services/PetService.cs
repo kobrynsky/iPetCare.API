@@ -115,7 +115,8 @@ namespace Application.Services
             Context.OwnerPets.Add(new OwnerPet
             {
                 Pet = pet,
-                Owner = owner
+                Owner = owner,
+                MainOwner = true,
             });
 
 
@@ -213,9 +214,9 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetMyPetsDtoResponse>(HttpStatusCode.Unauthorized);
 
-            var pets = await Context.Pets
-                .Where(x => x.OwnerPets
-                    .Any(y => y.OwnerId == CurrentlyLoggedUser.Owner.Id))
+            var pets = await Context.OwnerPets
+                .Where(x => x.MainOwner && x.Owner.User.Id == CurrentlyLoggedUser.Id)
+                .Select(x => x.Pet)
                 .ToListAsync();
 
             var dto = new GetMyPetsDtoResponse();
@@ -229,11 +230,8 @@ namespace Application.Services
             if (CurrentlyLoggedUser == null)
                 return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
 
-            if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.Unauthorized);
-
-            var pets = await Context.Requests
-                .Where(x => x.IsAccepted && x.User.Id == CurrentlyLoggedUser.Id)
+            var pets = await Context.OwnerPets
+                .Where(x => !x.MainOwner && x.Owner.User.Id == CurrentlyLoggedUser.Id)
                 .Select(x => x.Pet)
                 .ToListAsync();
 

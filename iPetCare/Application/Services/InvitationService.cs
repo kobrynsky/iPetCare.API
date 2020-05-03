@@ -121,7 +121,8 @@ namespace Application.Services
                     Context.OwnerPets.Add(new OwnerPet
                     {
                         Pet = pet,
-                        Owner = owner
+                        Owner = owner,
+                        MainOwner = false,
                     });
                 }
 
