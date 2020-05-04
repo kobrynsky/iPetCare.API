@@ -13,7 +13,7 @@ namespace Application.Interfaces
         Task<ServiceResponse<UpdateInstitutionDtoResponse>> UpdateInstitutionAsync(Guid institutionId, UpdateInstitutionDtoRequest dto);
         Task<ServiceResponse<CreateInstitutionDtoResponse>> CreateInstitutionAsync(CreateInstitutionDtoRequest dto);
         Task<ServiceResponse> DeleteInstitutionAsync(Guid institutionId);
-        Task<ServiceResponse> SignUpAsync(Guid institutionId);
+        Task<ServiceResponse<SignUpDtoResponse>> SignUpAsync(Guid institutionId);
         Task<ServiceResponse> SignOutAsync(Guid institutionId);
     }
 }
