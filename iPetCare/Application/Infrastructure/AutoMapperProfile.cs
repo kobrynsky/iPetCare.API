@@ -107,6 +107,7 @@ namespace Application.Infrastructure
             CreateMap<Institution, CreateInstitutionDtoResponse>();
             CreateMap<Institution, UpdateInstitutionDtoResponse>();
             CreateMap<Institution, InstitutionForGetVetsDto>();
+            CreateMap<Institution, SignUpDtoResponse>();
         }
 
         private void MapsForExaminationTypes()

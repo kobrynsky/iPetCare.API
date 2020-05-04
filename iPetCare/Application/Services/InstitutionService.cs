@@ -124,34 +124,36 @@ namespace Application.Services
             return new ServiceResponse(HttpStatusCode.OK);
         }
 
-        public async Task<ServiceResponse> SignUpAsync(Guid institutionId)
+        public async Task<ServiceResponse<SignUpDtoResponse>> SignUpAsync(Guid institutionId)
         {
             if (institutionId == Guid.Empty)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
+                return new ServiceResponse<SignUpDtoResponse>(HttpStatusCode.BadRequest, "Nieprawidłowy institutionId");
 
             if (CurrentlyLoggedUser == null)
-                return new ServiceResponse(HttpStatusCode.Unauthorized);
+                return new ServiceResponse<SignUpDtoResponse>(HttpStatusCode.Unauthorized);
 
             if (CurrentlyLoggedUser.Role != Role.Vet)
-                return new ServiceResponse(HttpStatusCode.Forbidden);
+                return new ServiceResponse<SignUpDtoResponse>(HttpStatusCode.Forbidden);
 
             var institution = Context.Institutions.Find(institutionId);
 
             if(institution == null)
-                return new ServiceResponse(HttpStatusCode.NotFound);
+                return new ServiceResponse<SignUpDtoResponse>(HttpStatusCode.NotFound);
 
             var institutionVets = await  Context.InstitutionVets.Where(x => x.InstitutionId == institutionId && x.VetId == CurrentlyLoggedUser.Vet.Id).ToListAsync();
 
             if(institutionVets.Any())
-                return new ServiceResponse(HttpStatusCode.BadRequest, $"Weterynarz jest już zapisany do placówki {institution.Name}");
+                return new ServiceResponse<SignUpDtoResponse>(HttpStatusCode.BadRequest, $"Weterynarz jest już zapisany do placówki {institution.Name}");
 
             var institutionVet = new InstitutionVet() {Vet = CurrentlyLoggedUser.Vet, Institution = institution};
             Context.Add(institutionVet);
 
             if(await Context.SaveChangesAsync() <= 0)
-                return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy weterynarza do placówki");
+                return new ServiceResponse<SignUpDtoResponse>(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy weterynarza do placówki");
 
-            return new ServiceResponse(HttpStatusCode.OK);
+            var dto = Mapper.Map<SignUpDtoResponse>(institution);
+
+            return new ServiceResponse<SignUpDtoResponse>(HttpStatusCode.OK, dto);
         }
 
         public async Task<ServiceResponse> SignOutAsync(Guid institutionId)
@@ -181,6 +183,38 @@ namespace Application.Services
                 return new ServiceResponse(HttpStatusCode.BadRequest, "Błąd podczas zapisu do bazy wypisania weterynarza z placówki");
 
             return new ServiceResponse(HttpStatusCode.OK);
+        }
+
+        public async Task<ServiceResponse<GetInstitutionsDtoResponse>> GetInstitutionsPerVetAsync(string userId)
+        {
+            if (CurrentlyLoggedUser == null)
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.Unauthorized);
+
+            if (CurrentlyLoggedUser.Role != Role.Vet)
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.Forbidden);
+
+            var vet = await Context.Vets.Where(x => x.UserId == userId).FirstOrDefaultAsync();
+
+            if (vet == null)
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.NotFound);
+
+            var institutionsVets = await Context.InstitutionVets.Where(x => x.VetId == vet.Id).ToListAsync();
+
+            var dto = new GetInstitutionsDtoResponse();
+            if (institutionsVets == null || !institutionsVets.Any())
+            {
+                List<Institution> institutions_empty = new List<Institution>();
+
+                dto.Institutions = Mapper.Map<ICollection<InstitutionForGetInstitutionDtoResponse>>(institutions_empty);
+
+                return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.OK, dto);
+            }
+
+            var institutions = await Context.Institutions.ToListAsync();
+            var filteredInstitutions = institutions.Where(x => institutionsVets.Where(y => y.InstitutionId == x.Id).Any()).ToList();
+            dto.Institutions = Mapper.Map<ICollection<InstitutionForGetInstitutionDtoResponse>>(filteredInstitutions);
+
+            return new ServiceResponse<GetInstitutionsDtoResponse>(HttpStatusCode.OK, dto);
         }
     }
 }

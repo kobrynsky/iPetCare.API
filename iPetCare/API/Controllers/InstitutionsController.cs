@@ -81,5 +81,14 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<GetInstitutionsDtoResponse>))]
+        [Authorize(Roles = Role.Vet)]
+        [HttpGet("vet/{userId}")]
+        public async Task<IActionResult> GetInstitutionsPerVet(string userId)
+        {
+            var response = await _institutionService.GetInstitutionsPerVetAsync(userId);
+            return SendResponse(response);
+        }
+
     }
 }
