@@ -20,6 +20,7 @@ namespace Persistence.Seeds
                 var ownerPets = new List<OwnerPet>();
 
                 var random = new Random();
+
                 foreach (var pet in pets)
                 {
                     var randomizedId = random.Next(0, owners.Count);
@@ -27,7 +28,7 @@ namespace Persistence.Seeds
                     {
                         PetId = pet.Id,
                         OwnerId = owners[randomizedId].Id,
-                        MainOwner = randomizedId % 2 == 0
+                        MainOwner = true
                     });
                 }
 

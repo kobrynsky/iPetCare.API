@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Application.Dtos.Pet;
 using Application.Interfaces;
@@ -249,6 +250,35 @@ namespace Application.Services
             dto.Pets = Mapper.Map<List<PetForGetSharedPetsDtoResponse>>(pets);
 
             return new ServiceResponse<GetSharedPetsDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
+        public async Task<ServiceResponse<GetUserPetsDtoResponse>> GetUserPetsAsync(string userId)
+        {
+            var user = await UserManager.FindByIdAsync(userId);
+
+            if(user?.Owner == null)
+                return new ServiceResponse<GetUserPetsDtoResponse>(HttpStatusCode.NotFound);
+
+            var pets = user.Owner.OwnerPets.Where(x => x.MainOwner).Select(x => x.Pet).ToList();
+            var userInvitations = await Context.Requests.Where(x => x.UserId == CurrentlyLoggedUser.Id).ToListAsync();
+            var dto = new GetUserPetsDtoResponse {Pets = new List<PetForGetUserPetsDtoResponse>()};
+
+            foreach (var pet in pets)
+            {
+                var petDto = Mapper.Map<PetForGetUserPetsDtoResponse>(pet);
+
+
+                if (pet.OwnerPets.Any(x => x.OwnerId == CurrentlyLoggedUser.Owner.Id) || pet.VetPets.Any(x => x.VetId == CurrentlyLoggedUser.Vet.Id))
+                    petDto.InvitationStatus = true;
+                else if (userInvitations.Any(x => x.PetId == pet.Id && x.UserId == CurrentlyLoggedUser.Id))
+                    petDto.InvitationStatus = false;
+                else
+                    petDto.InvitationStatus = null;
+
+                dto.Pets.Add(petDto);
+            }
+
+            return new ServiceResponse<GetUserPetsDtoResponse>(HttpStatusCode.OK, dto);
         }
 
         private async Task<ServiceResponse<UpdatePetDtoResponse>> ChangePetInfoAsync(UpdatePetDtoRequest dto, Pet pet)

@@ -38,6 +38,15 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
+        [Produces(typeof(ServiceResponse<GetUserPetsDtoResponse>))]
+        [AuthorizeRoles(Role.Owner, Role.Vet)]
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetUserPets(string userId)
+        {
+            var response = await _petService.GetUserPetsAsync(userId);
+            return SendResponse(response);
+        }
+
         [Produces(typeof(ServiceResponse<GetSharedPetsDtoResponse>))]
         [AuthorizeRoles(Role.Owner, Role.Vet)]
         [HttpGet("shared")]

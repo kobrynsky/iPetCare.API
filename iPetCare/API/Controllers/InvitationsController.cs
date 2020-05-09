@@ -36,13 +36,41 @@ namespace API.Controllers
             return SendResponse(response);
         }
 
-        [Produces(typeof(ServiceResponse<CreateInvitationDtoResponse>))]
+        [Produces(typeof(ServiceResponse))]
         [AuthorizeRoles(Role.Vet, Role.Owner)]
-        [HttpPut("{invitationId}")]
-        public async Task<IActionResult> ChangeStatusInvitation(ChangeStatusInvitationDtoRequest dto, Guid invitationId)
+        [HttpPut("{invitationId}/accept")]
+        public async Task<IActionResult> AcceptInvitation(Guid invitationId)
         {
-            var response = await _invitationService.ChangeInvitationStatusAsync(dto, invitationId);
+            var response = await _invitationService.AcceptInvitationAsync(invitationId);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse))]
+        [AuthorizeRoles(Role.Vet, Role.Owner)]
+        [HttpPut("{invitationId}/decline")]
+        public async Task<IActionResult> DeclineInvitation(Guid invitationId)
+        {
+            var response = await _invitationService.DeclineInvitationAsync(invitationId);
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse))]
+        [AuthorizeRoles(Role.Vet, Role.Owner)]
+        [HttpDelete("{invitationId}/revoke")]
+        public async Task<IActionResult> RevokeInvitation(Guid invitationId)
+        {
+            var response = await _invitationService.RevokeInvitationAsync(invitationId);
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse))]
+        [AuthorizeRoles(Role.Vet, Role.Owner)]
+        [HttpDelete("delete-access/{userId}/{petId}")]
+        public async Task<IActionResult> DeleteAccess(string userId, Guid petId)
+        {
+            var response = await _invitationService.DeleteAccessAsync(userId, petId);
+            return SendResponse(response);
+        }
+
     }
 }

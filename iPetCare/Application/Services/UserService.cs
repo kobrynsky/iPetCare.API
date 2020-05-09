@@ -474,7 +474,7 @@ namespace Application.Services
                 {
                     var vet = await Context.Vets.SingleOrDefaultAsync(x => x.UserId == userId);
                     Context.Vets.Remove(vet);
-                }                 
+                }
 
                 if (user.Role == Role.Owner)
                 {
@@ -486,7 +486,7 @@ namespace Application.Services
                     var owner = await Context.Owners.SingleOrDefaultAsync(x => x.UserId == userId);
                     Context.Owners.Remove(owner);
 
-                }                    
+                }
             }
 
             return await Context.SaveChangesAsync() > 0
