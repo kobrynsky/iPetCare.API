@@ -4,13 +4,12 @@ namespace Application.Dtos.Institutions
 {
     public class UpdateInstitutionDtoRequest
     {
-        [Required]
-        [MaxLength(255)]
+        [Required(ErrorMessage = "Pole jest wymagane")]
+        [MaxLength(255, ErrorMessage = "Długość nie może być większa, niż 255 znaków")]
         public string Name { get; set; }
 
-        [Required]
-        [MaxLength(255)]
+        [Required(ErrorMessage = "Pole jest wymagane")]
+        [MaxLength(255, ErrorMessage = "Długość nie może być większa, niż 255 znaków")]
         public string Address { get; set; }
-
     }
 }

@@ -15,8 +15,8 @@ namespace Application.Dtos.Pet
         public DateTime BirthDate { get; set; }
         public int RaceId { get; set; }
 
-        [Required]
-        [MaxLength(255)]
+        [Required(ErrorMessage = "Pole jest wymagane")]
+        [MaxLength(255, ErrorMessage = "Długość nie może być większa, niż 255 znaków")]
         public string Name { get; set; }
     }
 }
