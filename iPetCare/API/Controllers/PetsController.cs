@@ -88,5 +88,23 @@ namespace API.Controllers
             var response = await _petService.DeletePetAsync(petId);
             return SendResponse(response);
         }
+
+        [Produces(typeof(ServiceResponse<GetInvitationsStatusDtoResponse>))]
+        [HttpGet("{petId}/invitations")]
+        public async Task<IActionResult> GetInvitationsStatus(Guid petId)
+        {
+            var response = await _petService.GetInvitationsStatusAsync(petId);
+            return SendResponse(response);
+        }
+
+        [Produces(typeof(ServiceResponse<GetInvitationsStatusDtoResponse>))]
+        [HttpGet("my/invitations")]
+        public async Task<IActionResult> GetInvitationsStatus()
+        {
+            var response = await _petService.GetInvitationsStatusAsync();
+            return SendResponse(response);
+        }
+
+
     }
 }

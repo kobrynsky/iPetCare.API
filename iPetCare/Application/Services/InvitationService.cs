@@ -87,71 +87,6 @@ namespace Application.Services
             return new ServiceResponse(HttpStatusCode.OK);
         }
 
-        public async Task<ServiceResponse<ChangeStatusInvitationDtoResponse>> ChangeInvitationStatusAsync(ChangeStatusInvitationDtoRequest dto, Guid invitationId)
-        {
-            if (CurrentlyLoggedUser == null)
-                return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.Unauthorized);
-
-            var invitation = await Context.Requests.FindAsync(invitationId);
-
-            if (invitation == null)
-                return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.NotFound);
-
-            var pet = await Context.Pets.FindAsync(invitation.PetId);
-
-            if (CurrentlyLoggedUser.Id == invitation.UserId && pet.OwnerPets.Any(x => x.Owner.User.Id == CurrentlyLoggedUser.Id))
-                return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.Forbidden);
-
-              var responseDto = Mapper.Map<ChangeStatusInvitationDtoResponse>(invitation);
-
-            if (dto.IsAccepted)
-            {
-                var User = UserManager.FindByIdAsync(invitation.UserId).Result;
-
-                if (User.Role == Role.Owner)
-                {
-                    var owner = await Context.Owners.Where(x => x.UserId == invitation.UserId).SingleOrDefaultAsync();
-
-                    var existInvitation = await Context.OwnerPets.Where(x => x.PetId == invitation.PetId && x.OwnerId == owner.Id).ToListAsync();
-                    if (existInvitation.Any())
-                        return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Podany użytkownik został zatwierdzony do tego zwierzaka");
-
-                    Context.OwnerPets.Add(new OwnerPet
-                    {
-                        Pet = pet,
-                        Owner = owner,
-                        MainOwner = false,
-                    });
-                }
-
-                if (User.Role == Role.Vet)
-                {
-                    var vet = await Context.Vets.Where(x => x.UserId == invitation.UserId).SingleOrDefaultAsync();
-
-                    var existInvitation = await Context.VetPets.Where(x => x.PetId == invitation.PetId && x.VetId == vet.Id).AnyAsync();
-                    if (existInvitation)
-                        return new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Podany użytkownik został zatwierdzony do tego zwierzaka");
-
-                    Context.VetPets.Add(new VetPet
-                    {
-                        Pet = pet,
-                        Vet = vet
-                    });
-                }
-            }
-
-            if (!dto.IsAccepted)
-            {
-                Context.Requests.Remove(invitation);
-            }
-
-            int result = await Context.SaveChangesAsync();
-
-            return result >= 0
-                ? new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.OK, responseDto)
-                : new ServiceResponse<ChangeStatusInvitationDtoResponse>(HttpStatusCode.BadRequest, "Wystąpił błąd podczas zmiany statusu zaproszenia");
-        }
-
         public async Task<ServiceResponse> AcceptInvitationAsync(Guid invitationId)
         {
             if (CurrentlyLoggedUser == null)
@@ -245,7 +180,7 @@ namespace Application.Services
 
             var mainOwner = pet.OwnerPets.FirstOrDefault(x => x.MainOwner);
 
-            if (mainOwner != null && (mainOwner.Owner.UserId == CurrentlyLoggedUser.Id || user.Id == CurrentlyLoggedUser.Id))
+            if (mainOwner != null && mainOwner.Owner.UserId == CurrentlyLoggedUser.Id || user.Id == CurrentlyLoggedUser.Id)
             {
                 if (user.Role == Role.Vet)
                 {

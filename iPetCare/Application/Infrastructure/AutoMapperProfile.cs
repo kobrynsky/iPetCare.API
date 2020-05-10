@@ -81,6 +81,8 @@ namespace Application.Infrastructure
             CreateMap<Pet, GetPetDtoResponse>();
             CreateMap<UpdatePetDtoRequest, UpdatePetDtoResponse>();
             CreateMap<UpdatePetDtoRequest, Pet>();
+            CreateMap<Pet, PetForGetInvitationsStatusDtoResponse>();
+            CreateMap<ApplicationUser, UserForGetInvitationsStatusDtoResponse>();
         }
 
         private void MapsForRaces()

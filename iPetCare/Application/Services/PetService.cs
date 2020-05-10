@@ -256,19 +256,19 @@ namespace Application.Services
         {
             var user = await UserManager.FindByIdAsync(userId);
 
-            if(user?.Owner == null)
+            if (user?.Owner == null)
                 return new ServiceResponse<GetUserPetsDtoResponse>(HttpStatusCode.NotFound);
 
             var pets = user.Owner.OwnerPets.Where(x => x.MainOwner).Select(x => x.Pet).ToList();
             var userInvitations = await Context.Requests.Where(x => x.UserId == CurrentlyLoggedUser.Id).ToListAsync();
-            var dto = new GetUserPetsDtoResponse {Pets = new List<PetForGetUserPetsDtoResponse>()};
+            var dto = new GetUserPetsDtoResponse { Pets = new List<PetForGetUserPetsDtoResponse>() };
 
             foreach (var pet in pets)
             {
                 var petDto = Mapper.Map<PetForGetUserPetsDtoResponse>(pet);
 
 
-                if (pet.OwnerPets.Any(x => x.OwnerId == CurrentlyLoggedUser.Owner.Id) || pet.VetPets.Any(x => x.VetId == CurrentlyLoggedUser.Vet.Id))
+                if (pet.OwnerPets.Any(x => (CurrentlyLoggedUser.Owner != null && x.OwnerId == CurrentlyLoggedUser.Owner.Id) || pet.VetPets.Any(x => CurrentlyLoggedUser.Vet != null && x.VetId == CurrentlyLoggedUser.Vet.Id)))
                     petDto.InvitationStatus = true;
                 else if (userInvitations.Any(x => x.PetId == pet.Id && x.UserId == CurrentlyLoggedUser.Id))
                     petDto.InvitationStatus = false;
@@ -279,6 +279,109 @@ namespace Application.Services
             }
 
             return new ServiceResponse<GetUserPetsDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
+        public async Task<ServiceResponse<GetInvitationsStatusDtoResponse>> GetInvitationsStatusAsync(Guid petId)
+        {
+            var pet = await Context.Pets.FindAsync(petId);
+
+            if (pet == null)
+                return new ServiceResponse<GetInvitationsStatusDtoResponse>(HttpStatusCode.NotFound);
+
+            var owner = pet.OwnerPets.FirstOrDefault(x => x.MainOwner);
+
+            if (owner == null || CurrentlyLoggedUser.Owner.Id != owner.OwnerId)
+                return new ServiceResponse<GetInvitationsStatusDtoResponse>(HttpStatusCode.Forbidden);
+
+            var invitations = await Context.Requests.Where(x => x.Pet.Id == petId).ToListAsync();
+            var owners = await Context.OwnerPets.Where(x => x.PetId == petId && !x.MainOwner).ToListAsync();
+            var vets = await Context.VetPets.Where(x => x.PetId == petId).ToListAsync();
+
+            var dto = new GetInvitationsStatusDtoResponse()
+            {
+                InvitationsStatus = new List<InvitationStatusForGetInvitationsStatusDtoResponse>(),
+            };
+
+            foreach (var invitation in invitations)
+            {
+                dto.InvitationsStatus.Add(new InvitationStatusForGetInvitationsStatusDtoResponse()
+                {
+                    InvitationId = invitation.Id,
+                    Pet = Mapper.Map<PetForGetInvitationsStatusDtoResponse>(invitation.Pet),
+                    Pending = true,
+                    User = Mapper.Map<UserForGetInvitationsStatusDtoResponse>(invitation.User)
+                });
+            }
+
+            foreach (var ownerPet in owners)
+            {
+                dto.InvitationsStatus.Add(new InvitationStatusForGetInvitationsStatusDtoResponse()
+                {
+                    Pet = Mapper.Map<PetForGetInvitationsStatusDtoResponse>(ownerPet.Pet),
+                    Pending = false,
+                    User = Mapper.Map<UserForGetInvitationsStatusDtoResponse>(ownerPet.Owner.User)
+                });
+            }
+
+            foreach (var vetPet in vets)
+            {
+                dto.InvitationsStatus.Add(new InvitationStatusForGetInvitationsStatusDtoResponse()
+                {
+                    Pet = Mapper.Map<PetForGetInvitationsStatusDtoResponse>(vetPet.Pet),
+                    Pending = false,
+                    User = Mapper.Map<UserForGetInvitationsStatusDtoResponse>(vetPet.Vet.User)
+                });
+            }
+
+            return new ServiceResponse<GetInvitationsStatusDtoResponse>(HttpStatusCode.OK, dto);
+        }
+
+        public async Task<ServiceResponse<GetInvitationsStatusDtoResponse>> GetInvitationsStatusAsync()
+        {
+            var pets = Context.OwnerPets.Where(x => x.MainOwner && x.OwnerId == CurrentlyLoggedUser.Owner.Id);
+
+
+            var invitations = await Context.Requests.Where(x => pets.Any(y => y.PetId == x.PetId)).ToListAsync();
+            var owners = await Context.OwnerPets.Where(x => pets.Any(y => y.PetId == x.PetId) && !x.MainOwner).ToListAsync();
+            var vets = await Context.VetPets.Where(x => pets.Any(y => y.PetId == x.PetId)).ToListAsync();
+
+            var dto = new GetInvitationsStatusDtoResponse()
+            {
+                InvitationsStatus = new List<InvitationStatusForGetInvitationsStatusDtoResponse>(),
+            };
+
+            foreach (var invitation in invitations)
+            {
+                dto.InvitationsStatus.Add(new InvitationStatusForGetInvitationsStatusDtoResponse()
+                {
+                    InvitationId = invitation.Id,
+                    Pet = Mapper.Map<PetForGetInvitationsStatusDtoResponse>(invitation.Pet),
+                    Pending = true,
+                    User = Mapper.Map<UserForGetInvitationsStatusDtoResponse>(invitation.User)
+                });
+            }
+
+            foreach (var ownerPet in owners)
+            {
+                dto.InvitationsStatus.Add(new InvitationStatusForGetInvitationsStatusDtoResponse()
+                {
+                    Pet = Mapper.Map<PetForGetInvitationsStatusDtoResponse>(ownerPet.Pet),
+                    Pending = false,
+                    User = Mapper.Map<UserForGetInvitationsStatusDtoResponse>(ownerPet.Owner.User)
+                });
+            }
+
+            foreach (var vetPet in vets)
+            {
+                dto.InvitationsStatus.Add(new InvitationStatusForGetInvitationsStatusDtoResponse()
+                {
+                    Pet = Mapper.Map<PetForGetInvitationsStatusDtoResponse>(vetPet.Pet),
+                    Pending = false,
+                    User = Mapper.Map<UserForGetInvitationsStatusDtoResponse>(vetPet.Vet.User)
+                });
+            }
+
+            return new ServiceResponse<GetInvitationsStatusDtoResponse>(HttpStatusCode.OK, dto);
         }
 
         private async Task<ServiceResponse<UpdatePetDtoResponse>> ChangePetInfoAsync(UpdatePetDtoRequest dto, Pet pet)
