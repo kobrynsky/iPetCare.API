@@ -488,6 +488,7 @@ namespace Application.Services
 
                 var institutionVets = await Context.InstitutionVets.Where(iv => iv.VetId == vet.Id).ToListAsync();
                 if (institutionVets.Any())
+                { 
                     Context.InstitutionVets.RemoveRange(institutionVets);
                 }
 
