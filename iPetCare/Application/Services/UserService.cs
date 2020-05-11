@@ -468,30 +468,76 @@ namespace Application.Services
 
             if (CurrentlyLoggedUser.Role == Role.Administrator)
             {
-                Context.Users.Remove(user);
-
-                if (user.Role == Role.Vet)
-                {
-                    var vet = await Context.Vets.SingleOrDefaultAsync(x => x.UserId == userId);
-                    Context.Vets.Remove(vet);
-                }
-
-                if (user.Role == Role.Owner)
-                {
-                    var pets = await Context.OwnerPets.Where(x => x.Owner.User.Id == userId && x.MainOwner)
-                                                       .Select(x => x.Pet)
-                                                       .ToListAsync();
-                    Context.Pets.RemoveRange(pets);
-
-                    var owner = await Context.Owners.SingleOrDefaultAsync(x => x.UserId == userId);
-                    Context.Owners.Remove(owner);
-
-                }
+                await clearUserDataAsync(user);
             }
-
+            
             return await Context.SaveChangesAsync() > 0
                 ? new ServiceResponse(HttpStatusCode.OK)
                 : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania użytkownika");
         }
+
+        private async Task clearUserDataAsync(ApplicationUser user)
+        {
+            var usrNotes = await Context.Notes.Where(n => n.UserId == user.Id).ToListAsync();
+            if (usrNotes.Any())
+                Context.Notes.RemoveRange(usrNotes);
+
+            if (user.Role == Role.Vet)
+            {
+                var vet = await Context.Vets.SingleOrDefaultAsync(x => x.UserId == user.Id);
+
+                var institutionVets = await Context.InstitutionVets.Where(iv => iv.VetId == vet.Id).ToListAsync();
+                if (institutionVets.Any())
+                    Context.InstitutionVets.RemoveRange(institutionVets);
+                }
+
+            }
+
+            if (user.Role == Role.Owner)
+            {
+                var pets = await Context.OwnerPets.Where(x => x.Owner.User.Id == user.Id && x.MainOwner)
+                                                   .Select(x => x.Pet)
+                                                   .ToListAsync();
+
+                if (pets.Any())
+                {
+                    foreach (Pet pet in pets)
+                    {
+                        var ownerPets = await Context.OwnerPets.Where(op => op.PetId == pet.Id).ToListAsync();
+                        Context.OwnerPets.RemoveRange(ownerPets);
+
+                        var requests = await Context.Requests.Where(r => r.PetId == pet.Id).ToListAsync();
+                        if (requests.Any())
+                            Context.Requests.RemoveRange(requests);
+
+                        var notes = await Context.Notes.Where(n => n.PetId == pet.Id).ToListAsync();
+                        if (notes.Any())
+                            Context.Notes.RemoveRange(notes);
+
+                        var vetPets = await Context.VetPets.Where(vp => vp.PetId == pet.Id).ToListAsync();
+                        if (vetPets.Any())
+                            Context.VetPets.RemoveRange(vetPets);
+
+                        var examinations = await Context.Examinations.Where(e => e.PetId == pet.Id).ToListAsync();
+
+                        if (examinations.Any())
+                        {
+                            foreach (Examination examination in examinations)
+                            {
+                                var examinationParameterValue = await Context.ExaminationParameterValues.Where(e => e.ExaminationId == examination.Id).ToListAsync();
+                                if (examinationParameterValue.Any())
+                                    Context.ExaminationParameterValues.RemoveRange(examinationParameterValue);
+                            }
+                            Context.Examinations.RemoveRange(examinations);
+                        }
+                    }
+                    Context.Pets.RemoveRange(pets);
+                }
+                var owner = await Context.Owners.SingleOrDefaultAsync(x => x.UserId == user.Id);
+                Context.Owners.Remove(owner);
+            }
+            Context.Users.Remove(user);
+        }
+
     }
 }

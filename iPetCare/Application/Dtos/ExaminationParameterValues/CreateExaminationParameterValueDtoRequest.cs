@@ -6,7 +6,7 @@ namespace Application.Dtos.ExaminationParameterValues
 {
     public class CreateExaminationParameterValueDtoRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Pole jest wymagane")]
         [Range(float.MinValue, float.MaxValue, ErrorMessage = "Prosze wprowadzić wartość w formacie liczbowym")]
         public float Value { get; set; }
         public int ExaminationParameterId { get; set; }

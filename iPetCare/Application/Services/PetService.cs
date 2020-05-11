@@ -190,7 +190,7 @@ namespace Application.Services
 
             if (CurrentlyLoggedUser.Role == Role.Administrator)
             {
-                Context.Pets.Remove(pet);
+                await clearPetDataAsync(pet);
             }
             else
             {
@@ -198,10 +198,12 @@ namespace Application.Services
                 if (owner == null)
                     return new ServiceResponse(HttpStatusCode.Unauthorized);
 
+                var ownerPets = await Context.OwnerPets.SingleOrDefaultAsync(op => op.OwnerId == owner.Id && op.PetId == petId && op.MainOwner);
+
                 if (!await Context.OwnerPets.AnyAsync(op => op.OwnerId == owner.Id && op.PetId == petId && op.MainOwner))
                     return new ServiceResponse(HttpStatusCode.Forbidden);
 
-                Context.Pets.Remove(pet);
+                await clearPetDataAsync(pet);
             }
 
             return await Context.SaveChangesAsync() > 0
@@ -441,6 +443,37 @@ namespace Application.Services
             pet.ImageUrl = $"/{imageFolderPath}/{newFileName}";
 
             return true;
+        }
+        private async Task clearPetDataAsync(Pet pet)
+        { 
+            var ownerPets = await Context.OwnerPets.Where(op => op.PetId == pet.Id).ToListAsync();
+            Context.OwnerPets.RemoveRange(ownerPets);
+
+            var requests = await Context.Requests.Where(r => r.PetId == pet.Id).ToListAsync();
+            if (requests.Any())
+                Context.Requests.RemoveRange(requests);
+
+            var notes = await Context.Notes.Where(n => n.PetId == pet.Id).ToListAsync();
+            if (notes.Any())
+                Context.Notes.RemoveRange(notes);
+
+            var vetPets = await Context.VetPets.Where(vp => vp.PetId == pet.Id).ToListAsync();
+            if (vetPets.Any())
+                Context.VetPets.RemoveRange(vetPets);
+
+            var examinations = await Context.Examinations.Where(e => e.PetId == pet.Id).ToListAsync();
+
+            if (examinations.Any())
+            {
+                foreach (Examination examination in examinations)
+                {
+                    var examinationParameterValue = await Context.ExaminationParameterValues.Where(e => e.ExaminationId == examination.Id).ToListAsync();
+                    if (examinationParameterValue.Any())
+                         Context.ExaminationParameterValues.RemoveRange(examinationParameterValue);
+                }
+                Context.Examinations.RemoveRange(examinations);
+            }
+            Context.Pets.Remove(pet);
         }
     }
 }
