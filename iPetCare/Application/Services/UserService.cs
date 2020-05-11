@@ -43,6 +43,7 @@ namespace Application.Services
             if (!result.Succeeded)
                 return new ServiceResponse<LoginDtoResponse>(HttpStatusCode.Unauthorized);
 
+
             var responseDto = new LoginDtoResponse()
             {
                 Id = user.Id,
@@ -54,6 +55,11 @@ namespace Application.Services
                 Role = user.Role,
                 ImageUrl = user.ImageUrl
             };
+
+            if (user.Owner != null)
+                responseDto.PlaceOfResidence = user.Owner.PlaceOfResidence;
+            else if (user.Vet != null)
+                responseDto.Specialization = user.Vet.Specialization;
 
             return new ServiceResponse<LoginDtoResponse>(HttpStatusCode.OK, responseDto);
         }
