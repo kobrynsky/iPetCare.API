@@ -470,7 +470,7 @@ namespace Application.Services
             {
                 await clearUserDataAsync(user);
             }
-
+            
             return await Context.SaveChangesAsync() > 0
                 ? new ServiceResponse(HttpStatusCode.OK)
                 : new ServiceResponse(HttpStatusCode.BadRequest, "Wystąpił błąd podczas usuwania użytkownika");
@@ -489,12 +489,8 @@ namespace Application.Services
                 var institutionVets = await Context.InstitutionVets.Where(iv => iv.VetId == vet.Id).ToListAsync();
                 if (institutionVets.Any())
                     Context.InstitutionVets.RemoveRange(institutionVets);
+                }
 
-                var vetPets = await Context.VetPets.Where(vp => vp.VetId == vet.Id).ToListAsync();
-                if (vetPets.Any())
-                    Context.VetPets.RemoveRange(vetPets);
-
-                Context.Vets.Remove(vet);
             }
 
             if (user.Role == Role.Owner)

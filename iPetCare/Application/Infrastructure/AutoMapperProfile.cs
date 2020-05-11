@@ -14,6 +14,7 @@ using Application.Dtos.Invitations;
 using Application.Dtos.Owners;
 using Application.Dtos.Vets;
 using Application.Dtos.Notes;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Application.Infrastructure
 {
@@ -61,13 +62,18 @@ namespace Application.Infrastructure
                 .ForMember(d => d.Role, opt => opt.MapFrom(s => s.User.Role))
                 .ForMember(d => d.Email, opt => opt.MapFrom(s => s.User.Email))
                 .ForMember(d => d.FirstName, opt => opt.MapFrom(s => s.User.FirstName))
-                .ForMember(d => d.LastName, opt => opt.MapFrom(s => s.User.LastName));
+                .ForMember(d => d.LastName, opt => opt.MapFrom(s => s.User.LastName))
+                .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
+                .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.UserId));
         }
 
         private void MapsForPets()
         {
             CreateMap<Pet, PetForGetPetsDtoResponse>();
             CreateMap<Pet, PetForGetMyPetsDtoResponse>();
+            CreateMap<Pet, PetForGetUserPetsDtoResponse>()
+                .ForMember(d => d.Race, opt => opt.MapFrom(s => s.Race.Name))
+                .ForMember(d => d.Species, opt => opt.MapFrom(s => s.Race.Species.Name));
             CreateMap<Pet, PetForGetSharedPetsDtoResponse>();
             CreateMap<CreatePetDtoRequest, Pet>();
             CreateMap<Pet, CreatePetDtoResponse>()
@@ -75,6 +81,8 @@ namespace Application.Infrastructure
             CreateMap<Pet, GetPetDtoResponse>();
             CreateMap<UpdatePetDtoRequest, UpdatePetDtoResponse>();
             CreateMap<UpdatePetDtoRequest, Pet>();
+            CreateMap<Pet, PetForGetInvitationsStatusDtoResponse>();
+            CreateMap<ApplicationUser, UserForGetInvitationsStatusDtoResponse>();
         }
 
         private void MapsForRaces()
