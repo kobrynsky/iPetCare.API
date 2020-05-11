@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Application.Dtos.ExaminationParameterValues
 {
     public class UpdateExaminationParameterValueDtoRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Pole jest wymagane")]
         [Range(float.MinValue, float.MaxValue, ErrorMessage = "Prosze wprowadzić wartość w formacie liczbowym")]
         public float Value { get; set; }
         public int ExaminationParameterId { get; set; }
