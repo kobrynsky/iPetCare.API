@@ -39,11 +39,11 @@ The main target group of the system are private owners animals and vets. It will
 ![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/admin_image_7.png?raw=true)
 ![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/admin_image_8.png?raw=true)
 ![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/admin_image_9.png?raw=true)
-![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_8.png?raw=true)
-![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_10.png?raw=true)
-![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_11.png?raw=true)
-![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_13.png?raw=true)
-![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_14.png?raw=true)
+![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_8.PNG?raw=true)
+![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_10.PNG?raw=true)
+![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_11.PNG?raw=true)
+![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_13.PNG?raw=true)
+![](https://github.com/blc132/iPetCare.SPA/blob/dev/images/owner_14.PNG?raw=true)
 
 ------------
 
